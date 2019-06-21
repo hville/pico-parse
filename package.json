@@ -1,0 +1,26 @@
+{
+  "name": "pico-parse",
+  "version": "0.0.1",
+  "description": "small lexer and parser",
+  "devDependencies": {
+    "@types/node": "^11.11.0",
+    "cotest": "^4.0.2"
+  },
+  "scripts": {
+    "test": "cotest ./tst",
+    "post": "npm test && npm publish --access=public"
+  },
+  "keywords": [
+    "parser",
+    "parse",
+    "token",
+    "tokenizer",
+    "lexer"
+  ],
+  "author": "Hugo Villeneuve",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hville/pico-parse.git"
+  }
+}
