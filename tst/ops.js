@@ -2,6 +2,7 @@ var ct = require('cotest'),
 		any = require('../any'),
 		all = require('../all'),
 		rep = require('../rep'),
+		opt = require('../opt'),
 		spy = require('../spy')
 
 function test(t, res, ref) {
@@ -149,6 +150,23 @@ ct('rep fail', t => {
 	t('===', rep('ab', 3).peek('ababX').err, true)
 	t('===', rep('ab', 3).peek('ababX').i, 0)
 	t('===', rep('ab', 3).peek('ababX').j, 5)
+})
+
+ct('opt pass', t => {
+	t('===', opt('ab').peek('ab').kin, undefined)
+	t('===', opt.call('kin', 'bc').peek('ab').kin, 'kin')
+
+	t('===', opt('ab').peek('x').err, false)
+	t('===', opt('ab').peek('x').i, 0)
+	t('===', opt('ab').peek('x').j, 0)
+
+	t('===', opt('ab').peek('ab').err, false)
+	t('===', opt('ab').peek('ab').i, 0)
+	t('===', opt('ab').peek('ab').j, 2)
+
+	t('===', opt('ab').peek('abababX').err, false)
+	t('===', opt('ab').peek('abababX').i, 0)
+	t('===', opt('ab').peek('abababX').j, 2)
 })
 
 ct('spy', t => {
