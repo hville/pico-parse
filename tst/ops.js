@@ -132,6 +132,10 @@ ct('rep pass', t => {
 	t('===', rep('ab', 1, 2).peek('abababX').err, false)
 	t('===', rep('ab', 1, 2).peek('abababX').i, 0)
 	t('===', rep('ab', 1, 2).peek('abababX').j, 4)
+
+	t('===', rep('a', 'b', 1, 2).peek('abababX').err, false)
+	t('===', rep('a', 'b', 1, 2).peek('abababX').i, 0)
+	t('===', rep('a', 'b', 1, 2).peek('abababX').j, 4)
 })
 
 ct('rep fail', t => {

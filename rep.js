@@ -1,16 +1,24 @@
 var Tree = require('./src/_tree'),
 		text = require('./tok'),
-		Rule = require('./src/_rule')
+		Rule = require('./src/_rule'),
+		all = require('./all')
 
-module.exports = function(rule, min, max) {
+module.exports = function() {
 	var tok = new Rule(repset, reppeek)
 	//@ts-ignore
 	if (this instanceof String) tok.kin = ''+this
-	return tok.set(rule, min, max)
+	return repset.apply(tok, arguments)
 }
 
-function repset(rule, min, max) {
-	this.def = [rule.isRule ? rule : text(rule), min || 0, max || Infinity]
+function repset() {
+	var count = [],
+			rules = []
+	for (var i=0; i<arguments.length; ++i) {
+		var arg = arguments[i]
+		if (arg.constructor === Number) count.push(arg)
+		else rules.push(arg.isRule ? arg : text(arg))
+	}
+	this.def = [rules.length === 1 ? rules[0] : all.apply(null, rules), count[0] || 0, count[1] || Infinity]
 	return this
 }
 
