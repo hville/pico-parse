@@ -41,7 +41,7 @@ Rules are created with the following factories
 * `tok(String|RegExp) : Rule` converts a string or a regular expression to a string
 * `any(...Rule|String|RegExp) : Rule` finds the first passing rule
 * `all(...Rule|String|RegExp) : Rule` chains all rules
-* `rep(Rule [,min:Number [,max:Number]]) : Rule` repeat a rule min|0 to max|Infinity times
+* `rep(...Rule [,min:Number [,max:Number]]) : Rule` repeat a rule or all(...rules) min|0 to max|Infinity times
 * `opt(...Rule|String|RegExp) : Rule` optional rule. Just like `rep( all(...Rule), 0, 1)`
 * `spy(Rule [,Function]]) : Rule` executes a callback with the result of the rule
 
