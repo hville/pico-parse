@@ -7,11 +7,8 @@
 ## Example
 
 ```javascript
-const tok = require('pico-parse/any'),
-      any = require('pico-parse/any'),
-      all = require('pico-parse/all'),
-      rep = require('pico-parse/rep'),
-      spy = require('pico-parse/spy')
+const tok = require('pico-parse/tok'),
+      {any, all, rep, spy} = require('pico-parse')
 
 const _ = /[ ]*/,
       int = tok.call('myInteger', /[0-9]+/),
@@ -45,7 +42,7 @@ Rules are created with the following factories
 * `any(...Rule|String|RegExp) : Rule` finds the first passing rule
 * `all(...Rule|String|RegExp) : Rule` chains all rules
 * `rep(Rule [,min:Number [,max:Number]]) : Rule` repeat a rule min|0 to max|Infinity times
-* `opt(Rule) : Rule` optional rule. Just like `rep(Rule, 0, 1)`
+* `opt(...Rule|String|RegExp) : Rule` optional rule. Just like `rep( all(...Rule), 0, 1)`
 * `spy(Rule [,Function]]) : Rule` executes a callback with the result of the rule
 
 Any rule factory can be named by calling them with a string context. All results of that rule will have a `kin` property with that name.

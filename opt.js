@@ -1,16 +1,17 @@
 var Tree = require('./src/_tree'),
 		text = require('./tok'),
-		Rule = require('./src/_rule')
+		Rule = require('./src/_rule'),
+		all = require('./all')
 
-module.exports = function(rule) {
+module.exports = function() {
 	var tok = new Rule(optset, optpeek)
 	//@ts-ignore
 	if (this instanceof String) tok.kin = ''+this
-	return tok.set(rule)
+	return optset.apply(tok, arguments)
 }
 
 function optset(rule) {
-	this.def = [rule.isRule ? rule : text(rule)]
+	this.def = [arguments.length > 1 ? all.apply(null, arguments) : rule.isRule ? rule : text(rule)]
 	return this
 }
 

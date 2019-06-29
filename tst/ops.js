@@ -1,9 +1,5 @@
 var ct = require('cotest'),
-		any = require('../any'),
-		all = require('../all'),
-		rep = require('../rep'),
-		opt = require('../opt'),
-		spy = require('../spy')
+		{any, all, rep, opt, spy} = require('../')
 
 function test(t, res, ref) {
 	for (var i=0, ks=Object.keys(ref); i<ks.length; ++i) t('===', res[ks[i]], ref[ks[i]])
@@ -167,6 +163,10 @@ ct('opt pass', t => {
 	t('===', opt('ab').peek('abababX').err, false)
 	t('===', opt('ab').peek('abababX').i, 0)
 	t('===', opt('ab').peek('abababX').j, 2)
+
+	t('===', opt('a', 'b').peek('abababX').i, 0)
+	t('===', opt('a', 'b').peek('abababX').j, 2)
+
 })
 
 ct('spy', t => {
