@@ -5,7 +5,7 @@ var Tree = require('./src/_tree'),
 module.exports = function() {
 	var tok = new Rule(arrset, allpeek)
 	//@ts-ignore
-	if (this instanceof String) tok.kin = ''+this
+	if (this && this.trim) tok.kin = ''+this
 	return arrset.apply(tok, arguments)
 }
 

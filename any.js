@@ -4,7 +4,7 @@ var Rule = require('./src/_rule'),
 module.exports = function() {
 	var tok = new Rule(arrset, anypeek)
 	//@ts-ignore
-	if (this instanceof String) tok.kin = ''+this
+	if (this && this.trim) tok.kin = ''+this
 	return arrset.apply(tok, arguments)
 }
 

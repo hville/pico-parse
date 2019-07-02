@@ -4,7 +4,7 @@ var Leaf = require('./src/_leaf'),
 module.exports = function(pattern) {
 	var tok = new Rule(tokset)
 	//@ts-ignore
-	if (this instanceof String) tok.kin = ''+this
+	if (this && this.trim) tok.kin = ''+this
 	return tok.set(pattern)
 }
 function tokset(pattern) {

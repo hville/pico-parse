@@ -6,7 +6,7 @@ var Tree = require('./src/_tree'),
 module.exports = function() {
 	var tok = new Rule(repset, reppeek)
 	//@ts-ignore
-	if (this instanceof String) tok.kin = ''+this
+	if (this && this.trim) tok.kin = ''+this
 	return repset.apply(tok, arguments)
 }
 

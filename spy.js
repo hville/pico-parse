@@ -4,7 +4,7 @@ var text = require('./tok'),
 module.exports = function(rule, cb) {
 	var tok = new Rule(spyset, spypeek)
 	//@ts-ignore
-	if (this instanceof String) tok.kin = ''+this
+	if (this && this.trim) tok.kin = ''+this
 	return tok.set(rule, cb)
 }
 

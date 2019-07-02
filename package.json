@@ -1,6 +1,6 @@
 {
   "name": "pico-parse",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "small lexer and parser",
   "devDependencies": {
     "@types/node": "^11.11.0",
