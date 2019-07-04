@@ -45,8 +45,12 @@ Rules are created with the following factories
 * `opt(...Rule|String|RegExp) : Rule` optional rule. Just like `rep( all(...Rule), 0, 1)`
 * `spy(Rule [,Function]]) : Rule` executes a callback with the result of the rule
 
-Any rule factory can be named by calling them with a string context. All results of that rule will have a `kin` property with that name.
-`any.call('long list')`
+Any rule can be named. All results of named rule will have a `kin` property with that name.
+* direct assignment: `myRule.kin = 'myName'`
+* calling the factory with a string context: `myRule = any.call('myName', ...)`
+* assigning multiple names with the `kin` function
+  * `kin( { myName: myRule } ) : { kin: Rule }`
+  * `kin( { a: 'a', b: /b/, c: tok('c') } ) : { kin: Rule }`
 
 ### Rule
 

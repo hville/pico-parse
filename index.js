@@ -5,5 +5,6 @@ module.exports = {
 	all: require('./all'),
 	rep: require('./rep'),
 	opt: require('./opt'),
-	spy: require('./spy')
+	spy: require('./spy'),
+	kin: require('./kin')
 }

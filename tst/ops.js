@@ -1,5 +1,5 @@
 var ct = require('cotest'),
-		{any, all, rep, opt, spy} = require('../')
+		{any, all, rep, opt, spy, kin} = require('../')
 
 function test(t, res, ref) {
 	for (var i=0, ks=Object.keys(ref); i<ks.length; ++i) t('===', res[ks[i]], ref[ks[i]])
@@ -89,6 +89,11 @@ ct('all scan', t => {
 	test(t, all.call('kin', 'abc').scan('abcdef'), {
 		kin:'kin', i:0, j: 6, err: true
 	})
+})
+
+ct('kin', t => {
+	t('===', kin( { a:'a' } ).a.kin, 'a')
+	t('===', kin( { a:all() } ).a.kin, 'a')
 })
 
 ct('any pass', t => {
