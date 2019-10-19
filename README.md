@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD032 MD036 MD041 -->
 # pico-parse
 
 *small lexer and parser*
@@ -38,7 +39,7 @@ Pack {
 
 Rules are created with the following factories
 
-* `tok(String|RegExp) : Rule` converts a string or a regular expression to a string
+* `tok(String|RegExp|Rule) : Rule` converts a string or a regular expression to a string
 * `any(...Rule|String|RegExp) : Rule` finds the first passing rule
 * `all(...Rule|String|RegExp) : Rule` chains all rules
 * `rep(...Rule [,min:Number [,max:Number]]) : Rule` repeat a rule or all(...rules) min|0 to max|Infinity times

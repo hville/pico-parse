@@ -8,9 +8,16 @@ module.exports = function(pattern) {
 	return tok.set(pattern)
 }
 function tokset(pattern) {
-	var src = pattern.source
-	this.def = !src ? pattern : new RegExp(src, pattern.sticky == null ? 'g' : 'y')
-	this.peek = !src ? textAt : this.def.sticky ? stickyAt : globalAt
+	if (pattern.constructor === Rule) {
+		this.def = pattern.def
+		this.peek = pattern.peek
+	} else if (pattern.source) {
+		this.def = new RegExp(pattern.source, pattern.sticky == null ? 'g' : 'y')
+		this.peek = this.def.sticky ? stickyAt : globalAt
+	} else {
+		this.def = pattern
+		this.peek = textAt
+	}
 	return this
 }
 function textAt(string, index) {
