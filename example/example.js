@@ -1,15 +1,18 @@
-const tok = require('../any'),
+const tok = require('../tok'),
 			any = require('../any'),
 			all = require('../all'),
-			rep = require('../rep')
-			//spy = require('../spy')
+			rep = require('../rep'),
+			kin = require('../kin')
+
 const _ = /[ ]*/,
-			int = tok.call('myInteger', /[0-9]+/),
+			int = tok(/[0-9]+/),
 			ids = /[a-zA-Z$_][a-zA-Z$_0-9]+/,
 			val = any(),
 			sum = all('+', _, val),
-			exp = all.call('myExpression', val, rep( all(_, sum) ), _)
-val.set(int, ids, exp, all('(', _, val, _, ')'))
+			exp = all(val, rep( all(_, sum) ), _)
 
+val.set(int, ids, exp, all('(', _, val, _, ')'))
+int.kin = 'myInteger'
+kin({myExpression: exp})
 console.log(exp.scan('11 +22')) //eslint-disable-line
 

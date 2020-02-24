@@ -1,11 +1,8 @@
 var Rule = require('./src/_rule'),
-		arrset = require('./src/__arrset')
+		arrset = require('./src/__rulesetn')
 
 module.exports = function() {
-	var tok = new Rule(arrset, anypeek)
-	//@ts-ignore
-	if (this && this.trim) tok.kin = ''+this
-	return arrset.apply(tok, arguments)
+	return arrset.apply(new Rule(arrset, anypeek), arguments)
 }
 
 function anypeek(string, index) {

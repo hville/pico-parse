@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD032 MD036 MD041 -->
 # pico-parse
 
-*small lexer and parser*
+*small PEG-style lexer and parser*
 
 [Example](#example) • [API](#api) • [License](#license)
 
@@ -9,14 +9,14 @@
 
 ```javascript
 const tok = require('pico-parse/tok'),
-      {any, all, rep, spy} = require('pico-parse')
+      {any, all, rep, kin, spy} = require('pico-parse')
 
 const _ = /[ ]*/,
-      int = tok.call('myInteger', /[0-9]+/),
+      int = kin('myInteger', /[0-9]+/),
       ids = /[a-zA-Z$_][a-zA-Z$_0-9]+/,
       val = any(),
       sum = all('+', _, val),
-      exp = all.call('myExpression', val, rep( all(_, sum) ), _)
+      exp = kin('myExpression', val, rep( all(_, sum) ), _)
 val.set(int, ids, exp, all('(', _, val, _, ')'))
 console.log(exp.scan('11 +22'))
 /*
@@ -39,19 +39,17 @@ Pack {
 
 Rules are created with the following factories
 
-* `tok(String|RegExp|Rule) : Rule` converts a string or a regular expression to a string
+* `tok(String|RegExp|Rule) : Rule` converts a string or a regular expression to a rule
 * `any(...Rule|String|RegExp) : Rule` finds the first passing rule
 * `all(...Rule|String|RegExp) : Rule` chains all rules
-* `rep(...Rule [,min:Number [,max:Number]]) : Rule` repeat a rule or all(...rules) min|0 to max|Infinity times
-* `opt(...Rule|String|RegExp) : Rule` optional rule. Just like `rep( all(...Rule), 0, 1)`
+* `few(...Rule|String|RegExp) : Rule` repeat all rules one or more times (+ operator)
+* `run(...Rule|String|RegExp) : Rule` repeat rules any times (* operator)
+* `opt(...Rule|String|RegExp) : Rule` optional rule (? operator)
 * `spy(Rule [,Function]]) : Rule` executes a callback with the result of the rule
 
 Any rule can be named. All results of named rule will have a `kin` property with that name.
-* direct assignment: `myRule.kin = 'myName'`
-* calling the factory with a string context: `myRule = any.call('myName', ...)`
-* assigning multiple names with the `kin` function
-  * `kin( { myName: myRule } ) : { kin: Rule }`
-  * `kin( { a: 'a', b: /b/, c: tok('c') } ) : { kin: Rule }`
+* mutate with direct assignment: `myRule.kin = 'myName'`
+* new named Rule with the `kin` function `namedRule = kin('name', ...rules)`
 
 ### Rule
 

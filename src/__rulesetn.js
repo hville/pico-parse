@@ -1,11 +1,11 @@
-var text = require('../tok')
+var tok = require('../tok')
 
 module.exports = function() {
 	//@ts-ignore
-	var def = this.def
+	var def = this.def = []
 	for (var i=0; i<arguments.length; ++i) {
 		var arg = arguments[i]
-		def[def.length] = arg.isRule ? arg : text(arg)
+		def[i] = arg.isRule ? arg : tok(arg)
 	}
 	return this
 }

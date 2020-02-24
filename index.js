@@ -6,5 +6,7 @@ module.exports = {
 	rep: require('./rep'),
 	opt: require('./opt'),
 	spy: require('./spy'),
-	kin: require('./kin')
+	kin: require('./kin'),
+	few: require('./few'),
+	run: require('./run')
 }

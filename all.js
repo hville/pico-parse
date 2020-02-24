@@ -1,12 +1,9 @@
 var Tree = require('./src/_tree'),
 		Rule = require('./src/_rule'),
-		arrset = require('./src/__arrset')
+		arrset = require('./src/__rulesetn')
 
 module.exports = function() {
-	var tok = new Rule(arrset, allpeek)
-	//@ts-ignore
-	if (this && this.trim) tok.kin = ''+this
-	return arrset.apply(tok, arguments)
+	return arrset.apply(new Rule(arrset, allpeek), arguments)
 }
 
 function allpeek(string, index, debug) {
