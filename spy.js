@@ -2,10 +2,7 @@ var text = require('./tok'),
 		Rule = require('./src/_rule')
 
 module.exports = function(rule, cb) {
-	var tok = new Rule(spyset, spypeek)
-	//@ts-ignore
-	if (this && this.trim) tok.kin = ''+this
-	return tok.set(rule, cb)
+	return spyset.call(new Rule(spyset, spypeek), rule, cb)
 }
 
 function spyset(rule, cb) {

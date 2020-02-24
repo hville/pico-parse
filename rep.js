@@ -4,10 +4,7 @@ var Tree = require('./src/_tree'),
 		all = require('./all')
 
 module.exports = function() {
-	var tok = new Rule(repset, reppeek)
-	//@ts-ignore
-	if (this && this.trim) tok.kin = ''+this
-	return repset.apply(tok, arguments)
+	return repset.apply(new Rule(repset, reppeek), arguments)
 }
 
 function repset() {

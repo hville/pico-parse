@@ -1,5 +1,6 @@
 var ct = require('cotest'),
-		tok = require('../tok')
+		tok = require('../tok'),
+		kin = require('../kin')
 
 var simNoSticky = Object.defineProperty(/abc/, 'sticky', {value: null}),
 		abcT = tok('abc'),
@@ -20,13 +21,13 @@ ct('init sticky/global flags', t => {
 	t('===', abcG.def.global, true)
 })
 ct('kin', t => {
-	test(t, tok.call('kin', 'abc').peek('abc'), {
+	test(t, kin('kin', 'abc').peek('abc'), {
 		kin:'kin', i:0, txt: 'abc', j: 3, err: false
 	})
-	test(t, tok.call('kin', /abc/).peek('abc'), {
+	test(t, kin('kin', /abc/).peek('abc'), {
 		kin:'kin', i:0, txt: 'abc', j: 3, err: false
 	})
-	test(t, tok.call('kin', simNoSticky).peek('abc'), {
+	test(t, kin('kin', simNoSticky).peek('abc'), {
 		kin:'kin', i:0, txt: 'abc', j: 3, err: false
 	})
 })
@@ -112,8 +113,8 @@ ct('tok global fail', t => {
 	})
 })
 ct('rename', t => {
-	var subT = tok.call('subT', abcT),
-			subS = tok.call('subS', abcS)
+	var subT = kin('subT', abcT),
+			subS = kin('subS', abcS)
 	test(t, subT.peek('abc'), {
 		kin:'subT', i:0, txt: 'abc', j: 3, err: false
 	})

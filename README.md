@@ -45,6 +45,8 @@ Rules are created with the following factories
 * `few(...Rule|String|RegExp) : Rule` repeat all rules one or more times (+ operator)
 * `run(...Rule|String|RegExp) : Rule` repeat rules any times (* operator)
 * `opt(...Rule|String|RegExp) : Rule` optional rule (? operator)
+* `and(...Rule|String|RegExp) : Rule` pass if lookahead passes (& operator)
+* `not(...Rule|String|RegExp) : Rule` pass if lookahead fails (! operator)
 * `spy(Rule [,Function]]) : Rule` executes a callback with the result of the rule
 
 Any rule can be named. All results of named rule will have a `kin` property with that name.

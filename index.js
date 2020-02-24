@@ -8,5 +8,7 @@ module.exports = {
 	spy: require('./spy'),
 	kin: require('./kin'),
 	few: require('./few'),
-	run: require('./run')
+	run: require('./run'),
+	and: require('./and'),
+	not: require('./not')
 }

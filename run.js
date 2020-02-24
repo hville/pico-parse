@@ -3,8 +3,7 @@ var Tree = require('./src/_tree'),
 		set = require('./src/__ruleset1')
 
 module.exports = function() {
-	var rule = new Run
-	return rule.set.apply(rule, arguments)
+	return set.apply(new Run, arguments)
 }
 
 function Run() {

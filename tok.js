@@ -2,10 +2,7 @@ var Leaf = require('./src/_leaf'),
 		Rule = require('./src/_rule')
 
 module.exports = function(pattern) {
-	var tok = new Rule(tokset)
-	//@ts-ignore
-	if (this && this.trim) tok.kin = ''+this
-	return tok.set(pattern)
+	return tokset.call(new Rule(tokset), pattern)
 }
 function tokset(pattern) {
 	if (pattern.constructor === Rule) {

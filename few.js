@@ -3,7 +3,7 @@ var Tree = require('./src/_tree'),
 		set = require('./src/__ruleset1')
 
 module.exports = function() {
-	return Few.prototype.set.apply(new Few, arguments)
+	return set.apply(new Few, arguments)
 }
 
 function Few() {

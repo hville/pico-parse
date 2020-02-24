@@ -1,5 +1,5 @@
 var ct = require('cotest'),
-		{any, all, rep, opt, spy, kin, few, run} = require('../')
+		{any, all, rep, opt, spy, kin, few, run, and, not} = require('../')
 
 function test(t, res, ref) {
 	for (var i=0, ks=Object.keys(ref); i<ks.length; ++i) t('===', res[ks[i]], ref[ks[i]])
@@ -183,4 +183,31 @@ ct('fuse', t => {
 		not: txt=>txt.replace('y', 'z'),
 		all: txt => txt.toUpperCase()
 	}), 'ABXZ')
+})
+
+ct('and not', t => {
+	test(t, and('ab').peek('abc'), {
+		i:0, j:0, err: false
+	})
+	test(t, not('ab').peek('abc'), {
+		i:0, j:0, err: true
+	})
+	test(t, and('ba').peek('abc'), {
+		i:0, j:0, err: true
+	})
+	test(t, not('ba').peek('abc'), {
+		i:0, j:0, err: false
+	})
+	test(t, all('a', and('c')).peek('abc'), {
+		i:0, err: true
+	})
+	test(t, all('a', and('b')).peek('abc'), {
+		i:0, err: false
+	})
+	test(t, all('a', not('c')).peek('abc'), {
+		i:0, err: false
+	})
+	test(t, all('a', not('b')).peek('abc'), {
+		i:0, err: true
+	})
 })
