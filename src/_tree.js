@@ -1,7 +1,6 @@
 module.exports = Tree
 
-function Tree(i, kin) {
-	if (kin) this.kin = kin
+function Tree(i) {
 	this.i = i
 	this.j = i
 	this.err = false
@@ -20,7 +19,7 @@ Tree.prototype.add = function(itm) {
 }
 
 Tree.prototype.fuse = function(xfos) {
-	var fcn = xfos && xfos[this.kin],
+	var fcn = xfos && xfos[this.kin], //TODO this.kin
 			set = this.set,
 			res = ''
 	for (var i=0; i<set.length; ++i) res += set[i].fuse(xfos)

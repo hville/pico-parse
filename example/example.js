@@ -1,7 +1,7 @@
 const tok = require('../tok'),
 			any = require('../any'),
 			all = require('../all'),
-			rep = require('../rep'),
+			rep = require('../old/rep'),
 			kin = require('../kin')
 
 const _ = /[ ]*/,

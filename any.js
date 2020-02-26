@@ -1,15 +1,18 @@
-var Rule = require('./src/_rule'),
-		arrset = require('./src/__rulesetn')
+var set = require('./src/__rulesetn'),
+		Rule = require('./src/_rule')
 
 module.exports = function() {
-	return arrset.apply(new Rule(arrset, anypeek), arguments)
+	return set.apply(new Any, arguments)
 }
-
-function anypeek(string, index) {
-	var ops = this.def,
-			pos = index || 0,
-			itm
-	for (var i=0; i<ops.length; ++i) if (!(itm = ops[i].peek(string, pos)).err) break
-	if (this.kin) itm.kin = this.kin
-	return itm
+function Any() {
+	this.def = null
 }
+Any.prototype = new Rule(set,
+	function(string, index) {
+		var ops = this.def,
+				pos = index || 0,
+				itm
+		for (var i=0; i<ops.length; ++i) if (!(itm = ops[i].peek(string, pos)).err) break
+		return itm
+	}
+)
