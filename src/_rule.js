@@ -17,3 +17,19 @@ Rule.prototype.scan = function(string) {
 	}
 	return res
 }
+Rule.prototype.test = function() {
+	this.tRules = new Set
+	this.nRules = new Set
+	this.rRules = new Set
+	testRule.call(this, this)
+	return this
+}
+
+function testRule(rule) {
+	if (rule.term) return this.tRules.add(rule)
+	if (this.nRules.has(rule)) return this.rRules.add(rule)
+	this.nRules.add(rule)
+	if (rule.def.isRule) return testRule.call(this, rule.def)
+	rule.def.forEach(testRule, this)
+}
+

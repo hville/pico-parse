@@ -14,11 +14,11 @@ function test(t, res, ref) {
 }
 
 ct('init sticky/global flags', t => {
-	t('===', abcS.def.sticky, true)
-	t('===', abcS.def.global, false)
+	t('===', abcS.term.sticky, true)
+	t('===', abcS.term.global, false)
 
-	t('===', abcG.def.sticky, false)
-	t('===', abcG.def.global, true)
+	t('===', abcG.term.sticky, false)
+	t('===', abcG.term.global, true)
 })
 ct('kin', t => {
 	test(t, kin('kin', 'abc').peek('abc'), {
@@ -62,9 +62,6 @@ ct('tok sticky pass', t => {
 	})
 	test(t, abcS.peek('aabc', 1), {
 		kin:undefined, i:1, txt: 'abc', j: 4, err: false
-	})
-	test(t, tok(voidS).peek('aabc', 1), {
-		kin:undefined, i:1, txt: '', j: 1, err: false
 	})
 	test(t, tok(/[ ]*/).peek('a', 0), {
 		i:0, txt: '', j: 0, err: false

@@ -7,6 +7,7 @@ function Leaf(i, txt, err) {
 	this.err = err
 }
 Leaf.prototype.fuse = function(xfos) {
-	var fcn = xfos && xfos[this.kin] //TODO this.kin?
+	//@ts-ignore
+	var fcn = xfos && xfos[this.kin]
 	return fcn ? fcn.call(this, this.txt) : this.txt
 }

@@ -19,7 +19,8 @@ Tree.prototype.add = function(itm) {
 }
 
 Tree.prototype.fuse = function(xfos) {
-	var fcn = xfos && xfos[this.kin], //TODO this.kin
+	//@ts-ignore
+	var fcn = xfos && xfos[this.kin],
 			set = this.set,
 			res = ''
 	for (var i=0; i<set.length; ++i) res += set[i].fuse(xfos)
