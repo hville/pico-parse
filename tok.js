@@ -1,26 +1,17 @@
-var Leaf = require('./src/_leaf'),
-		Rule = require('./src/_rule')
+var Leaf = require('./src/_leaf')
 
-module.exports = function(pattern) {
-	return Tok.prototype.set.call(new Tok, pattern)
+module.exports = Tok
+function Tok(pattern) {
+	if (this.constructor !== Tok) return new Tok(pattern)
+	if (pattern.source) {
+		this.term = new RegExp(pattern.source, pattern.sticky == null ? 'g' : 'y')
+		this.peek = this.term.sticky ? stickyAt : globalAt
+	} else {
+		this.term = pattern
+		this.peek = textAt
+	}
 }
-function Tok() {
-	this.term = null
-	this.peek = null
-}
-Tok.prototype = new Rule(
-	function(pattern) {
-		if (pattern.source) {
-			this.term = new RegExp(pattern.source, pattern.sticky == null ? 'g' : 'y')
-			this.peek = this.term.sticky ? stickyAt : globalAt
-		} else {
-			this.term = pattern
-			this.peek = textAt
-		}
-		return this
-	},
-	null
-)
+Tok.prototype.isRule = true
 function textAt(string, index) {
 	var ref = this.term,
 			i = 0,

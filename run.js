@@ -1,22 +1,25 @@
 var Tree = require('./src/_tree'),
-		Rule = require('./src/_rule'),
-		set = require('./src/__ruleset1')
+		set = require('./src/__ruleset1'),
+		proto = require('./src/prototype')
+
 
 module.exports = function() {
 	return set.apply(new Run, arguments)
 }
 function Run() {
 	this.def = null
+	this.set = set
+	this.peek = peek
 }
-Run.prototype = new Rule(set,
-	function(string, index) {
-		var rule = this.def,
-				tree = new Tree(index || 0)
-		for (var i=0; i<string.length; ++i) {
-			var res = rule.peek(string, tree.j)
-			if (res.err) break
-			tree.add(res)
-		}
-		return tree
+Run.prototype = proto
+
+function peek(string, index) {
+	var rule = this.def,
+			tree = new Tree(index || 0)
+	for (var i=0; i<string.length; ++i) {
+		var res = rule.peek(string, tree.j)
+		if (res.err) break
+		tree.add(res)
 	}
-)
+	return tree
+}
