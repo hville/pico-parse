@@ -3,13 +3,15 @@ var Tree = require('./_tree'),
 		mapR = require('./__rulesetn')
 
 module.exports = {
-	isRule: true, //TODO replace with this.rules?
+	isRule: true, //TODO this.rules?
 	set: function() {
 		return mapR.apply(this, arguments)
 	},
 	peek: function(string, index, debug) {
-		var ops = this.def, //TODO this.rules
-				tree = new Tree(index || 0)
+		var ops = this.def //TODO this.rules
+		if (ops.length === 1) return ops[0].peek(string, index, debug)
+
+		var tree = new Tree(index || 0)
 		for (var i=0; i<ops.length; ++i) {
 			if (tree.add(ops[i].peek(string, tree.j, debug)).err && !debug) break
 		}

@@ -8,7 +8,7 @@ function Tree(i) {
 }
 Tree.prototype.add = function(itm) {
 	//failure is contagious, unless you've never really failed
-	if (!this.err || this.j === this.i) this.err = itm.err
+	if (!this.err) this.err = itm.err
 	this.j = itm.j
 	//merge orphan lists
 	var set = this.set

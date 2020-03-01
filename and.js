@@ -1,5 +1,5 @@
 var Leaf = require('./src/_leaf'),
-		set = require('./src/__ruleset1'),
+		set = require('./src/__rulesetn'),
 		proto = require('./src/prototype')
 
 module.exports = function() {
@@ -13,6 +13,6 @@ function And() {
 And.prototype = proto
 function peek(string, index) {
 	var spot = index || 0,
-			tree = this.def.peek(string, spot)
+			tree = proto.peek.call(this, string, spot)
 	return new Leaf(spot, '', tree.err)
 }

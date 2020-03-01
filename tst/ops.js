@@ -12,17 +12,14 @@ ct('all pass', t => {
 	test(t, all('abc').peek('abc'), {
 		kin:undefined, i:0, j: 3, err: false
 	})
-	test(t, all('abc').peek('abc').set[0], {
+	test(t, all('abc').peek('abc'), {
 		kin:undefined, i:0, j: 3, err: false
 	})
-	t('===', all('abc').peek('abc').set.length, 1)
-
 	t('===', all('bc').peek('abc', 1).err, false)
 	t('===', all('bc').peek('abc', 1).kin, undefined)
 	t('===', kin('kin', 'bc').peek('abc', 1).kin, 'kin')
 	t('===', all('bc').peek('abc', 1).i, 1)
 	t('===', all('bc').peek('abc', 1).j, 3)
-	t('===', all('bc').peek('abc').set.length, 1)
 
 	t('===', all('ab', /c/).peek('abc').err, false)
 	t('===', all('ab', /c/).peek('abc').kin, undefined)
@@ -62,7 +59,6 @@ ct('all fail', t => {
 	t('===', all('abc').peek('abc', 1).err, true)
 	t('===', all('abc').peek('abc', 1).i, 1)
 	t('===', all('abc').peek('abc', 1).j, 2)
-	t('===', all('abc').peek('abc', 1).set.length, 1)
 
 	t('===', all('a', 'c').peek('abc').err, true)
 	t('===', all('a', 'c').peek('abc').i, 0)

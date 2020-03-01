@@ -1,5 +1,5 @@
 var Tree = require('./src/_tree'),
-		set = require('./src/__ruleset1'),
+		set = require('./src/__rulesetn'),
 		proto = require('./src/prototype')
 
 module.exports = function() {
@@ -11,10 +11,9 @@ function Few() {
 }
 Few.prototype = proto
 function peek(string, index) {
-	var rule = this.def,
-			tree = new Tree(index || 0)
+	var tree = new Tree(index || 0)
 	for (var i=0; i<string.length; ++i) {
-		var res = rule.peek(string, tree.j)
+		var res = proto.peek.call(this, string, tree.j)
 		if (res.err) break
 		tree.add(res)
 	}
