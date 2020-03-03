@@ -11,7 +11,7 @@ function Tok(pattern) {
 		this.peek = textAt
 	}
 }
-Tok.prototype.rules = true
+Tok.prototype.rules = true //TODO a little inconsistent...
 function textAt(string, index) {
 	var ref = this.term,
 			i = 0,

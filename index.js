@@ -9,6 +9,5 @@ module.exports = {
 	few: require('./few'),
 	run: require('./run'),
 	and: require('./and'),
-	not: require('./not'),
-	box: require('./box')
+	not: require('./not')
 }
