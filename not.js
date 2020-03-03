@@ -1,12 +1,12 @@
 var Leaf = require('./src/_leaf'),
-		set = require('./src/__rulesetn'),
+		set = require('./src/__set'),
 		proto = require('./src/prototype')
 
 module.exports = function() {
 	return set.apply(new Not, arguments)
 }
 function Not() {
-	this.def = null
+	this.rules = null
 	this.set = set
 	this.peek = peek
 }

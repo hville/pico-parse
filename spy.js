@@ -5,7 +5,7 @@ module.exports = function(rule, spy) {
 	return set.call(new Spy, rule, spy)
 }
 function Spy() {
-	this.def = null
+	this.rules = null
 	this.spy = null
 	this.peek = peek
 	this.set = set
@@ -13,13 +13,13 @@ function Spy() {
 Spy.prototype = proto
 
 function set(rule, spy) {
-	this.def = rule.isRule ? rule : text(rule)
+	this.rules = rule.rules ? rule : text(rule)
 	this.spy = spy
 	return this
 }
 function peek(string, index) {
 	var pos = index || 0,
-			itm = this.def.peek(string, pos),
+			itm = this.rules.peek(string, pos),
 			spy = this.spy
 	if (spy) spy(itm)
 	return itm

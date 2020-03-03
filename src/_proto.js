@@ -1,22 +1,11 @@
 var Tree = require('./_tree'),
 		Leaf = require('./_leaf'),
-		mapR = require('./__set')
+		tok = require('../tok'),
+		all = require('../all')
 
 module.exports = {
-	set: function() {
-		return mapR.apply(this, arguments)
-	},
-	peek: function(string, index, debug) {
-		var ops = this.rules //TODO this.rules
-		if (ops.length === 1) return ops[0].peek(string, index, debug)
-
-		var tree = new Tree(index || 0)
-		for (var i=0; i<ops.length; ++i) {
-			if (tree.add(ops[i].peek(string, tree.j, debug)).err && !debug) break
-		}
-		return tree
-	},
-	scan: function scan(string) {
+	isRule: true,
+	scan: function(string) {
 		var res = this.peek(string, 0)
 		if (res.j !== string.length) {
 			if (!res.add) res = (new Tree(res.i).add(res))
@@ -24,15 +13,25 @@ module.exports = {
 		}
 		return res
 	},
-	test: function test() {
+	test: function() {
 		this.tRules = new Set
 		this.nRules = new Set
 		this.rRules = new Set
 		testRule.call(this, this)
 		return this
 	},
+	_setone: function(rule) {
+		this.rules = arguments.length > 1 ? all.apply(null, arguments) : rule.rules ? rule : tok(rule)
+		return this
+	},
+	_setall: function() {
+		for (var i=0, def = this.rules = []; i<arguments.length; ++i) {
+			var arg = arguments[i]
+			def[i] = arg.rules ? arg : tok(arg)
+		}
+		return this
+	}
 }
-
 function testRule(rule) {
 	if (rule.term) return this.tRules.add(rule)
 	if (this.nRules.has(rule)) return this.rRules.add(rule)

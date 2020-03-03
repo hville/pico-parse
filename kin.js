@@ -7,7 +7,7 @@ module.exports = function() {
 }
 function Kin() {
 	this.kin = ''
-	this.def = null
+	this.rules = null
 	this.set = set
 	this.peek = peek
 }
@@ -15,14 +15,14 @@ Kin.prototype = proto
 
 function set(name) {
 	this.kin = name
-	for (var i=1, rs=this.def=[]; i<arguments.length; ++i) {
+	for (var i=1, rs=this.rules=[]; i<arguments.length; ++i) {
 		var arg = arguments[i]
-		rs.push(arg.isRule ? arg : tok(arg))
+		rs.push(arg.rules ? arg : tok(arg))
 	}
 	return this
 }
 function peek(string, index) {
-	var tree = this.def.length === 1 ? this.def[0].peek(string, index||0) : proto.peek.call(this, string, index||0)
+	var tree = this.rules.length === 1 ? this.rules[0].peek(string, index||0) : proto.peek.call(this, string, index||0)
 	tree.kin = this.kin
 	return tree
 }

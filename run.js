@@ -1,5 +1,5 @@
 var Tree = require('./src/_tree'),
-		set = require('./src/__rulesetn'),
+		set = require('./src/__set'),
 		proto = require('./src/prototype')
 
 
@@ -7,7 +7,7 @@ module.exports = function() {
 	return set.apply(new Run, arguments)
 }
 function Run() {
-	this.def = null
+	this.rules = null
 	this.set = set
 	this.peek = peek
 }

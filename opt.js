@@ -1,12 +1,12 @@
 var Tree = require('./src/_tree'),
-		set = require('./src/__rulesetn'),
+		set = require('./src/__set'),
 		proto = require('./src/prototype')
 
 module.exports = function() {
 	return set.apply(new Opt, arguments)
 }
 function Opt() {
-	this.def = null
+	this.rules = null
 	this.set = set
 	this.peek = peek
 }
