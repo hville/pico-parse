@@ -10,5 +10,5 @@ module.exports = {
 	run: require('./run'),
 	and: require('./and'),
 	not: require('./not'),
-	box: require('./box')
+	Box: require('./src/_box')
 }

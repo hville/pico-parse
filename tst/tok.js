@@ -32,7 +32,7 @@ ct('kin', t => {
 	})
 })
 ct('tok string pass', t => {
-	test(t, abcT.peek('abc'), {
+	test(t, abcT.scan('abc'), {
 		kin:'', i:0, txt: 'abc', j: 3, err: false
 	})
 	test(t, abcT.peek('aabc', 1), {
@@ -48,6 +48,9 @@ ct('tok string fail', t => {
 	})
 	test(t, abcT.peek('aabc'), {
 		kin:'', i:0, txt: 'aa', j: 2, err: true
+	})
+	test(t, abcT.scan('aabc'), {
+		kin:'', i:0, j: 4, err: true
 	})
 	test(t, abcT.peek('abc', 1), {
 		kin:'', i:1, txt: 'b', j: 2, err: true
@@ -112,10 +115,10 @@ ct('tok global fail', t => {
 ct('rename', t => {
 	var subT = kin('subT', abcT),
 			subS = kin('subS', abcS)
-	test(t, subT.peek('abc'), {
+	test(t, subT.scan('abc'), {
 		kin:'subT', i:0, txt: 'abc', j: 3, err: false
 	})
-	test(t, subS.peek('abc'), {
+	test(t, subS.scan('abc'), {
 		kin:'subS', i:0, txt: 'abc', j: 3, err: false
 	})
 })

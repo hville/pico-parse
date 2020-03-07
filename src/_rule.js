@@ -12,7 +12,7 @@ Rule.prototype.isRule = true
 Rule.prototype.scan = function(string) {
 	var res = this.peek(string, 0)
 	if (res.j !== string.length) {
-		if (!res.add) res = (new Tree(res.i)).add(res) //TODO looks like this line is never called
+		if (res.constructor === Leaf) res = (new Tree(res.i)).add(res)
 		res.add(new Leaf(res.j, string.slice(res.j), true))
 	}
 	return res

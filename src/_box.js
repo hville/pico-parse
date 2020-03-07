@@ -1,9 +1,8 @@
-var Leaf = require('./src/_leaf'),
-		Rule = require('./src/_rule')
+var Leaf = require('./_leaf'),
+		Rule = require('./_rule')
 
 module.exports = Box
 function Box(rule) {
-	if (this.constructor !== Box) return new Box(rule)
 	this.rule = rule
 	this.last = null
 }
