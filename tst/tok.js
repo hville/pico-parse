@@ -33,35 +33,35 @@ ct('kin', t => {
 })
 ct('tok string pass', t => {
 	test(t, abcT.peek('abc'), {
-		kin:undefined, i:0, txt: 'abc', j: 3, err: false
+		kin:'', i:0, txt: 'abc', j: 3, err: false
 	})
 	test(t, abcT.peek('aabc', 1), {
-		kin:undefined, i:1, txt: 'abc', j: 4, err: false
+		kin:'', i:1, txt: 'abc', j: 4, err: false
 	})
 	test(t, tok('').peek('aabc', 1), {
-		kin:undefined, i:1, txt: '', j: 1, err: false
+		kin:'', i:1, txt: '', j: 1, err: false
 	})
 })
 ct('tok string fail', t => {
 	test(t, abcT.peek('ab'), {
-		kin:undefined, i:0, txt: 'ab', j: 2, err: true
+		kin:'', i:0, txt: 'ab', j: 2, err: true
 	})
 	test(t, abcT.peek('aabc'), {
-		kin:undefined, i:0, txt: 'aa', j: 2, err: true
+		kin:'', i:0, txt: 'aa', j: 2, err: true
 	})
 	test(t, abcT.peek('abc', 1), {
-		kin:undefined, i:1, txt: 'b', j: 2, err: true
+		kin:'', i:1, txt: 'b', j: 2, err: true
 	})
 	test(t, abcT.peek('abc', 3), {
-		kin:undefined, i:3, txt: '', j: 3, err: true
+		kin:'', i:3, txt: '', j: 3, err: true
 	})
 })
 ct('tok sticky pass', t => {
 	test(t, abcS.peek('abc'), {
-		kin:undefined, i:0, txt: 'abc', j: 3, err: false
+		kin:'', i:0, txt: 'abc', j: 3, err: false
 	})
 	test(t, abcS.peek('aabc', 1), {
-		kin:undefined, i:1, txt: 'abc', j: 4, err: false
+		kin:'', i:1, txt: 'abc', j: 4, err: false
 	})
 	test(t, tok(/[ ]*/).peek('a', 0), {
 		i:0, txt: '', j: 0, err: false
@@ -72,41 +72,41 @@ ct('tok sticky pass', t => {
 })
 ct('tok sticky fail', t => {
 	test(t, abcS.peek('ab'), {
-		kin:undefined, i:0, txt: 'a', j: 1, err: true
+		kin:'', i:0, txt: 'a', j: 1, err: true
 	})
 	test(t, abcS.peek('aabc'), {
-		kin:undefined, i:0, txt: 'a', j: 1, err: true
+		kin:'', i:0, txt: 'a', j: 1, err: true
 	})
 	test(t, abcS.peek('abc', 1), {
-		kin:undefined, i:1, txt: 'b', j: 2, err: true
+		kin:'', i:1, txt: 'b', j: 2, err: true
 	})
 	test(t, abcS.peek('abc', 3), {
-		kin:undefined, i:3, txt: '', j: 3, err: true
+		kin:'', i:3, txt: '', j: 3, err: true
 	})
 })
 ct('tok global pass', t => {
 	test(t, abcG.peek('abc'), {
-		kin:undefined, i:0, txt: 'abc', j: 3, err: false
+		kin:'', i:0, txt: 'abc', j: 3, err: false
 	})
 	test(t, abcG.peek('aabc', 1), {
-		kin:undefined, i:1, txt: 'abc', j: 4, err: false
+		kin:'', i:1, txt: 'abc', j: 4, err: false
 	})
 	test(t, tok(voidG).peek('aabc', 1), {
-		kin:undefined, i:1, txt: '', j: 1, err: false
+		kin:'', i:1, txt: '', j: 1, err: false
 	})
 })
 ct('tok global fail', t => {
 	test(t, abcG.peek('ab'), {
-		kin:undefined, i:0, txt: 'a', j: 1, err: true
+		kin:'', i:0, txt: 'a', j: 1, err: true
 	})
 	test(t, abcG.peek('aabc'), {
-		kin:undefined, i:0, txt: 'a', j: 1, err: true
+		kin:'', i:0, txt: 'a', j: 1, err: true
 	})
 	test(t, abcG.peek('abc', 1), {
-		kin:undefined, i:1, txt: 'b', j: 2, err: true
+		kin:'', i:1, txt: 'b', j: 2, err: true
 	})
 	test(t, abcG.peek('abc', 3), {
-		kin:undefined, i:3, txt: '', j: 3, err: true
+		kin:'', i:3, txt: '', j: 3, err: true
 	})
 })
 ct('rename', t => {

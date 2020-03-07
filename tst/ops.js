@@ -10,26 +10,24 @@ ct('all pass', t => {
 		kin:'kin', i:0, j: 3, err: false
 	})
 	test(t, all('abc').peek('abc'), {
-		kin:undefined, i:0, j: 3, err: false
+		kin:'', i:0, j: 3, err: false
 	})
 	test(t, all('abc').peek('abc'), {
-		kin:undefined, i:0, j: 3, err: false
+		kin:'', i:0, j: 3, err: false
 	})
 	t('===', all('bc').peek('abc', 1).err, false)
-	t('===', all('bc').peek('abc', 1).kin, undefined)
+	t('===', all('bc').peek('abc', 1).kin, '')
 	t('===', kin('kin', 'bc').peek('abc', 1).kin, 'kin')
 	t('===', all('bc').peek('abc', 1).i, 1)
 	t('===', all('bc').peek('abc', 1).j, 3)
 
 	t('===', all('ab', /c/).peek('abc').err, false)
-	t('===', all('ab', /c/).peek('abc').kin, undefined)
 	t('===', kin('kin', 'ab', /c/).peek('abc').kin, 'kin')
 	t('===', all('ab', /c/).peek('abc').i, 0)
 	t('===', all('ab', /c/).peek('abc').j, 3)
 	t('===', all('ab', /c/).peek('abc').set.length, 2)
 
 	t('===', all('a', all('b', all('c'))).peek('abc').err, false)
-	t('===', all('a', all('b', all('c'))).peek('abc').kin, undefined)
 	t('===', all('a', all('b', all('c'))).peek('abc').i, 0)
 	t('===', all('a', all('b', all('c'))).peek('abc').j, 3)
 	t('===', all('a', all('b', all('c'))).peek('abc').set.length, 3)
@@ -39,7 +37,7 @@ ct('all pass', t => {
 			nest = pack.set[1]
 	t('===', pack.err, false)
 	t('===', nest.err, false)
-	t('===', pack.kin, undefined)
+	t('===', pack.kin, '')
 	t('===', nest.kin, 'A')
 	t('===', pack.i, 0)
 	t('===', nest.i, 1)
@@ -71,7 +69,6 @@ ct('all fail', t => {
 			nest = pack.set[1]
 	t('===', pack.err, true)
 	t('===', nest.err, true)
-	t('===', pack.kin, undefined)
 	t('===', nest.kin, 'A')
 	t('===', pack.i, 0)
 	t('===', nest.i, 1)
@@ -109,15 +106,12 @@ ct('any fail', t => {
 			rule = any(fail, any(fail), fail),
 			pack = rule.peek('abc')
 	t('===', pack.err, true)
-	t('===', pack.kin, undefined)
 	t('===', pack.i, 0)
 	t('===', pack.txt, 'abc')
 	t('===', pack.j, 3)
 })
 
 ct('rep few pass', t => {
-	t('===', run('ab').peek('ab').kin, undefined)
-
 	t('===', run('ab').peek('x').err, false)
 	t('===', run('ab').peek('x').i, 0)
 	t('===', run('ab').peek('x').j, 0)
@@ -146,8 +140,6 @@ ct('run few fail', t => {
 })
 
 ct('opt pass', t => {
-	t('===', opt('ab').peek('ab').kin, undefined)
-
 	t('===', opt('ab').peek('x').err, false)
 	t('===', opt('ab').peek('x').i, 0)
 	t('===', opt('ab').peek('x').j, 0)

@@ -6,6 +6,7 @@ function Tree(i) {
 	this.err = false
 	this.set = []
 }
+Tree.prototype.kin = ''
 Tree.prototype.add = function(itm) {
 	//failure is contagious, unless you've never really failed
 	if (!this.err) this.err = itm.err

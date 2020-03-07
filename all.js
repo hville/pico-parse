@@ -1,10 +1,5 @@
-var mapR = require('./src/__set'),
-		proto = require('./src/prototype')
+var All = require('./src/_all')
 
 module.exports = function() {
-	return mapR.apply(new All, arguments)
+	return All.prototype.set.apply(new All, arguments)
 }
-function All() {
-	this.rules = []
-}
-All.prototype = proto

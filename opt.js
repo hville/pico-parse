@@ -1,20 +1,20 @@
 var Tree = require('./src/_tree'),
-		set = require('./src/__set'),
-		proto = require('./src/prototype')
+		set = require('./src/__allset'),
+		Rule = require('./src/_rule'),
+		peek = require('./src/__allpeek')
 
 module.exports = function() {
 	return set.apply(new Opt, arguments)
 }
 function Opt() {
 	this.rules = []
-	this.set = set
-	this.peek = peek
 }
-Opt.prototype = proto
-
-function peek(string, index) {
-	var pos = index || 0,
-			res = proto.peek.call(this, string, pos)
-	if (res.err) return new Tree(pos)
-	return res
-}
+Opt.prototype = new Rule(Opt, {
+	set: set,
+	peek: function(string, index) {
+		var pos = index || 0,
+				res = peek.call(this, string, pos)
+		if (res.err) return new Tree(pos)
+		return res
+	}
+})

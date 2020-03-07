@@ -6,7 +6,7 @@ module.exports = function() {
 			len = def.length = arguments.length
 	for (var i=0; i<len; ++i) {
 		var arg = arguments[i]
-		def[i] = arg.rules ? arg : tok(arg)
+		def[i] = arg.isRule ? arg : tok(arg)
 	}
 	return this
 }
