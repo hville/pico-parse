@@ -5,6 +5,6 @@ module.exports = function() {
 	return mapR.apply(new All, arguments)
 }
 function All() {
-	this.rules = null
+	this.rules = []
 }
 All.prototype = proto

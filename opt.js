@@ -6,7 +6,7 @@ module.exports = function() {
 	return set.apply(new Opt, arguments)
 }
 function Opt() {
-	this.rules = null
+	this.rules = []
 	this.set = set
 	this.peek = peek
 }

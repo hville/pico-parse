@@ -6,7 +6,7 @@ module.exports = function() {
 	return set.apply(new Not, arguments)
 }
 function Not() {
-	this.rules = null
+	this.rules = []
 	this.set = set
 	this.peek = peek
 }

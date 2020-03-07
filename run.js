@@ -7,7 +7,7 @@ module.exports = function() {
 	return set.apply(new Run, arguments)
 }
 function Run() {
-	this.rules = null
+	this.rules = []
 	this.set = set
 	this.peek = peek
 }

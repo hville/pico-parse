@@ -7,7 +7,7 @@ module.exports = function() {
 }
 function Kin() {
 	this.kin = ''
-	this.rules = null
+	this.rules = []
 	this.set = set
 	this.peek = peek
 }

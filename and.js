@@ -6,7 +6,7 @@ module.exports = function() {
 	return set.apply(new And, arguments)
 }
 function And() {
-	this.rules = null
+	this.rules = []
 	this.peek = peek
 	this.set = set
 }

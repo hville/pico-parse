@@ -6,7 +6,7 @@ module.exports = function() {
 	return set.apply(new Few, arguments)
 }
 function Few() {
-	this.rules = null
+	this.rules = []
 	this.peek = peek
 }
 Few.prototype = proto

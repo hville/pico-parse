@@ -5,7 +5,7 @@ module.exports = function(rule, spy) {
 	return set.call(new Spy, rule, spy)
 }
 function Spy() {
-	this.rules = null
+	this.rules = []
 	this.spy = null
 	this.peek = peek
 	this.set = set
@@ -13,7 +13,7 @@ function Spy() {
 Spy.prototype = proto
 
 function set(rule, spy) {
-	this.rules = rule.rules ? rule : text(rule)
+	this.rules = rule.rules ? rule : text(rule) //TODOchange to rule
 	this.spy = spy
 	return this
 }
