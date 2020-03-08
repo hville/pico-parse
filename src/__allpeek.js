@@ -7,7 +7,6 @@ module.exports = function(string, index, debug) {
 	var tree = new Tree(index || 0)
 	for (var i=0; i<ops.length; ++i) {
 		var part = ops[i].peek(string, tree.j, debug)
-		if (!part) throw Error()
 		if (tree.add(part).err && !debug) break
 	}
 	return tree

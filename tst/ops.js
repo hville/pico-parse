@@ -6,15 +6,9 @@ function test(t, res, ref) {
 }
 
 ct('all pass', t => {
-	test(t, kin('kin', 'abc').peek('abc'), {
-		kin:'kin', i:0, j: 3, err: false
-	})
-	test(t, all('abc').peek('abc'), {
-		kin:'', i:0, j: 3, err: false
-	})
-	test(t, all('abc').peek('abc'), {
-		kin:'', i:0, j: 3, err: false
-	})
+	test(t, kin('kin', 'abc').peek('abc'), {kin:'kin', i:0, j: 3, err: false})
+	test(t, all('abc').peek('abc'), {kin:'', i:0, j: 3, err: false})
+	test(t, all('abc').peek('abc'), {kin:'', i:0, j: 3, err: false})
 	t('===', all('bc').peek('abc', 1).err, false)
 	t('===', all('bc').peek('abc', 1).kin, '')
 	t('===', kin('kin', 'bc').peek('abc', 1).kin, 'kin')
@@ -54,34 +48,17 @@ ct('all pass', t => {
 })
 
 ct('all fail', t => {
-	t('===', all('abc').peek('abc', 1).err, true)
-	t('===', all('abc').peek('abc', 1).i, 1)
-	t('===', all('abc').peek('abc', 1).j, 2)
-
-	t('===', all('a', 'c').peek('abc').err, true)
-	t('===', all('a', 'c').peek('abc').i, 0)
-	t('===', all('a', 'c').peek('abc').j, 2)
-	t('===', all('a', 'c').peek('abc').set.length, 2)
-	t('===', all('a', 'c').peek('abc').set[1].j, 2)
+	test(t, all('abc').peek('abc', 1), {i:1, j:1, err: true})
+	test(t, all('a', 'c').peek('abc'), {i:0, j:1, err: true})
 
 	var rule = all('a', kin('A','b', all('C'))),
-			pack = rule.peek('abc'),
-			nest = pack.set[1]
-	t('===', pack.err, true)
-	t('===', nest.err, true)
-	t('===', nest.kin, 'A')
-	t('===', pack.i, 0)
-	t('===', nest.i, 1)
-	t('===', pack.j, 3)
-	t('===', nest.j, 3)
-	t('===', pack.set.length, 2)
-	t('===', nest.set.length, 2)
+			pack = rule.peek('abc')
+	test(t, pack, {i:0, j:2, err: true})
+	test(t, pack.set[1], {kin:'A', i:1, j:2, err: true})
 })
 
 ct('all scan', t => {
-	test(t, kin('kin', 'abc').scan('abc'), {
-		kin:'kin', i:0, j: 3, err: false
-	})
+	test(t, kin('kin', 'abc').scan('abc'), {kin:'kin', i:0, j: 3, err: false})
 })
 
 ct('kin', t => {
@@ -103,12 +80,8 @@ ct('any pass', t => {
 
 ct('any fail', t => {
 	var fail = any('X', 'Y', 'abX'),
-			rule = any(fail, any(fail), fail),
-			pack = rule.peek('abc')
-	t('===', pack.err, true)
-	t('===', pack.i, 0)
-	t('===', pack.txt, 'abc')
-	t('===', pack.j, 3)
+			rule = any(fail, any(fail), fail)
+	test(t, rule.peek('abc'), {txt:'ab', i:0, j:2, err: true})
 })
 
 ct('rep few pass', t => {
@@ -158,9 +131,7 @@ ct('opt pass', t => {
 })
 
 ct('spy', t => {
-	test(t, kin('SPY', spy('abc', res=>(res.txt=res.txt.toUpperCase()))).peek('abc'), {
-		kin:'SPY', i:0, txt:'ABC', j: 3, err: false
-	})
+	test(t, kin('SPY', spy('abc', res=>(res.txt=res.txt.toUpperCase()))).peek('abc'), {kin:'SPY', i:0, txt:'ABC', j: 3, err: false})
 })
 
 ct('fuse', t => {

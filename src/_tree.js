@@ -28,6 +28,6 @@ Tree.prototype.fuse = function(xfos) {
 	return fcn ? fcn.call(this, res) : res
 }
 Tree.prototype.fold = function(red, tgt) {
-	for (var i=0, set = this.set; i<set.length; ++i) tgt = red(tgt, set[i])
+	for (var i=0, set = this.set; i<set.length; ++i) tgt = red(tgt||this, set[i])
 	return tgt
 }

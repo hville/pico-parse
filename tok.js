@@ -20,7 +20,7 @@ function textAt(string, index) {
 			i = 0,
 			pos = index || 0,
 			j = pos
-	while (i<ref.length) if (ref[i++] !== string[j++]) return new Leaf(pos, string.slice(pos, j), true, this.kin)
+	while (i<ref.length) if (ref[i++] !== string[j++]) return new Leaf(pos, string.slice(pos, j-1), true, this.kin)
 	return new Leaf(pos, string.slice(pos, j), false, this.kin)
 }
 function stickyAt(string, index) {
