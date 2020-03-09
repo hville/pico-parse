@@ -1,36 +1,36 @@
 <!-- markdownlint-disable MD032 MD036 MD041 -->
 # pico-parse
 
-*small PEG-style lexer and parser*
+*small PEG-style lexer and parser without pre-compilation*
 
 [Example](#example) • [API](#api) • [License](#license)
 
 ## Example
 
 ```javascript
-const tok = require('pico-parse/tok'),
-      {any, all, rep} = require('pico-parse')
+const {any, all, run} = require('pico-parse')
 
 const _ = /[ ]*/,
-      int = tok(/[0-9]+/).name('myInteger'),
-      ids = /[a-zA-Z$_][a-zA-Z$_0-9]+/,
-      val = any(),
-      sum = all('+', _, val),
-      exp = all(val, rep( all(_, sum) ), _).name('myExpression')
-val.set(int, ids, exp, all('(', _, val, _, ')'))
-console.log(exp.scan('11 +22'))
-//TODO rerun, spy, kin, Box, ...
+      integer = /[0-9]+/,
+      label = /[a-zA-Z$_][a-zA-Z$_0-9]+/,
+      value = any(),
+      addition = all('+', _, value),
+      expression = all(value, run( all(_, addition) ), _).name('expression')
+value.set(integer, label, expression, all('(', _, value, _, ')'))
+console.log(expression.scan('11 +22'))
 /*
-Pack {
-  kin: 'myExpression',
+Tree {
   i: 0,
   j: 6,
   err: false,
-  set:
-   [ Word { i: 0, txt: '11', j: 2, err: false, kin: 'myInteger' },
-     Word { i: 2, txt: ' ', j: 3, err: false },
-     Word { i: 3, txt: '+', j: 4, err: false },
-     Word { i: 4, txt: '22', j: 6, err: false, kin: 'myInteger' } ] }
+  set: [
+    Leaf { i: 0, txt: '11', j: 2, err: false },
+    Leaf { i: 2, txt: ' ', j: 3, err: false },
+    Leaf { i: 3, txt: '+', j: 4, err: false },
+    Leaf { i: 4, txt: '22', j: 6, err: false }
+  ],
+  kin: 'expression'
+}
 */
 ```
 
@@ -40,9 +40,9 @@ Pack {
 
 Rules are created with the following factories
 
-* `tok(String|RegExp|Rule) : Rule` converts a string or a regular expression to a rule
-* `any(...Rule|String|RegExp) : Rule` finds the first passing rule
-* `all(...Rule|String|RegExp) : Rule` chains all rules
+* `tok(Rule|String|RegExp) : Rule` converts a string, regular expression or other terminal to a terminal rule
+* `any(...Rule|String|RegExp) : Rule` finds the first passing rule (/ operator)
+* `all(...Rule|String|RegExp) : Rule` chains all rules, all must pass
 * `few(...Rule|String|RegExp) : Rule` repeat all rules one or more times (+ operator)
 * `run(...Rule|String|RegExp) : Rule` repeat rules any times (* operator)
 * `opt(...Rule|String|RegExp) : Rule` optional rule (? operator)
@@ -55,14 +55,15 @@ Any rule can be named. All results of named rule will have a `kin` property with
 
 ### Rule
 
-* `.kin : string|undefined` optional family name to be assigned to results
 * `.set(factoryArguments) : this` for recursive rules, allow to define a rule after it is created
-* `.peek(string [, index=0]) : Tree|Leaf` parses a substring at a given position
-* `.scan(string) : Tree|Leaf` parses the given complete string
+* `.name(string) : this` results of this rule are given a kin property
+* `.spy( Tree|Leaf => Tree|Leaf ) : this` results of this rule are pre-processed with the given callback
+* `.peek(string [, index=0]) : Tree|Leaf` Used internally to parse a string at a given position
+* `.scan(string) : Tree|Leaf` parses the complete string
 
 ### Leaf
 
-* `.kin : string|undefined` optional family name
+* `.kin : string|undefined` optional name
 * `.i : number` start position of the token in the input string
 * `.j : number` start position of the next token in the input string
 * `.txt : string` the substring found
@@ -71,7 +72,7 @@ Any rule can be named. All results of named rule will have a `kin` property with
 
 ### Tree
 
-* `.kin : string|undefined` optional family name
+* `.kin : string|undefined` optional name
 * `.i : number` start position of the tree (same as the first contained leaf)
 * `.j : number` start position of the next token after the tree in the input string
 * `.set : Array<Tree|Leaf>` the sub trees and leafs

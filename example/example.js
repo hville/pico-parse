@@ -1,18 +1,11 @@
-const tok = require('../tok'),
-			any = require('../any'),
-			all = require('../all'),
-			rep = require('../old/rep'),
-			kin = require('../kin')
+const {any, all, run} = require('../')
 
 const _ = /[ ]*/,
-			int = tok(/[0-9]+/),
-			ids = /[a-zA-Z$_][a-zA-Z$_0-9]+/,
-			val = any(),
-			sum = all('+', _, val),
-			exp = all(val, rep( all(_, sum) ), _)
-
-val.set(int, ids, exp, all('(', _, val, _, ')'))
-int.kin = 'myInteger'
-kin({myExpression: exp})
-console.log(exp.scan('11 +22')) //eslint-disable-line
+			integer = /[0-9]+/,
+			label = /[a-zA-Z$_][a-zA-Z$_0-9]+/,
+			value = any(),
+			addition = all('+', _, value),
+			expression = all(value, run( all(_, addition) ), _).name('expression')
+value.set(integer, label, expression, all('(', _, value, _, ')'))
+console.log(expression.scan('11 +22'))
 
