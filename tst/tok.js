@@ -1,6 +1,5 @@
 var ct = require('cotest'),
-		tok = require('../tok'),
-		kin = require('../kin')
+		tok = require('../tok')
 
 var simNoSticky = Object.defineProperty(/abc/, 'sticky', {value: null}),
 		abcT = tok('abc'),
@@ -14,22 +13,17 @@ function test(t, res, ref) {
 }
 
 ct('init sticky/global flags', t => {
-	t('===', abcS.term.sticky, true)
-	t('===', abcS.term.global, false)
+	test(t, simNoSticky, {sticky:null})
+	test(t, abcG.term, {sticky:false, global:true})
 
-	t('===', abcG.term.sticky, false)
-	t('===', abcG.term.global, true)
+	test(t, /abc/, {sticky:false, global:false})
+	test(t, abcS.term, {sticky:true, global:false})
 })
-ct('kin', t => {
-	test(t, kin('kin', 'abc').peek('abc'), {
-		kin:'kin', i:0, txt: 'abc', j: 3, err: false
-	})
-	test(t, kin('kin', /abc/).peek('abc'), {
-		kin:'kin', i:0, txt: 'abc', j: 3, err: false
-	})
-	test(t, kin('kin', simNoSticky).peek('abc'), {
-		kin:'kin', i:0, txt: 'abc', j: 3, err: false
-	})
+ct('name', t => {
+	test(t, tok('abc').name('kin').peek('abc'), {kin:'kin', i:0, txt: 'abc', j: 3, err: false})
+	test(t, tok(/abc/).name('kin').peek('abc'), {kin:'kin', i:0, txt: 'abc', j: 3, err: false})
+	test(t, tok(simNoSticky).name('kin').peek('abc'), {kin:'kin', i:0, txt: 'abc', j: 3, err: false})
+	test(t, tok(tok(simNoSticky).name('kin')).name('KIN').peek('abc'), {kin:'KIN', i:0, txt: 'abc', j: 3, err: false})
 })
 ct('tok string pass', t => {
 	test(t, abcT.scan('abc'), {kin:'', i:0, txt: 'abc', j: 3, err: false})
@@ -71,12 +65,16 @@ ct('tok global fail', t => {
 	test(t, abcG.peek('abc', 3), {kin:'', i:3, txt: '', j: 3, err: true})
 })
 ct('rename', t => {
-	var subT = kin('subT', abcT),
-			subS = kin('subS', abcS)
-	test(t, subT.scan('abc'), {
-		kin:'subT', i:0, txt: 'abc', j: 3, err: false
-	})
-	test(t, subS.scan('abc'), {
-		kin:'subS', i:0, txt: 'abc', j: 3, err: false
-	})
+	var subT = abcT.name('subT'),
+			subS = abcS.name('subS')
+	test(t, subT.scan('abc'), {kin:'subT', i:0, txt: 'abc', j: 3, err: false})
+	test(t, subS.scan('abc'), {kin:'subS', i:0, txt: 'abc', j: 3, err: false})
+})
+ct('spy', t => {
+	function cb(res) {
+		res.txt = res.txt.toUpperCase()
+		res.kin = this.constructor.name
+		return res
+	}
+	test(t, tok('abc').spy(cb).peek('abc'), {kin:'Tok', i:0, txt:'ABC', j: 3, err: false})
 })

@@ -1,39 +1,5 @@
-var Leaf = require('./src/_leaf'),
-		Rule = require('./src/_rule')
+var Tok = require('./src/_tok')
 
-module.exports = Tok
-
-function Tok(pattern) {
-	if (this.constructor !== Tok) return new Tok(pattern)
-	if (pattern.source) {
-		this.term = new RegExp(pattern.source, pattern.sticky == null ? 'g' : 'y')
-		this.peek = this.term.sticky ? stickyAt : globalAt
-	} else {
-		this.term = pattern
-		this.peek = textAt
-	}
-}
-Tok.prototype = new Rule(Tok)
-
-function textAt(string, index) {
-	var ref = this.term,
-			i = 0,
-			pos = index || 0,
-			j = pos
-	while (i<ref.length) if (ref[i++] !== string[j++]) return new Leaf(pos, string.slice(pos, j-1), true, this.kin)
-	return new Leaf(pos, string.slice(pos, j), false, this.kin)
-}
-function stickyAt(string, index) {
-	var ref = this.term,
-			pos = ref.lastIndex = index || 0,
-			res = ref.exec(string)
-	return res ? new Leaf(pos, res[0], false, this.kin)
-		: new Leaf(pos, pos >= string.length - 1 ? '' : string[pos], true, this.kin)
-}
-function globalAt(string, index) {
-	var ref = this.term,
-			pos = ref.lastIndex = index || 0,
-			res = ref.exec(string)
-	return (res && res.index === pos) ? new Leaf(pos, res[0], false, this.kin)
-		: new Leaf(pos, pos >= string.length - 1 ? '' : string[pos], true, this.kin)
+module.exports = function(pattern) {
+	return new Tok(pattern)
 }

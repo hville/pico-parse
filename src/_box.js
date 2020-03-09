@@ -1,12 +1,15 @@
 var Leaf = require('./_leaf'),
-		Rule = require('./_rule')
+		proto = require('./_all').prototype
 
 module.exports = Box
 function Box(rule) {
 	this.rule = rule
 	this.last = null
 }
-Box.prototype = new Rule(Box, {
+Box.prototype = {
+	constructor: Box,
+	isRule: true,
+	kin:'',
 	set: function() {
 		this.rule.set.apply(this.rule, arguments)
 		return this
@@ -19,5 +22,8 @@ Box.prototype = new Rule(Box, {
 		next = this.last
 		this.last = null
 		return next
-	}
-})
+	},
+	name: proto.name,
+	scan: proto.scan,
+	spy: proto.spy
+}

@@ -9,16 +9,17 @@
 
 ```javascript
 const tok = require('pico-parse/tok'),
-      {any, all, rep, kin, spy} = require('pico-parse')
+      {any, all, rep} = require('pico-parse')
 
 const _ = /[ ]*/,
-      int = kin('myInteger', /[0-9]+/),
+      int = tok(/[0-9]+/).name('myInteger'),
       ids = /[a-zA-Z$_][a-zA-Z$_0-9]+/,
       val = any(),
       sum = all('+', _, val),
-      exp = kin('myExpression', val, rep( all(_, sum) ), _)
+      exp = all(val, rep( all(_, sum) ), _).name('myExpression')
 val.set(int, ids, exp, all('(', _, val, _, ')'))
 console.log(exp.scan('11 +22'))
+//TODO rerun, spy, kin, Box, ...
 /*
 Pack {
   kin: 'myExpression',
@@ -47,7 +48,6 @@ Rules are created with the following factories
 * `opt(...Rule|String|RegExp) : Rule` optional rule (? operator)
 * `and(...Rule|String|RegExp) : Rule` pass if lookahead passes (& operator)
 * `not(...Rule|String|RegExp) : Rule` pass if lookahead fails (! operator)
-* `spy(Rule [,Function]]) : Rule` executes a callback with the result of the rule
 
 Any rule can be named. All results of named rule will have a `kin` property with that name.
 * mutate with direct assignment: `myRule.kin = 'myName'`

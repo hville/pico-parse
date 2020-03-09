@@ -1,19 +1,23 @@
 var Leaf = require('./src/_leaf'),
-		set = require('./src/__allset'),
-		Rule = require('./src/_rule'),
-		peek = require('./src/__allpeek')
+		proto = require('./src/_All').prototype
 
 module.exports = function() {
-	return set.apply(new And, arguments)
+	return proto.set.apply(new And, arguments)
 }
 function And() {
 	this.rules = []
 }
-And.prototype = new Rule(And, {
-	set: set,
+And.prototype = {
+	constructor: And,
+	isRule: true,
+	kin:'',
+	set: proto.set,
 	peek: function(string, index) {
 		var spot = index || 0,
-				tree = peek.call(this, string, spot)
+				tree = proto.peek.call(this, string, spot)
 		return new Leaf(spot, '', tree.err) //TODO no point in having a name?
-	}
-})
+	},
+	name: proto.name,
+	scan: proto.scan,
+	spy: proto.spy
+}

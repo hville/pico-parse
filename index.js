@@ -4,8 +4,6 @@ module.exports = {
 	any: require('./any'),
 	all: require('./all'),
 	opt: require('./opt'),
-	spy: require('./spy'),
-	kin: require('./kin'),
 	few: require('./few'),
 	run: require('./run'),
 	and: require('./and'),

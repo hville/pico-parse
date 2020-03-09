@@ -1,19 +1,23 @@
 var Leaf = require('./src/_leaf'),
-		set = require('./src/__allset'),
-		Rule = require('./src/_rule'),
-		peek = require('./src/__allpeek')
+		proto = require('./src/_All').prototype
 
 module.exports = function() {
-	return set.apply(new Not, arguments)
+	return proto.set.apply(new Not, arguments)
 }
 function Not() {
 	this.rules = []
 }
-Not.prototype = new Rule(Not, {
+Not.prototype = {
+	constructor: Not,
+	isRule: true,
+	kin:'',
+	set: proto.set,
 	peek: function(string, index) {
 		var spot = index || 0,
-				tree = peek.call(this, string, spot)
+				tree = proto.peek.call(this, string, spot)
 		return new Leaf(spot, '', !tree.err)
 	},
-	set: set
-})
+	name: proto.name,
+	scan: proto.scan,
+	spy: proto.spy
+}
