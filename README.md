@@ -29,7 +29,7 @@ Tree {
     Leaf { i: 3, txt: '+', j: 4, err: false },
     Leaf { i: 4, txt: '22', j: 6, err: false }
   ],
-  kin: 'expression'
+  id: 'expression'
 }
 */
 ```
@@ -52,14 +52,14 @@ Rules are created with the following factories
 ### Rule
 
 * `.set(factoryArguments) : this` for recursive rules, allow to define a rule after it is created
-* `.id(string) : this` results of this rule are given a kin property
+* `.id(string) : this` results of this rule are given a `id` property
 * `.spy( Tree|Leaf => Tree|Leaf ) : this` results of this rule are pre-processed with the given callback
 * `.peek(string [, index=0]) : Tree|Leaf` Used internally to parse a string at a given position
 * `.scan(string) : Tree|Leaf` parses the complete string
 
 ### Leaf
 
-* `.kin : string|undefined` optional name
+* `.id : string|undefined` optional id
 * `.i : number` start position of the token in the input string
 * `.j : number` start position of the next token in the input string
 * `.txt : string` the substring found
@@ -68,7 +68,7 @@ Rules are created with the following factories
 
 ### Tree
 
-* `.kin : string|undefined` optional name
+* `.id : string|undefined` optional name
 * `.i : number` start position of the tree (same as the first contained leaf)
 * `.j : number` start position of the next token after the tree in the input string
 * `.set : Array<Tree|Leaf>` the sub trees and leafs

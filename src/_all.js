@@ -30,7 +30,7 @@ All.prototype = {
 				if (tree.add(part).err && !debug) break
 			}
 		}
-		if (this.kin) tree.kin = this.kin
+		if (this.kin) tree.id = this.kin
 		return tree
 	},
 	id: Tok.prototype.id,

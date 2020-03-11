@@ -6,9 +6,9 @@ function test(t, res, ref) {
 }
 
 ct('all pass', t => {
-	test(t, all('abc').peek('abc'), {kin:'', i:0, j: 3, err: false})
-	test(t, all('bc').peek('abc', 1), {kin:'', i:1, j: 3, err: false})
-	test(t, all('ab', /c/).id('kin').scan('abc'), {kin:'kin', i:0, j: 3, err: false})
+	test(t, all('abc').peek('abc'), {id:'', i:0, j: 3, err: false})
+	test(t, all('bc').peek('abc', 1), {id:'', i:1, j: 3, err: false})
+	test(t, all('ab', /c/).id('kin').scan('abc'), {id:'kin', i:0, j: 3, err: false})
 	test(t, all('a', all('b', all('c'))).scan('abc'), {i:0, j: 3, err: false})
 	var _ = / */,
 			spaced = all('a', _, 'b', _, 'c')
@@ -25,12 +25,12 @@ ct('all fail', t => {
 	var rule = all('a', all('b', all('C')).id('A')),
 			pack = rule.peek('abc')
 	test(t, pack, {i:0, j:2, err: true})
-	test(t, pack.set[1], {kin:'A', i:1, j:2, err: true})
+	test(t, pack.set[1], {id:'A', i:1, j:2, err: true})
 })
 
 ct('all scan', t => {
-	test(t, all('abc').id('kin').peek('abc'), {kin:'kin', i:0, j: 3, err: false})
-	test(t, all('abc').id('kin').scan('abc'), {kin:'kin', i:0, j: 3, err: false})
+	test(t, all('abc').id('kin').peek('abc'), {id:'kin', i:0, j: 3, err: false})
+	test(t, all('abc').id('kin').scan('abc'), {id:'kin', i:0, j: 3, err: false})
 })
 
 ct('any pass', t => {
@@ -39,7 +39,7 @@ ct('any pass', t => {
 			rule = any(fail, all(any(fail, ab, 'abc')).id('kin')),
 			pack = rule.peek('abc')
 	t('===', pack.err, false)
-	t('===', pack.kin, 'kin')
+	t('===', pack.id, 'kin')
 	t('===', pack.i, 0)
 	t('===', pack.j, 2)
 })

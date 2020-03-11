@@ -6,7 +6,7 @@ function Tree(i) {
 	this.err = false
 	this.set = []
 }
-Tree.prototype.kin = ''
+Tree.prototype.id = ''
 Tree.prototype.txt = ''
 Tree.prototype.add = function(itm) {
 	//failure is contagious, unless you've never really failed
@@ -14,7 +14,7 @@ Tree.prototype.add = function(itm) {
 	this.j = itm.j
 	//merge orphan lists
 	var set = this.set
-	if (itm.set && !itm.kin) for (var i=0; i<itm.set.length; ++i) set[set.length] = itm.set[i]
+	if (itm.set && !itm.id) for (var i=0; i<itm.set.length; ++i) set[set.length] = itm.set[i]
 	else if (itm.j > itm.i) set[set.length] = itm
 	//done!
 	return this
@@ -22,7 +22,7 @@ Tree.prototype.add = function(itm) {
 
 Tree.prototype.fuse = function(xfos) {
 	//@ts-ignore
-	var fcn = xfos && xfos[this.kin],
+	var fcn = xfos && xfos[this.id],
 			set = this.set,
 			res = ''
 	for (var i=0; i<set.length; ++i) res += set[i].fuse(xfos)

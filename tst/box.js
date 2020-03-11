@@ -1,5 +1,5 @@
 var ct = require('cotest'),
-		{any, all, rep, opt, spy, kin, few, run, and, not} = require('..'),
+		{any, all, rep, opt, few, run, and, not} = require('..'),
 		Box = require('../src/_box')
 
 function test(t, res, ref) {
