@@ -9,7 +9,6 @@ function Any() {
 Any.prototype = {
 	constructor: Any,
 	isRule: true,
-	kin:'',
 	set: proto.set,
 	peek: function(string, index) {
 		var ops = this.rules, //TODO no-rules case

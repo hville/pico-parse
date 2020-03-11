@@ -1,5 +1,5 @@
 module.exports = Leaf
-//TODO: empty fail: Leaf(i)
+
 function Leaf(i, txt, err, kin) {
 	this.i = i
 	this.txt = txt

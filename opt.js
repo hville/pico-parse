@@ -10,7 +10,6 @@ function Opt() {
 Opt.prototype = {
 	constructor: Opt,
 	isRule: true,
-	kin:'',
 	set: proto.set,
 	peek: function(string, index) {
 		var pos = index || 0,

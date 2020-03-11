@@ -10,7 +10,6 @@ function Not() {
 Not.prototype = {
 	constructor: Not,
 	isRule: true,
-	kin:'',
 	set: proto.set,
 	peek: function(string, index) {
 		var spot = index || 0,

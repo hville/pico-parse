@@ -10,7 +10,6 @@ function Few() {
 Few.prototype = {
 	constructor: Few,
 	isRule: true,
-	kin:'',
 	set: proto.set,
 	peek: function(string, index) {
 		var tree = new Tree(index || 0)

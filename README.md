@@ -49,10 +49,6 @@ Rules are created with the following factories
 * `and(...Rule|String|RegExp) : Rule` pass if lookahead passes (& operator)
 * `not(...Rule|String|RegExp) : Rule` pass if lookahead fails (! operator)
 
-Any rule can be named. All results of named rule will have a `kin` property with that name.
-* mutate with direct assignment: `myRule.kin = 'myName'`
-* new named Rule with the `kin` function `namedRule = kin('name', ...rules)`
-
 ### Rule
 
 * `.set(factoryArguments) : this` for recursive rules, allow to define a rule after it is created

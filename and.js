@@ -10,7 +10,6 @@ function And() {
 And.prototype = {
 	constructor: And,
 	isRule: true,
-	kin:'',
 	set: proto.set,
 	peek: function(string, index) {
 		var spot = index || 0,
