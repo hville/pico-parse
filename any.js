@@ -17,7 +17,7 @@ Any.prototype = {
 		for (var i=0; i<ops.length; ++i) if (!(itm = ops[i].peek(string, pos)).err) break
 		return itm
 	},
-	name: proto.name,
+	id: proto.id,
 	scan: proto.scan,
 	spy: proto.spy
 }

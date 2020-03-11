@@ -15,7 +15,7 @@ Tok.prototype = {
 	constructor: Tok,
 	isRule: true,
 	kin:'',
-	name: function(kin) {
+	id: function(kin) {
 		this.kin = ''+kin
 		return this
 	},

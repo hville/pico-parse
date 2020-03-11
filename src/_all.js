@@ -33,7 +33,7 @@ All.prototype = {
 		if (this.kin) tree.kin = this.kin
 		return tree
 	},
-	name: Tok.prototype.name,
+	id: Tok.prototype.id,
 	spy: Tok.prototype.spy,
 	scan: function(string) {
 		var res = this.peek(string, 0)

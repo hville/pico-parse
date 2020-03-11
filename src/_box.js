@@ -23,7 +23,7 @@ Box.prototype = {
 		this.last = null
 		return next
 	},
-	name: proto.name,
+	id: proto.id,
 	scan: proto.scan,
 	spy: proto.spy
 }

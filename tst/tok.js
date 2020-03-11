@@ -20,10 +20,10 @@ ct('init sticky/global flags', t => {
 	test(t, abcS.term, {sticky:true, global:false})
 })
 ct('name', t => {
-	test(t, tok('abc').name('kin').peek('abc'), {kin:'kin', i:0, txt: 'abc', j: 3, err: false})
-	test(t, tok(/abc/).name('kin').peek('abc'), {kin:'kin', i:0, txt: 'abc', j: 3, err: false})
-	test(t, tok(simNoSticky).name('kin').peek('abc'), {kin:'kin', i:0, txt: 'abc', j: 3, err: false})
-	test(t, tok(tok(simNoSticky).name('kin')).name('KIN').peek('abc'), {kin:'KIN', i:0, txt: 'abc', j: 3, err: false})
+	test(t, tok('abc').id('kin').peek('abc'), {kin:'kin', i:0, txt: 'abc', j: 3, err: false})
+	test(t, tok(/abc/).id('kin').peek('abc'), {kin:'kin', i:0, txt: 'abc', j: 3, err: false})
+	test(t, tok(simNoSticky).id('kin').peek('abc'), {kin:'kin', i:0, txt: 'abc', j: 3, err: false})
+	test(t, tok(tok(simNoSticky).id('kin')).id('KIN').peek('abc'), {kin:'KIN', i:0, txt: 'abc', j: 3, err: false})
 })
 ct('tok string pass', t => {
 	test(t, abcT.scan('abc'), {kin:'', i:0, txt: 'abc', j: 3, err: false})
@@ -65,8 +65,8 @@ ct('tok global fail', t => {
 	test(t, abcG.peek('abc', 3), {kin:'', i:3, txt: '', j: 3, err: true})
 })
 ct('rename', t => {
-	var subT = abcT.name('subT'),
-			subS = abcS.name('subS')
+	var subT = abcT.id('subT'),
+			subS = abcS.id('subS')
 	test(t, subT.scan('abc'), {kin:'subT', i:0, txt: 'abc', j: 3, err: false})
 	test(t, subS.scan('abc'), {kin:'subS', i:0, txt: 'abc', j: 3, err: false})
 })

@@ -16,7 +16,7 @@ Not.prototype = {
 				tree = proto.peek.call(this, string, spot)
 		return new Leaf(spot, '', !tree.err)
 	},
-	name: proto.name,
+	id: proto.id,
 	scan: proto.scan,
 	spy: proto.spy
 }

@@ -24,7 +24,7 @@ Few.prototype = {
 		}
 		return tree
 	},
-	name: proto.name,
+	id: proto.id,
 	scan: proto.scan,
 	spy: proto.spy
 }

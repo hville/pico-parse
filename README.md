@@ -15,7 +15,7 @@ const _ = /[ ]*/,
       label = /[a-zA-Z$_][a-zA-Z$_0-9]+/,
       value = any(),
       addition = all('+', _, value),
-      expression = all(value, run( all(_, addition) ), _).name('expression')
+      expression = all(value, run( all(_, addition) ), _).id('expression')
 value.set(integer, label, expression, all('(', _, value, _, ')'))
 console.log(expression.scan('11 +22'))
 /*
@@ -52,7 +52,7 @@ Rules are created with the following factories
 ### Rule
 
 * `.set(factoryArguments) : this` for recursive rules, allow to define a rule after it is created
-* `.name(string) : this` results of this rule are given a kin property
+* `.id(string) : this` results of this rule are given a kin property
 * `.spy( Tree|Leaf => Tree|Leaf ) : this` results of this rule are pre-processed with the given callback
 * `.peek(string [, index=0]) : Tree|Leaf` Used internally to parse a string at a given position
 * `.scan(string) : Tree|Leaf` parses the complete string

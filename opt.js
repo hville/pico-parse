@@ -17,7 +17,7 @@ Opt.prototype = {
 		if (res.err) return new Leaf(pos, '', false)
 		return res
 	},
-	name: proto.name,
+	id: proto.id,
 	scan: proto.scan,
 	spy: proto.spy
 }
