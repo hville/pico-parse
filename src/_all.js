@@ -40,6 +40,20 @@ All.prototype = {
 		//complete the result with a failed remaining portion
 		if (res.j !== string.length) res.add(new Leaf(res.j, string.slice(res.j), true))
 		return res
+	},
+	box: function(){
+		var peek = this.peek,
+				last = null
+		this.peek = function(string, index) {
+			if (last) return last
+			var spot = index||0,
+					next = last = new Leaf(spot, '', true) //first pass fails
+			while ((next = peek.call(this, string, spot)).j > last.j) last = next
+			next = last
+			last = null
+			return next
+		}
+		return this
 	}
 }
 //chop(string, res) //TODO

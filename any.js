@@ -19,5 +19,6 @@ Any.prototype = {
 	},
 	id: proto.id,
 	scan: proto.scan,
-	spy: proto.spy
+	spy: proto.spy,
+	box: proto.box
 }

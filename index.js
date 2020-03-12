@@ -7,6 +7,5 @@ module.exports = {
 	few: require('./few'),
 	run: require('./run'),
 	and: require('./and'),
-	not: require('./not'),
-	Box: require('./src/_box')
+	not: require('./not')
 }

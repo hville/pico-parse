@@ -56,6 +56,7 @@ Rules are created with the following factories
 * `.spy( Tree|Leaf => Tree|Leaf ) : this` results of this rule are pre-processed with the given callback
 * `.peek(string [, index=0]) : Tree|Leaf` Used internally to parse a string at a given position
 * `.scan(string) : Tree|Leaf` parses the complete string
+* `.box() : this` allows left-recursive rules by 'boxing' the recursive calls(fails if no recursion)
 
 ### Leaf
 
