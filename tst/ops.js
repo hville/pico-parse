@@ -1,5 +1,5 @@
 var ct = require('cotest'),
-		{any, all, rep, opt, few, run, and, not} = require('../')
+		{any, all, opt, few, run, and, not} = require('../')
 
 function test(t, res, ref) {
 	for (var i=0, ks=Object.keys(ref); i<ks.length; ++i) t('===', res[ks[i]], ref[ks[i]])
