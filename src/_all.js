@@ -43,14 +43,22 @@ All.prototype = {
 	},
 	box: function(){
 		var peek = this.peek,
-				last = null
+				last = new Map,
+				next = null
 		this.peek = function(string, index) {
-			if (last) return last
-			var spot = index||0,
-					next = last = new Leaf(spot, '', true) //first pass fails
-			while ((next = peek.call(this, string, spot)).j > last.j) last = next
-			next = last
-			last = null
+			var spot = index||0
+			if (last.has(spot)) {
+				next = last.get(spot)
+				//last.delete(spot)
+				return next
+			}
+			//console.log('opening', spot, string[spot], string.length, last.keys(), string)
+			next = new Leaf(spot, '', true) //first pass fails
+			last.set(spot, next)
+			while (last.get(spot).j < (next = peek.call(this, string, spot)).j) last.set(spot, next)
+			next = last.get(spot)
+			last.delete(spot)
+			//console.log('closing', spot, string[spot], string.length, last.keys(), string)
 			return next
 		}
 		return this
