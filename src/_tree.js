@@ -1,22 +1,34 @@
-module.exports = Tree
-
-function Tree(i) {
+export function Tree(i) {
 	this.i = i
 	this.j = i
-	this.err = false
+	this.err = 0
 	this.set = []
 }
 Tree.prototype.id = ''
 Tree.prototype.txt = ''
+Tree.prototype.skip = function(itm) {
+	if (itm && itm.err === 0) this.j = itm.j
+	return this
+}
 Tree.prototype.add = function(itm) {
-	//failure is contagious, unless you've never really failed
-	if (!this.err) this.err = itm.err
-	this.j = itm.j
-	//merge orphan lists
 	var set = this.set
-	if (itm.set && !itm.id) for (var i=0; i<itm.set.length; ++i) set[set.length] = itm.set[i]
-	else if (itm.j > itm.i) set[set.length] = itm
-	//done!
+	this.j = itm.j
+	if (!itm.set) { //Leaf
+		var last = set[set.length-1]
+		if (last && itm.err === last.err && itm.id === last.id) last.add(itm)
+		else {
+			set.push(itm)
+			this.err += itm.err
+		}
+	} else if (itm.err || itm.id) {
+		this.err += itm.err
+		set.push(itm)
+	} else if (itm.j > itm.i) { //merge annonymous groups
+		this.j = itm.j
+		if (itm.set && !itm.id) for (var i=0; i<itm.set.length; ++i) this.set.push(itm.set[i])
+		//append named groups
+		this.set.push(itm)
+	}
 	return this
 }
 

@@ -1,7 +1,7 @@
-var proto = require('./src/_All').prototype
+import {All} from './src/_all.js'
 
-module.exports = function() {
-	return proto.set.apply(new Any, arguments)
+export default function() {
+	return All.prototype.set.apply(new Any, arguments)
 }
 function Any() {
 	this.rules = []
@@ -9,16 +9,19 @@ function Any() {
 Any.prototype = {
 	constructor: Any,
 	isRule: true,
-	set: proto.set,
-	peek: function(string, index) {
+	set: All.prototype.set,
+	peek: function(string, pos) {
 		var ops = this.rules, //TODO no-rules case
-				pos = index || 0,
-				itm
-		for (var i=0; i<ops.length; ++i) if (!(itm = ops[i].peek(string, pos)).err) break
+				min
+		for (var i=0; i<ops.length; ++i) {
+			var itm = ops[i].peek(string, pos)
+			if (!itm.err) return itm
+			if (!min || min.err > itm.err) min = itm
+		}
 		return itm
 	},
-	id: proto.id,
-	scan: proto.scan,
-	spy: proto.spy,
-	box: proto.box
+	id: All.prototype.id,
+	scan: All.prototype.scan,
+	spy: All.prototype.spy,
+	box: All.prototype.box
 }

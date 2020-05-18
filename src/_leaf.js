@@ -1,6 +1,4 @@
-module.exports = Leaf
-
-function Leaf(i, txt, err, kin) {
+export function Leaf(i, txt, err, kin) {
 	this.i = i
 	this.txt = txt
 	this.j = i+txt.length
@@ -8,6 +6,12 @@ function Leaf(i, txt, err, kin) {
 	if (kin) this.id = kin
 }
 Leaf.prototype.id = ''
+Leaf.prototype.add = function(itm) {
+	if (itm.set) throw Error('can\'t add a tree to a leaf')
+	this.txt += itm.txt
+	this.j += itm.j
+	this.err = this.err & itm.err
+}
 Leaf.prototype.fuse = function(xfos) {
 	//@ts-ignore
 	var fcn = xfos && xfos[this.id]

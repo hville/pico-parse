@@ -1,16 +1,17 @@
-var Tree = require('./_tree'),
-		Leaf = require('./_leaf'),
-		Tok = require('./_tok')
+import {Leaf} from './_leaf.js'
+import {Tree} from './_tree.js'
+import {Tok} from './_tok.js'
 
-module.exports = All
-function All() {
+export function All() {
 	this.rules = []
+	this.skips = null
 }
 All.prototype = {
 	constructor: All,
+	maxE: 50,
 	isRule: true,
 	kin:'',
-	set: function() {
+	set: function() { //TODO push rule?
 		var def = this.rules,
 				len = def.length = arguments.length
 		for (var i=0; i<len; ++i) {
@@ -19,15 +20,18 @@ All.prototype = {
 		}
 		return this
 	},
-	peek: function(string, index, debug) {
+	peek: function(src, pos) {
 		var ops = this.rules,
 				tree
-		if (ops.length === 1) tree = ops[0].peek(string, index, debug)
+		if (ops.length === 1) {
+			tree = ops[0].peek(src, pos)
+			if (this.skip) tree.skip(this.skip(src, tree.j))
+		}
 		else {
-			tree = new Tree(index || 0)
+			tree = new Tree(pos)
 			for (var i=0; i<ops.length; ++i) {
-				var part = ops[i].peek(string, tree.j, debug)
-				if (tree.add(part).err && !debug) break
+				tree.add(ops[i].peek(src, tree.j))
+				if (this.skip) tree.skip(this.skip(src, tree.j))
 			}
 		}
 		if (this.kin) tree.id = this.kin
@@ -38,22 +42,22 @@ All.prototype = {
 	scan: function(string) {
 		var res = this.peek(string, 0)
 		//complete the result with a failed remaining portion
-		if (res.j !== string.length) res.add(new Leaf(res.j, string.slice(res.j), true))
+		if (res.j !== string.length) res.add(new Leaf(res.j, string.slice(res.j), 1))
 		return res
 	},
 	box: function(){
 		var peek = this.peek,
 				last = new Map,
 				next = null
-		this.peek = function(string, index) {
-			var spot = index||0
+		this.peek = function(string, spot) {
 			if (last.has(spot)) {
 				next = last.get(spot)
 				//last.delete(spot)
 				return next
 			}
 			//console.log('opening', spot, string[spot], string.length, last.keys(), string)
-			next = new Leaf(spot, '', true) //first pass fails
+			next = new Tree(spot)
+			next.err = 1 //first pass fails
 			last.set(spot, next)
 			while (last.get(spot).j < (next = peek.call(this, string, spot)).j) last.set(spot, next)
 			next = last.get(spot)

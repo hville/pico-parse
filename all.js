@@ -1,5 +1,5 @@
-var All = require('./src/_all')
+import {All} from './src/_all.js'
 
-module.exports = function() {
+export default function() {
 	return All.prototype.set.apply(new All, arguments)
 }

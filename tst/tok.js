@@ -1,80 +1,68 @@
-var ct = require('cotest'),
-		tok = require('../tok')
+import t from 'assert-op'
+import tok from '../tok.js'
 
 var simNoSticky = Object.defineProperty(/abc/, 'sticky', {value: null}),
 		abcT = tok('abc'),
 		abcG = tok(simNoSticky),
 		abcS = tok(/abc/),
-		voidS = tok(/.{0,0}/),
+		//voidS = tok(/.{0,0}/),
 		voidG = Object.defineProperty(/.{0,0}/, 'sticky', {value: null})
 
-function test(t, res, ref) {
+function test(res, ref) {
 	for (var i=0, ks=Object.keys(ref); i<ks.length; ++i) t('===', res[ks[i]], ref[ks[i]])
 }
 
-ct('init sticky/global flags', t => {
-	test(t, simNoSticky, {sticky:null})
-	test(t, abcG.term, {sticky:false, global:true})
+// init sticky/global flags
+test(simNoSticky, {sticky:null})
+test(abcG.term, {sticky:false, global:true})
 
-	test(t, /abc/, {sticky:false, global:false})
-	test(t, abcS.term, {sticky:true, global:false})
-})
-ct('name', t => {
-	test(t, tok('abc').id('kin').peek('abc'), {id:'kin', i:0, txt: 'abc', j: 3, err: false})
-	test(t, tok(/abc/).id('kin').peek('abc'), {id:'kin', i:0, txt: 'abc', j: 3, err: false})
-	test(t, tok(simNoSticky).id('kin').peek('abc'), {id:'kin', i:0, txt: 'abc', j: 3, err: false})
-	test(t, tok(tok(simNoSticky).id('kin')).id('KIN').peek('abc'), {id:'KIN', i:0, txt: 'abc', j: 3, err: false})
-})
-ct('tok string pass', t => {
-	test(t, abcT.scan('abc'), {id:'', i:0, txt: 'abc', j: 3, err: false})
-	test(t, abcT.peek('aabc', 1), {id:'', i:1, txt: 'abc', j: 4, err: false})
-	test(t, tok('').peek('aabc', 1), {id:'', i:1, txt: '', j: 1, err: false})
-})
-ct('tok string fail', t => {
-	test(t, abcT.peek('ab'), {id:'', i:0, txt: 'ab', j: 2, err: true})
-	test(t, abcT.peek('aabc'), {id:'', i:0, txt: 'a', j: 1, err: true})
-	test(t, abcT.scan('aabc'), {id:'', i:0, j: 4, err: true})
-	test(t, abcT.peek('abc', 1), {id:'', i:1, txt: '', j: 1, err: true})
-	test(t, abcT.peek('abc', 3), {id:'', i:3, txt: '', j: 3, err: true})
-})
-ct('tok sticky pass', t => {
-	test(t, abcS.peek('abc'), {id:'', i:0, txt: 'abc', j: 3, err: false})
-	test(t, abcS.peek('aabc', 1), {id:'', i:1, txt: 'abc', j: 4, err: false})
-	test(t, tok(/[ ]*/).peek('a', 0), {
-		i:0, txt: '', j: 0, err: false
-	})
-	test(t, tok(/[ ]*/).peek('a', 1), {
-		i:1, txt: '', j: 1, err: false
-	})
-})
-ct('tok sticky fail', t => {
-	test(t, abcS.peek('ab'), {id:'', i:0, txt: 'a', j: 1, err: true})
-	test(t, abcS.peek('aabc'), {id:'', i:0, txt: 'a', j: 1, err: true})
-	test(t, abcS.peek('abc', 1), {id:'', i:1, txt: 'b', j: 2, err: true})
-	test(t, abcS.peek('abc', 3), {id:'', i:3, txt: '', j: 3, err: true})
-})
-ct('tok global pass', t => {
-	test(t, abcG.peek('abc'), {id:'', i:0, txt: 'abc', j: 3, err: false})
-	test(t, abcG.peek('aabc', 1), {id:'', i:1, txt: 'abc', j: 4, err: false})
-	test(t, tok(voidG).peek('aabc', 1), {id:'', i:1, txt: '', j: 1, err: false})
-})
-ct('tok global fail', t => {
-	test(t, abcG.peek('ab'), {id:'', i:0, txt: 'a', j: 1, err: true})
-	test(t, abcG.peek('aabc'), {id:'', i:0, txt: 'a', j: 1, err: true})
-	test(t, abcG.peek('abc', 1), {id:'', i:1, txt: 'b', j: 2, err: true})
-	test(t, abcG.peek('abc', 3), {id:'', i:3, txt: '', j: 3, err: true})
-})
-ct('rename', t => {
-	var subT = abcT.id('subT'),
-			subS = abcS.id('subS')
-	test(t, subT.scan('abc'), {id:'subT', i:0, txt: 'abc', j: 3, err: false})
-	test(t, subS.scan('abc'), {id:'subS', i:0, txt: 'abc', j: 3, err: false})
-})
-ct('spy', t => {
-	function cb(res) {
-		res.txt = res.txt.toUpperCase()
-		res.id = this.constructor.name
-		return res
-	}
-	test(t, tok('abc').spy(cb).peek('abc'), {id:'Tok', i:0, txt:'ABC', j: 3, err: false})
-})
+test(/abc/, {sticky:false, global:false})
+test(abcS.term, {sticky:true, global:false})
+
+// name
+test(tok('abc').id('kin').peek('abc', 0), {id:'kin', i:0, txt: 'abc', j: 3, err: 0})
+test(tok(/abc/).id('kin').peek('abc', 0), {id:'kin', i:0, txt: 'abc', j: 3, err: 0})
+test(tok(simNoSticky).id('kin').peek('abc', 0), {id:'kin', i:0, txt: 'abc', j: 3, err: 0})
+test(tok(tok(simNoSticky).id('kin')).id('KIN').peek('abc', 0), {id:'KIN', i:0, txt: 'abc', j: 3, err: 0})
+
+// tok string pass
+test(abcT.scan('abc'), {id:'', i:0, txt: 'abc', j: 3, err: 0})
+test(abcT.peek('aabc', 1), {id:'', i:1, txt: 'abc', j: 4, err: 0})
+test(tok('').peek('aabc', 1), {id:'', i:1, txt: '', j: 1, err: 0})
+// tok string fail
+test(abcT.peek('ab', 0), {id:'', i:0, txt: 'ab', j: 2, err: 1})
+test(abcT.peek('aabc', 0), {id:'', i:0, txt: 'a', j: 1, err: 1})
+test(abcT.scan('aabc'), {id:'', i:0, j: 4, err: 1})
+test(abcT.peek('abc', 1), {id:'', i:1, txt: '', j: 1, err: 1})
+test(abcT.peek('abc', 3), {id:'', i:3, txt: '', j: 3, err: 1})
+// tok sticky pass
+test(abcS.scan('abc'), {id:'', i:0, txt: 'abc', j: 3, err: 0})
+test(abcS.peek('aabc', 1), {id:'', i:1, txt: 'abc', j: 4, err: 0})
+test(tok(/[ ]*/).peek('a', 0), {i:0, txt: '', j: 0, err: 0})
+test(tok(/[ ]*/).peek('a', 1), {i:1, txt: '', j: 1, err: 0})
+// tok sticky fail
+test(abcS.peek('ab', 0), {id:'', i:0, txt: 'a', j: 1, err: 1})
+test(abcS.peek('aabc', 0), {id:'', i:0, txt: 'a', j: 1, err: 1})
+test(abcS.peek('abc', 1), {id:'', i:1, txt: 'b', j: 2, err: 1})
+test(abcS.peek('abc', 3), {id:'', i:3, txt: '', j: 3, err: 1})
+// tok global pass
+test(abcG.peek('abc', 0), {id:'', i:0, txt: 'abc', j: 3, err: 0})
+test(abcG.peek('aabc', 1), {id:'', i:1, txt: 'abc', j: 4, err: 0})
+test(tok(voidG).peek('aabc', 1), {id:'', i:1, txt: '', j: 1, err: 0})
+// tok global fail
+test(abcG.peek('ab', 0), {id:'', i:0, txt: 'a', j: 1, err: 1})
+test(abcG.peek('aabc', 0), {id:'', i:0, txt: 'a', j: 1, err: 1})
+test(abcG.peek('abc', 1), {id:'', i:1, txt: 'b', j: 2, err: 1})
+test(abcG.peek('abc', 3), {id:'', i:3, txt: '', j: 3, err: 1})
+// rename
+var subT = abcT.id('subT'),
+		subS = abcS.id('subS')
+test(subT.scan('abc'), {id:'subT', i:0, txt: 'abc', j: 3, err: 0})
+test(subS.scan('abc'), {id:'subS', i:0, txt: 'abc', j: 3, err: 0})
+// spy
+function cb(res) {
+	res.txt = res.txt.toUpperCase()
+	res.id = this.constructor.name
+	return res
+}
+test(tok('abc').spy(cb).peek('abc', 0), {id:'Tok', i:0, txt:'ABC', j: 3, err: 0})

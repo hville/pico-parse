@@ -1,5 +1,5 @@
-var Tok = require('./src/_tok')
+import {Tok} from './src/_tok.js'
 
-module.exports = function(pattern) {
+export default function(pattern) {
 	return new Tok(pattern)
 }

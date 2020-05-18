@@ -1,122 +1,49 @@
-var ct = require('cotest'),
-		{any, all, opt, few, run, and, not} = require('../')
+import t from 'assert-op'
+import all from '../all.js'
+import run from '../run.js'
+import few from '../few.js'
+import opt from '../opt.js'
+import and from '../and.js'
+import not from '../not.js'
 
-function test(t, res, ref) {
+function test(res, ref) {
 	for (var i=0, ks=Object.keys(ref); i<ks.length; ++i) t('===', res[ks[i]], ref[ks[i]])
 }
 
-ct('all pass', t => {
-	test(t, all('abc').peek('abc'), {id:'', i:0, j: 3, err: false})
-	test(t, all('bc').peek('abc', 1), {id:'', i:1, j: 3, err: false})
-	test(t, all('ab', /c/).id('kin').scan('abc'), {id:'kin', i:0, j: 3, err: false})
-	test(t, all('a', all('b', all('c'))).scan('abc'), {i:0, j: 3, err: false})
-	var _ = / */,
-			spaced = all('a', _, 'b', _, 'c')
-	t('===', spaced.peek('abc').j, 3)
-	t('===', spaced.peek('a bc').j, 4)
-	t('===', spaced.peek('a  bc').j, 5)
-	t('===', spaced.peek('a  b c').j, 6)
-})
+// rep pass
+test(run('ab').peek('x', 0), {i:0, j:0, err: 0})
+test(run('ab').peek('ab', 0), {i:0, j:2, err: 0})
+test(run('ab').peek('abababX', 0), {i:0, j:6, err: 0})
+test(run('a', 'b').peek('abababX', 0), {i:0, j:6, err: 0})
 
-ct('all fail', t => {
-	test(t, all('abc').peek('abc', 1), {i:1, j:1, err: true})
-	test(t, all('a', 'c').peek('abc'), {i:0, j:1, err: true})
+// few pass
+test(few('ab').peek('abababX', 0), {i:0, j:6, err: 0})
+test(few('a', 'b').peek('abababX', 0), {i:0, j:6, err: 0})
 
-	var rule = all('a', all('b', all('C')).id('A')),
-			pack = rule.peek('abc')
-	test(t, pack, {i:0, j:2, err: true})
-	test(t, pack.set[1], {id:'A', i:1, j:2, err: true})
-})
+// few fail
+test(few('ab').peek('x', 0), {i:0, j:1, err: 1})
 
-ct('all scan', t => {
-	test(t, all('abc').id('kin').peek('abc'), {id:'kin', i:0, j: 3, err: false})
-	test(t, all('abc').id('kin').scan('abc'), {id:'kin', i:0, j: 3, err: false})
-})
+// opt pass
+test(opt('ab').peek('x', 0), {i:0, j:0, err: 0})
+test(opt('a', 'b').peek('x', 0), {i:0, j:0, err: 0})
+test(opt('ab').peek('ab', 0), {i:0, j:2, err: 0})
+test(opt('a', 'b').peek('ab', 0), {i:0, j:2, err: 0})
+test(opt('ab').peek('abababX', 0), {i:0, j:2, err: 0})
+test(opt('a', 'b').peek('abababX', 0), {i:0, j:2, err: 0})
 
-ct('any pass', t => {
-	var fail = any('X', 'Y', 'Z'),
-			ab = any(fail, 'ab'),
-			rule = any(fail, all(any(fail, ab, 'abc')).id('kin')),
-			pack = rule.peek('abc')
-	t('===', pack.err, false)
-	t('===', pack.id, 'kin')
-	t('===', pack.i, 0)
-	t('===', pack.j, 2)
-})
+//TODO
+// fuse
+//t('===', all('ab', 'cd').peek('ab').fuse(), 'ab')
+//t('===', all('ab', kin('xxx', /[^]*/)).peek('abxy').fuse({xxx: txt => txt.toUpperCase() }), 'abXY')
+//t('===', all('ab', /[^]*/).peek('abxy').fuse({xxx: txt => txt.toUpperCase() }), 'ABXY')
+//t('===', all('ab', all(/[^]*/)).peek('abxy').fuse({ not: txt=>txt.replace('y', 'z'), all: txt => txt.toUpperCase()}), 'ABXZ')
 
-ct('any fail', t => {
-	var fail = any('X', 'Y', 'abX'),
-			rule = any(fail, any(fail), fail)
-	test(t, rule.peek('abc'), {txt:'ab', i:0, j:2, err: true})
-})
-
-ct('rep few pass', t => {
-	t('===', run('ab').peek('x').err, false)
-	t('===', run('ab').peek('x').i, 0)
-	t('===', run('ab').peek('x').j, 0)
-
-	t('===', run('ab').peek('ab').err, false)
-	t('===', run('ab').peek('ab').i, 0)
-	t('===', run('ab').peek('ab').j, 2)
-
-	t('===', run('ab').peek('abababX').err, false)
-	t('===', run('ab').peek('abababX').i, 0)
-	t('===', run('ab').peek('abababX').j, 6)
-
-	t('===', few('ab').peek('abababX').err, false)
-	t('===', few('ab').peek('abababX').i, 0)
-	t('===', few('ab').peek('abababX').j, 6)
-
-	t('===', few('a', 'b').peek('abababX').err, false)
-	t('===', few('a', 'b').peek('abababX').i, 0)
-	t('===', few('a', 'b').peek('abababX').j, 6)
-})
-
-ct('run few fail', t => {
-	t('===', few('ab').peek('x').err, true)
-	t('===', few('ab').peek('x').i, 0)
-	t('===', few('ab').peek('x').j, 1)
-})
-
-ct('opt pass', t => {
-	t('===', opt('ab').peek('x').err, false)
-	t('===', opt('ab').peek('x').i, 0)
-	t('===', opt('ab').peek('x').j, 0)
-
-	t('===', opt('ab').peek('ab').err, false)
-	t('===', opt('ab').peek('ab').i, 0)
-	t('===', opt('ab').peek('ab').j, 2)
-
-	t('===', opt('ab').peek('abababX').err, false)
-	t('===', opt('ab').peek('abababX').i, 0)
-	t('===', opt('ab').peek('abababX').j, 2)
-
-	t('===', opt('a', 'b').peek('abababX').i, 0)
-	t('===', opt('a', 'b').peek('abababX').j, 2)
-
-})
-
-ct.skip('fuse', t => {
-	t('===', all('ab', 'cd').peek('ab').fuse(), 'ab')
-	//t('===', all('ab', kin('xxx', /[^]*/)).peek('abxy').fuse({xxx: txt => txt.toUpperCase() }), 'abXY')
-	t('===', all('ab', /[^]*/).peek('abxy').fuse({xxx: txt => txt.toUpperCase() }), 'ABXY')
-	t('===', all('ab', all(/[^]*/)).peek('abxy').fuse({
-		not: txt=>txt.replace('y', 'z'),
-		all: txt => txt.toUpperCase()
-	}), 'ABXZ')
-})
-
-ct('and not', t => {
-	test(t, and('ab').peek('abc'), {
-		i:0, j:0, err: false
-	})
-	test(t, not('ab').peek('abc'), {
-		i:0, j:0, err: true
-	})
-	test(t, and('ba').peek('abc'), {i:0, j:0, err: true})
-	test(t, not('ba').peek('abc'), {i:0, j:0, err: false})
-	test(t, all('a', and('c')).peek('abc'), {i:0, err: true})
-	test(t, all('a', and('b')).peek('abc'), {i:0, err: false})
-	test(t, all('a', not('c')).peek('abc'), {i:0, err: false})
-	test(t, all('a', not('b')).peek('abc'), {i:0, err: true})
-})
+// and not
+test(and('ab').peek('abc', 0), { i:0, j:0, err: 0})
+test(not('ab').peek('abc', 0), { i:0, j:0, err: 1 })
+test(and('ba').peek('abc', 0), {i:0, j:0, err: 1 })
+test(not('ba').peek('abc', 0), {i:0, j:0, err: 0})
+test(all('a', and('c')).peek('abc', 0), {i:0, err: 1})//
+test(all('a', and('b')).peek('abc', 0), {i:0, err: 0})
+test(all('a', not('c')).peek('abc', 0), {i:0, err: 0})
+test(all('a', not('b')).peek('abc', 0), {i:0, err: 1})

@@ -1,8 +1,8 @@
-var Leaf = require('./src/_leaf'),
-		proto = require('./src/_All').prototype
+import {Tree} from './src/_tree.js'
+import {All} from './src/_all.js'
 
-module.exports = function() {
-	return proto.set.apply(new Opt, arguments)
+export default function() {
+	return All.prototype.set.apply(new Opt, arguments)
 }
 function Opt() {
 	this.rules = []
@@ -10,14 +10,13 @@ function Opt() {
 Opt.prototype = {
 	constructor: Opt,
 	isRule: true,
-	set: proto.set,
-	peek: function(string, index) {
-		var pos = index || 0,
-				res = proto.peek.call(this, string, pos)
-		if (res.err) return new Leaf(pos, '', false)
+	set: All.prototype.set,
+	peek: function(string, pos) {
+		var res = All.prototype.peek.call(this, string, pos)
+		if (res.err) return new Tree(pos)
 		return res
 	},
-	id: proto.id,
-	scan: proto.scan,
-	spy: proto.spy
+	id: All.prototype.id,
+	scan: All.prototype.scan,
+	spy: All.prototype.spy
 }

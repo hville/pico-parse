@@ -1,9 +1,13 @@
 {
   "name": "pico-parse",
-  "version": "0.4.0",
+  "type": "module",
+  "main": "index.js",
+  "module": "index.js",
+  "version": "0.5.0",
   "description": "small lexer and parser",
   "devDependencies": {
     "@types/node": "^11.11.0",
+    "assert-op": "^0.5.1",
     "cotest": "^4.0.2"
   },
   "scripts": {

@@ -1,8 +1,8 @@
-var Tree = require('./src/_tree'),
-		proto = require('./src/_All').prototype
+import {Tree} from './src/_tree.js'
+import {All} from './src/_all.js'
 
-module.exports = function() {
-	return proto.set.apply(new Few, arguments)
+export default function() {
+	return All.prototype.set.apply(new Few, arguments)
 }
 function Few() {
 	this.rules = []
@@ -10,21 +10,21 @@ function Few() {
 Few.prototype = {
 	constructor: Few,
 	isRule: true,
-	set: proto.set,
-	peek: function(string, index) {
-		var tree = new Tree(index || 0)
+	set: All.prototype.set,
+	peek: function(string, pos) {
+		var tree = new Tree(pos)
 		for (var i=0; i<string.length; ++i) {
-			var res = proto.peek.call(this, string, tree.j)
+			var res = All.prototype.peek.call(this, string, tree.j)
 			if (res.err) break
 			tree.add(res)
 		}
 		if (tree.set.length < 1) {
-			tree.err = true
+			tree.err = 1
 			++tree.j
 		}
 		return tree
 	},
-	id: proto.id,
-	scan: proto.scan,
-	spy: proto.spy
+	id: All.prototype.id,
+	scan: All.prototype.scan,
+	spy: All.prototype.spy
 }
