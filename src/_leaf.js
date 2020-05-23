@@ -9,7 +9,7 @@ Leaf.prototype.id = ''
 Leaf.prototype.add = function(itm) {
 	if (itm.set) throw Error('can\'t add a tree to a leaf')
 	this.txt += itm.txt
-	this.j += itm.j
+	this.j += itm.j - itm.i
 	this.err = this.err & itm.err
 }
 Leaf.prototype.fuse = function(xfos) {

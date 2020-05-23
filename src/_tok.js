@@ -36,7 +36,7 @@ function textAt(string, pos) {
 	var ref = this.term,
 			i = 0,
 			j = pos
-	while (i<ref.length) if (ref[i++] !== string[j++]) return new Leaf(pos, string.slice(pos, j-1), 1, this.kin)
+	while (i<ref.length) if (ref[i++] !== string[j++]) return new Leaf(pos, string.slice(pos, j), 1, this.kin)
 	return new Leaf(pos, string.slice(pos, j), 0, this.kin)
 }
 function stickyAt(src, pos) {
