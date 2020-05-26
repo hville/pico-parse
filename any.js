@@ -5,17 +5,20 @@ export default function() {
 }
 function Any() {
 	this.rules = []
+	this._lastSrc = ''
+	this._lastPos = -1
+	this._lastRes = null
 }
 Any.prototype = {
 	constructor: Any,
 	isRule: true,
 	set: All.prototype.set,
-	peek: function(string, pos) {
+	peek: function(src, pos) {
 		var ops = this.rules, //TODO no-rules case
 				min
 		for (var i=0; i<ops.length; ++i) {
-			var itm = ops[i].peek(string, pos)
-			if (!itm.err) return itm
+			var itm = ops[i].peek(src, pos)
+			if (!itm.err) break
 			if (!min || min.err > itm.err) min = itm
 		}
 		return itm

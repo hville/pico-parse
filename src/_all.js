@@ -81,6 +81,20 @@ All.prototype = {
 }
  */
 function peekall(src, pos) {
+	//memoize and recursion check
+	if (this._lastSrc !== src || this._lastPos !== pos) { // context changed, reset
+		console.log('MEM-reset', pos, this.lastPos, src, this._lastSrc, this._lastSrc !== src || this._lastPos !== pos)
+		this._lastSrc = src
+		this._lastPos = pos
+		this._lastRes = null
+	} else if (this._lastRes === null) { // recursion is in the air
+		//TODO
+		console.log('MEM-unbox', pos, src)
+	} else {
+		console.log('MEM-recall', pos, src)
+		return this._lastRes
+	}
+
 	var ops = this.rules,
 			tree
 	if (ops.length === 1) tree = ops[0].peek(src, pos)
@@ -89,5 +103,5 @@ function peekall(src, pos) {
 		for (var i=0; i<ops.length; ++i) tree.add(ops[i].peek(src, tree.j))
 	}
 	if (this.kin) tree.id = this.kin
-	return tree
+	return this._lastRes = tree
 }
