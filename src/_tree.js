@@ -6,10 +6,6 @@ export function Tree(i) {
 }
 Tree.prototype.id = ''
 Tree.prototype.txt = ''
-Tree.prototype.skip = function(itm) {
-	if (itm && itm.err === 0) this.j = itm.j
-	return this
-}
 Tree.prototype.add = function(itm) {
 	var set = this.set
 	this.j = itm.j

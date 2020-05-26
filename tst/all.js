@@ -28,3 +28,6 @@ test(pack, {i:0, j:3, err: 1})
 // all scan
 test(all('abc').id('kin').peek('abc', 0), {id:'kin', i:0, j: 3, err: 0})
 test(all('abc').id('kin').scan('abc'), {id:'kin', i:0, j: 3, err: 0})
+
+// all skip
+test(all('a', 'b', 'c').hop(' ').scan('a b c'), {i:0, j: 5, err: 0})

@@ -1,11 +1,8 @@
-/* eslint-disable global-require */
-module.exports = {
-	tok: require('./tok'),
-	any: require('./any'),
-	all: require('./all'),
-	opt: require('./opt'),
-	few: require('./few'),
-	run: require('./run'),
-	and: require('./and'),
-	not: require('./not')
-}
+export {tok} from './tok.js'
+export {any} from './any.js'
+export {all} from './all.js'
+export {opt} from './opt.js'
+export {few} from './few.js'
+export {run} from './run.js'
+export {and} from './and.js'
+export {not} from './not.js'

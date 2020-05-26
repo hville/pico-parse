@@ -4,7 +4,6 @@ import {Tok} from './_tok.js'
 
 export function All() {
 	this.rules = []
-	this.skips = null
 }
 All.prototype = {
 	constructor: All,
@@ -20,22 +19,29 @@ All.prototype = {
 		}
 		return this
 	},
-	peek: function(src, pos) {
-		var ops = this.rules,
-				tree
-		if (ops.length === 1) {
-			tree = ops[0].peek(src, pos)
-			if (this.skip) tree.skip(this.skip(src, tree.j))
-		}
-		else {
-			tree = new Tree(pos)
-			for (var i=0; i<ops.length; ++i) {
-				tree.add(ops[i].peek(src, tree.j))
-				if (this.skip) tree.skip(this.skip(src, tree.j))
+	peek: peekall,
+	hop: function() {
+		var skip = All.prototype.set.apply(new All, arguments)
+		this.peek = function(src, pos) {
+			var ops = this.rules,
+					tree, itm
+			if (ops.length === 1) {
+				tree = ops[0].peek(src, pos)
+				itm = skip.peek(src, tree.j)
+				if (itm.err === 0) tree.j = itm.j
 			}
+			else {
+				tree = new Tree(pos)
+				for (var i=0; i<ops.length; ++i) {
+					tree.add(ops[i].peek(src, tree.j))
+					itm = skip.peek(src, tree.j)
+					if (itm.err === 0) tree.j = itm.j
+				}
+			}
+			if (this.kin) tree.id = this.kin
+			return tree
 		}
-		if (this.kin) tree.id = this.kin
-		return tree
+		return this
 	},
 	id: Tok.prototype.id,
 	spy: Tok.prototype.spy,
@@ -74,3 +80,14 @@ All.prototype = {
 	else if (itm.i !== itm.j) itm.txt = src.slice(itm.i, itm.j)
 }
  */
+function peekall(src, pos) {
+	var ops = this.rules,
+			tree
+	if (ops.length === 1) tree = ops[0].peek(src, pos)
+	else {
+		tree = new Tree(pos)
+		for (var i=0; i<ops.length; ++i) tree.add(ops[i].peek(src, tree.j))
+	}
+	if (this.kin) tree.id = this.kin
+	return tree
+}
