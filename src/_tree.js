@@ -12,6 +12,6 @@ Tree.prototype.add = function(itm) {
 	this.err += itm.err
 	return this
 }
-Tree.prototype.cut = function() {
-	return this.text.slice(this.i, this.j)
+Tree.prototype.toString = function() {
+	return this.cuts.length ? this.cuts.join('') : this.text.slice(this.i, this.j)
 }

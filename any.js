@@ -5,9 +5,6 @@ export default function() {
 }
 function Any() {
 	this.rules = []
-	this._lastSrc = ''
-	this._lastPos = -1
-	this._lastRes = null
 }
 Any.prototype = {
 	constructor: Any,
