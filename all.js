@@ -1,5 +1,16 @@
-import {All} from './src/_all.js'
+import {set, peek, spy, scan} from './src/proto.js'
 
 export default function() {
-	return All.prototype.set.apply(new All, arguments)
+	return set.apply(new All, arguments)
+}
+function All() {
+	this.rules = []
+}
+All.prototype = {
+	constructor: All,
+	maxE: 50,
+	set: set,
+	peek: peek,
+	spy: spy,
+	scan: scan
 }

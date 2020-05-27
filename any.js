@@ -1,7 +1,7 @@
-import {All} from './src/_all.js'
+import {set, spy, scan} from './src/proto.js'
 
 export default function() {
-	return All.prototype.set.apply(new Any, arguments)
+	return set.apply(new Any, arguments)
 }
 function Any() {
 	this.rules = []
@@ -11,8 +11,7 @@ function Any() {
 }
 Any.prototype = {
 	constructor: Any,
-	isRule: true,
-	set: All.prototype.set,
+	set: set,
 	peek: function(src, pos) {
 		var ops = this.rules, //TODO no-rules case
 				min
@@ -23,8 +22,6 @@ Any.prototype = {
 		}
 		return itm
 	},
-	id: All.prototype.id,
-	scan: All.prototype.scan,
-	spy: All.prototype.spy,
-	box: All.prototype.box
+	scan: scan,
+	spy: spy
 }

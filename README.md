@@ -15,7 +15,7 @@ const _ = /[ ]*/,
       label = /[a-zA-Z$_][a-zA-Z$_0-9]+/,
       value = any(),
       addition = all('+', _, value),
-      expression = all(value, run( all(_, addition) ), _).id('expression')
+      expression = all(value, run( all(_, addition) ), _)
 value.set(integer, label, expression, all('(', _, value, _, ')'))
 console.log(expression.scan('11 +22'))
 /*
@@ -52,27 +52,16 @@ Rules are created with the following factories
 ### Rule
 
 * `.set(factoryArguments) : this` for recursive rules, allow to define a rule after it is created
-* `.id(string) : this` results of this rule are given a `id` property
 * `.spy( Tree|Leaf => Tree|Leaf ) : this` results of this rule are pre-processed with the given callback
 * `.peek(string [, index=0]) : Tree|Leaf` Used internally to parse a string at a given position
 * `.scan(string) : Tree|Leaf` parses the complete string
 * `.box() : this` allows left-recursive rules by 'boxing' the recursive calls(fails if no recursion)
 
-### Leaf
-
-* `.id : string|undefined` optional id
-* `.i : number` start position of the token in the input string
-* `.j : number` start position of the next token in the input string
-* `.txt : string` the substring found
-* `.err : boolean` if the result is an error
-* `.fuse([transforms:Object]) : string` returns the transformed token text
-
 ### Tree
 
-* `.id : string|undefined` optional name
 * `.i : number` start position of the tree (same as the first contained leaf)
 * `.j : number` start position of the next token after the tree in the input string
-* `.set : Array<Tree|Leaf>` the sub trees and leafs
+* `.cuts : Array<Tree|Leaf>` the sub trees and leafs
 * `.err : boolean` if the result is an error
 * `.fuse([transforms:Object]) : string` returns the transformed tree text after transforming the leaves
 * `.fold( (target:any, item: Pack|Leaf) => any, target:any) : any` fold/reduce to parse tree

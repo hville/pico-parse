@@ -34,7 +34,6 @@ test(opt('a', 'b').peek('abababX', 0), {i:0, j:2, err: 0})
 //TODO
 // fuse
 //t('===', all('ab', 'cd').peek('ab').fuse(), 'ab')
-//t('===', all('ab', kin('xxx', /[^]*/)).peek('abxy').fuse({xxx: txt => txt.toUpperCase() }), 'abXY')
 //t('===', all('ab', /[^]*/).peek('abxy').fuse({xxx: txt => txt.toUpperCase() }), 'ABXY')
 //t('===', all('ab', all(/[^]*/)).peek('abxy').fuse({ not: txt=>txt.replace('y', 'z'), all: txt => txt.toUpperCase()}), 'ABXZ')
 

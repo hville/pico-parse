@@ -1,30 +1,28 @@
 import {Tree} from './src/_tree.js'
-import {All} from './src/_all.js'
+import {set, peek, spy, scan} from './src/proto.js'
 
 export default function() {
-	return All.prototype.set.apply(new Few, arguments)
+	return set.apply(new Few, arguments)
 }
 function Few() {
 	this.rules = []
 }
 Few.prototype = {
 	constructor: Few,
-	isRule: true,
-	set: All.prototype.set,
-	peek: function(string, pos) {
-		var tree = new Tree(pos)
-		for (var i=0; i<string.length; ++i) {
-			var res = All.prototype.peek.call(this, string, tree.j)
+	set: set,
+	peek: function(text, pos) {
+		var tree = new Tree(text, this, pos, pos, 0)
+		for (var i=0; i<text.length; ++i) {
+			var res = peek.call(this, text, tree.j)
 			if (res.err) break
 			tree.add(res)
 		}
-		if (tree.set.length < 1) {
+		if (tree.cuts.length === 0) {
 			tree.err = 1
 			++tree.j
 		}
 		return tree
 	},
-	id: All.prototype.id,
-	scan: All.prototype.scan,
-	spy: All.prototype.spy
+	scan: scan,
+	spy: spy
 }
