@@ -56,7 +56,7 @@ test(subT.scan('abc'), {i:0, j: 3, err: 0})
 test(subS.scan('abc'), {i:0, j: 3, err: 0})
 // spy
 function cb(res) {
-	res.txt = res.cut().toUpperCase()
+	res.txt = (''+res).toUpperCase()
 	res.id = this.constructor.name
 	return res
 }

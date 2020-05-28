@@ -24,23 +24,23 @@ Tok.prototype = {
 	}
 }
 
-function textAt(text, pos) {
-	if (pos >= text.length) throw Error('index >= string.length')
+function textAt(src, pos) {
+	if (pos >= src.length) new Tree(src, this, pos, pos, 1)
 	var ref = this.term,
 			i = 0,
 			j = pos
-	while (i<ref.length) if (ref[i++] !== text[j++]) return new Tree(text, this, pos, Math.min(j, text.length), 1)
-	return new Tree(text, this, pos, j, 0)
+	while (i<ref.length) if (ref[i++] !== src[j++]) return new Tree(src, this, pos, Math.min(j, src.length), 1)
+	return new Tree(src, this, pos, j, 0)
 }
 function stickyAt(src, pos) {
-	if (pos >= src.length) throw Error('index >= string.length')
+	if (pos >= src.length) new Tree(src, this, pos, pos, 1)
 	this.term.lastIndex = pos
 	var res = this.term.test(src)
 	return res ? new Tree(src, this, pos, this.term.lastIndex, 0)
 		: new Tree(src, this, pos, pos === src.length ? pos : pos+1, 1)
 }
 function globalAt(src, pos) {
-	if (pos >= src.length) throw Error('index >= string.length')
+	if (pos >= src.length) new Tree(src, this, pos, pos, 1)
 	this.term.lastIndex = pos
 	var res = this.term.exec(src)
 	return (res && res.index === pos) ? new Tree(src, this, pos, pos+res[0].length, 0)

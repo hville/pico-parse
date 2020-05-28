@@ -13,7 +13,6 @@ function test(res, ref) {
 var abcde = all('a', 'b', 'c', 'd', 'e')
 // rep pass
 test(abcde.peek('ab_de', 0), {i:0, j:5, err: 1})
-test(abcde.peek('ab__e', 0), {i:0, j:5, err: 1})
-console.log(abcde.peek('abde', 0))
-test(abcde.peek('abde', 0), {i:0, j:4, err: 1})
+test(abcde.peek('ab__e', 0), {i:0, j:5, err: 2})
+test(abcde.peek('abde', 0), {i:0, j:4, err: 3})
 

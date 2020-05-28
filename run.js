@@ -12,7 +12,7 @@ Run.prototype = {
 	set: set,
 	peek: function(text, spot) {
 		var tree = new Tree(text, this, spot, spot, 0)
-		for (var i=0; i<text.length; ++i) {
+		while(tree.j < text.length) {
 			var res = peek.call(this, text, tree.j)
 			if (res.err) return tree
 			tree.add(res)

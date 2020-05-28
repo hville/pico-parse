@@ -15,4 +15,4 @@ test(rule.peek('abc', 0), {i:0, j:2, err:0})
 // any fail
 fail = any('X', 'Y', 'abX')
 rule = any(fail, any(fail), fail)
-test(rule.peek('abcd', 0), {txt:'abc', i:0, j:3, err: 1})
+test(rule.peek('abcd', 0), {i:0, j:3, err: 1})
