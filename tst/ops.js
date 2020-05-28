@@ -11,25 +11,25 @@ function test(res, ref) {
 }
 
 // rep pass
-test(run('ab').peek('x', 0), {i:0, j:0, err: 0})
-test(run('ab').peek('ab', 0), {i:0, j:2, err: 0})
-test(run('ab').peek('abababX', 0), {i:0, j:6, err: 0})
-test(run('a', 'b').peek('abababX', 0), {i:0, j:6, err: 0})
+test(run('ab').peek('x', 0), {i:0, j:0, err: false})
+test(run('ab').peek('ab', 0), {i:0, j:2, err: false})
+test(run('ab').peek('abababX', 0), {i:0, j:6, err: false})
+test(run('a', 'b').peek('abababX', 0), {i:0, j:6, err: false})
 
 // few pass
-test(few('ab').peek('abababX', 0), {i:0, j:6, err: 0})
-test(few('a', 'b').peek('abababX', 0), {i:0, j:6, err: 0})
+test(few('ab').peek('abababX', 0), {i:0, j:6, err: false})
+test(few('a', 'b').peek('abababX', 0), {i:0, j:6, err: false})
 
 // few fail
-test(few('ab').peek('x', 0), {i:0, j:1, err: 1})
+test(few('ab').peek('x', 0), {i:0, j:1, err: true})
 
 // opt pass
-test(opt('ab').peek('x', 0), {i:0, j:0, err: 0})
-test(opt('a', 'b').peek('x', 0), {i:0, j:0, err: 0})
-test(opt('ab').peek('ab', 0), {i:0, j:2, err: 0})
-test(opt('a', 'b').peek('ab', 0), {i:0, j:2, err: 0})
-test(opt('ab').peek('abababX', 0), {i:0, j:2, err: 0})
-test(opt('a', 'b').peek('abababX', 0), {i:0, j:2, err: 0})
+test(opt('ab').peek('x', 0), {i:0, j:0, err: false})
+test(opt('a', 'b').peek('x', 0), {i:0, j:0, err: false})
+test(opt('ab').peek('ab', 0), {i:0, j:2, err: false})
+test(opt('a', 'b').peek('ab', 0), {i:0, j:2, err: false})
+test(opt('ab').peek('abababX', 0), {i:0, j:2, err: false})
+test(opt('a', 'b').peek('abababX', 0), {i:0, j:2, err: false})
 
 //TODO
 // fuse
@@ -38,11 +38,11 @@ test(opt('a', 'b').peek('abababX', 0), {i:0, j:2, err: 0})
 //t('===', all('ab', all(/[^]*/)).peek('abxy').fuse({ not: txt=>txt.replace('y', 'z'), all: txt => txt.toUpperCase()}), 'ABXZ')
 
 // and not
-test(and('ab').peek('abc', 0), { i:0, j:0, err: 0})
-test(not('ab').peek('abc', 0), { i:0, j:0, err: 1 })
-test(and('ba').peek('abc', 0), {i:0, j:0, err: 1 })
-test(not('ba').peek('abc', 0), {i:0, j:0, err: 0})
-test(all('a', and('c')).peek('abc', 0), {i:0, err: 1})//
-test(all('a', and('b')).peek('abc', 0), {i:0, err: 0})
-test(all('a', not('c')).peek('abc', 0), {i:0, err: 0})
-test(all('a', not('b')).peek('abc', 0), {i:0, err: 1})
+test(and('ab').peek('abc', 0), { i:0, j:0, err: false})
+test(not('ab').peek('abc', 0), { i:0, j:0, err: true })
+test(and('ba').peek('abc', 0), {i:0, j:0, err: true })
+test(not('ba').peek('abc', 0), {i:0, j:0, err: false})
+test(all('a', and('c')).peek('abc', 0), {i:0, err: true})//
+test(all('a', and('b')).peek('abc', 0), {i:0, err: false})
+test(all('a', not('c')).peek('abc', 0), {i:0, err: false})
+test(all('a', not('b')).peek('abc', 0), {i:0, err: true})

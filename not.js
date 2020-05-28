@@ -12,8 +12,8 @@ Not.prototype = {
 	set: set,
 	peek: function(text, spot) {
 		var next = peek.call(this, text, spot),
-				tree = new Tree(text, this, spot, spot, 0)
-		if (next.err === 0) tree.err = 1
+				tree = new Tree(text, this, spot, spot)
+		if (!next.err) tree.err = true
 		return tree
 	},
 	scan: scan,

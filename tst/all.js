@@ -6,10 +6,10 @@ function test(res, ref) {
 }
 
 // all pass
-test(all('abc').peek('abc', 0), {i:0, j: 3, err: 0})
-test(all('bc').peek('abc', 1), {i:1, j: 3, err: 0})
-test(all('ab', /c/).scan('abc'), {i:0, j: 3, err: 0})
-test(all('a', all('b', all('c'))).scan('abc'), {i:0, j: 3, err: 0})
+test(all('abc').peek('abc', 0), {i:0, j: 3, err: false})
+test(all('bc').peek('abc', 1), {i:1, j: 3, err: false})
+test(all('ab', /c/).scan('abc'), {i:0, j: 3, err: false})
+test(all('a', all('b', all('c'))).scan('abc'), {i:0, j: 3, err: false})
 var _ = / */,
 		spaced = all('a', _, 'b', _, 'c')
 t('===', spaced.peek('abc', 0).j, 3)
@@ -18,13 +18,13 @@ t('===', spaced.peek('a  bc', 0).j, 5)
 t('===', spaced.peek('a  b c', 0).j, 6)
 
 // all fail
-test(all('abc').peek('abc', 1), {i:1, j:2, err: 1})
-test(all('a', 'c').peek('abc', 0), {i:0, j:2, err: 1})
+test(all('abc').peek('abc', 1), {i:1, j:2, err: true})
+test(all('a', 'c').peek('abc', 0), {i:0, j:2, err: true})
 
 var rule = all('a', all('b', all('C'))),
 		pack = rule.peek('abc', 0)
-test(pack, {i:0, j:3, err: 1})
+test(pack, {i:0, j:3, err: true})
 
 // all scan
-test(all('abc').peek('abc', 0), {i:0, j: 3, err: 0})
-test(all('abc').scan('abc'), {i:0, j: 3, err: 0})
+test(all('abc').peek('abc', 0), {i:0, j: 3, err: false})
+test(all('abc').scan('abc'), {i:0, j: 3, err: false})

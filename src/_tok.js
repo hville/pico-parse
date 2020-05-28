@@ -12,37 +12,40 @@ Tok.prototype = {
 	scan: function(text) {
 		var res = this.peek(text, 0)
 		//complete the result with a failed remaining portion
-		if (res.j !== text.length) res.add(new Tree(text, this, res.j, text.length, 1))
+		if (res.j !== text.length) res.add(new Tree(text, this, res.j, text.length, true))
 		return res
 	},
-	spy: function(spy) {
+	spy: function(ante, post) {
 		var peek = this.peek
 		this.peek = function(src, pos) {
-			return spy.call(this, peek.call(this, src, pos))
+			if (ante) ante.call(this, src, pos)
+			var res = peek.call(this, src, pos)
+			if (post) post.call(this, src, pos, res)
+			return res
 		}
 		return this
 	}
 }
 
 function textAt(src, pos) {
-	if (pos >= src.length) new Tree(src, this, pos, pos, 1)
+	if (pos >= src.length) new Tree(src, this, pos, pos, true)
 	var ref = this.term,
 			i = 0,
 			j = pos
-	while (i<ref.length) if (ref[i++] !== src[j++]) return new Tree(src, this, pos, Math.min(j, src.length), 1)
-	return new Tree(src, this, pos, j, 0)
+	while (i<ref.length) if (ref[i++] !== src[j++]) return new Tree(src, this, pos, Math.min(j, src.length), true)
+	return new Tree(src, this, pos, j)
 }
 function stickyAt(src, pos) {
-	if (pos >= src.length) new Tree(src, this, pos, pos, 1)
+	if (pos >= src.length) new Tree(src, this, pos, pos, true)
 	this.term.lastIndex = pos
 	var res = this.term.test(src)
-	return res ? new Tree(src, this, pos, this.term.lastIndex, 0)
-		: new Tree(src, this, pos, pos === src.length ? pos : pos+1, 1)
+	return res ? new Tree(src, this, pos, this.term.lastIndex)
+		: new Tree(src, this, pos, pos === src.length ? pos : pos+1, true)
 }
 function globalAt(src, pos) {
-	if (pos >= src.length) new Tree(src, this, pos, pos, 1)
+	if (pos >= src.length) new Tree(src, this, pos, pos, true)
 	this.term.lastIndex = pos
 	var res = this.term.exec(src)
-	return (res && res.index === pos) ? new Tree(src, this, pos, pos+res[0].length, 0)
-		: new Tree(src, this, pos, pos === src.length ? pos : pos+1, 1)
+	return (res && res.index === pos) ? new Tree(src, this, pos, pos+res[0].length)
+		: new Tree(src, this, pos, pos === src.length ? pos : pos+1, true)
 }

@@ -24,10 +24,10 @@ Tree {
   j: 6,
   err: false,
   set: [
-    Leaf { i: 0, txt: '11', j: 2, err: false },
-    Leaf { i: 2, txt: ' ', j: 3, err: false },
-    Leaf { i: 3, txt: '+', j: 4, err: false },
-    Leaf { i: 4, txt: '22', j: 6, err: false }
+    Tree { i: 0', j: 2, err: false },
+    Tree { i: 2, j: 3, err: false },
+    Tree { i: 3, j: 4, err: false },
+    Tree { i: 4', j: 6, err: false }
   ],
   id: 'expression'
 }
@@ -52,19 +52,19 @@ Rules are created with the following factories
 ### Rule
 
 * `.set(factoryArguments) : this` for recursive rules, allow to define a rule after it is created
-* `.spy( Tree|Leaf => Tree|Leaf ) : this` results of this rule are pre-processed with the given callback
-* `.peek(string [, index=0]) : Tree|Leaf` Used internally to parse a string at a given position
-* `.scan(string) : Tree|Leaf` parses the complete string
+* `.spy( function(string, integer):void, function(string, integer, Tree):void) : this` callbacks to be applied before and after applying the rule
+* `.peek(string [, index=0]) : Tree` Used internally to parse a string at a given position
+* `.scan(string) : Tree` parses the complete string
 * `.box() : this` allows left-recursive rules by 'boxing' the recursive calls(fails if no recursion)
 
 ### Tree
 
-* `.i : number` start position of the tree (same as the first contained leaf)
+* `.i : number` start position of the tree (same as the first contained tree)
 * `.j : number` start position of the next token after the tree in the input string
-* `.cuts : Array<Tree|Leaf>` the sub trees and leafs
+* `.cuts : Array<Tree>` the sub trees
 * `.err : boolean` if the result is an error
 * `.fuse([transforms:Object]) : string` returns the transformed tree text after transforming the leaves
-* `.fold( (target:any, item: Pack|Leaf) => any, target:any) : any` fold/reduce to parse tree
+* `.fold( (target:any, item: Pack) => any, target:any) : any` fold/reduce to parse tree
 
 ## License
 

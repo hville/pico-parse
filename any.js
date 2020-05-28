@@ -10,12 +10,10 @@ Any.prototype = {
 	constructor: Any,
 	set: set,
 	peek: function(src, pos) {
-		var ops = this.rules, //TODO no-rules case
-				min
+		var ops = this.rules //TODO no-rules case
 		for (var i=0; i<ops.length; ++i) {
 			var itm = ops[i].peek(src, pos)
 			if (!itm.err) break
-			if (!min || min.err > itm.err) min = itm
 		}
 		return itm
 	},

@@ -14,7 +14,7 @@ Box.prototype = {
 	},
 	peek: function(src, pos) {
 		if (this.last) return this.last //TODO this.last.i===index            //for the repeat calls in the loop below
-		var next = this.last = new Tree(src, this, pos, pos, 1) //first pass fails
+		var next = this.last = new Tree(src, this, pos, pos, true) //first pass fails
 		while ((next = this.rule.peek(src, pos)).j > this.last.j) this.last = next
 		next = this.last
 		this.last = null

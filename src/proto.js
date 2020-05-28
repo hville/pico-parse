@@ -12,13 +12,10 @@ export function set() {
 }
 
 export function peek(src, pos) {
-	var ops = this.rules,
-			tree
-	if (ops.length === 1) tree = ops[0].peek(src, pos)
-	else {
-		tree = new Tree(src, this, pos, pos, 0)
-		for (var i=0; i<ops.length; ++i) tree.add(ops[i].peek(src, tree.j))
-	}
+	var ops = this.rules
+	if (ops.length === 1) return ops[0].peek(src, pos)
+	var tree = new Tree(src, this, pos, pos)
+	for (var i=0; i<ops.length; ++i) if (tree.add(ops[i].peek(src, tree.j)).err) break
 	return tree
 }
 
