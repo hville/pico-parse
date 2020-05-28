@@ -11,6 +11,11 @@ export function set() {
 	return this
 }
 
+/* TODO future
+	peek(tree, pos)
+	if (tree.rule !== this || !tree.cuts.length) normal
+	else tree.cuts.forEach(leaf => )
+*/
 export function peek(src, pos) {
 	var ops = this.rules
 	if (ops.length === 1) return ops[0].peek(src, pos)

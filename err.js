@@ -11,6 +11,6 @@ Err.prototype.scan = scan
 Err.prototype.spy = spy
 Err.prototype.peek = function(text, pos) {
 	var res = peek.call(this, text, pos)
-	res.err = true
+	res.err = true //TODO if an error is returned, the parsing still stops how useful is that?
 	return res
 }
