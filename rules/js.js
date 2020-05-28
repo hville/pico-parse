@@ -2,8 +2,8 @@
 export const ws1 = /[ \t\v\f\x20\xA0]+/
 export const ws0 = /[ \t\v\f\x20\xA0]*/
 
-export const nl1 = /[ \t\v\f\x20\xA0\n\r\u2028\u2029]*/
-export const nl0 = /[ \t\v\f\x20\xA0]*[\n\r\u2028\u2029]+[ \t\v\f\x20\xA0\n\r\u2028\u2029]*/
+export const nl1 = /[ \t\v\f\x20\xA0]*[\n\r\u2028\u2029]+[ \t\v\f\x20\xA0\n\r\u2028\u2029]*/
+export const nl0 = /[ \t\v\f\x20\xA0\n\r\u2028\u2029]*/
 
 export const ci = /\/\/[^\n\r\u2028\u2029]*/
 export const cm = /\/\*[^]*?\*\//
