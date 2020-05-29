@@ -1,8 +1,8 @@
-import {set, spy, scan} from './src/proto.js'
+import {Rule, set} from './src/_rule.js'
 import {Tree} from './src/_tree.js'
 
 export default function() {
-	return Any.prototype.set.apply(new Any, arguments)
+	return set.apply(new Any, arguments)
 }
 function Any() {
 	this.rules = []
@@ -34,10 +34,9 @@ function wrapPeek(src, pos) {
 	}
 	return this.cache(src, pos)
 }
-Any.prototype = {
-	constructor: Any,
+Any.prototype = new Rule(Any, {
 	set: function() {
-		var rule = set.apply(this, arguments),
+		var rule = Rule.prototype.set.apply(this, arguments),
 				todo = rule.rules.slice()
 		while (todo.length) {
 			var item = todo.pop()
@@ -49,10 +48,8 @@ Any.prototype = {
 		}
 		rule.peek = normPeek
 		return rule
-	},
-	scan: scan,
-	spy: spy
-}
+	}
+})
 
 function flatpeek(src, pos) {
 	var ops = this.rules,

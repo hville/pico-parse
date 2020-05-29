@@ -1,5 +1,5 @@
 import {Tree} from './src/_tree.js'
-import {set, peek, spy, scan} from './src/proto.js'
+import {Rule, set, peek} from './src/_rule.js'
 
 export default function() {
 	return set.apply(new Few, arguments)
@@ -7,9 +7,7 @@ export default function() {
 function Few() {
 	this.rules = []
 }
-Few.prototype = {
-	constructor: Few,
-	set: set,
+Few.prototype = new Rule(Few, {
 	peek: function(text, pos) {
 		var tree = new Tree(text, this, pos, pos)
 		for (var i=0; i<text.length; ++i) {
@@ -22,7 +20,5 @@ Few.prototype = {
 			++tree.j
 		}
 		return tree
-	},
-	scan: scan,
-	spy: spy
-}
+	}
+})

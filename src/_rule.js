@@ -1,7 +1,12 @@
 import {Tree} from './_tree.js'
 import {Tok} from './_tok.js'
 
-export function set() {
+export function Rule(constructor, stuff) {
+	this.constructor = constructor
+	this.peek = peek // most called function by far... closer up the prototype chain
+	if (stuff) Object.assign(this, stuff)
+}
+export const set = Rule.prototype.set = function() {
 	var def = this.rules,
 			len = arguments.length
 	for (var i=0; i<len; ++i) {
@@ -10,12 +15,6 @@ export function set() {
 	}
 	return this
 }
-
-/* TODO future
-	peek(tree, pos)
-	if (tree.rule !== this || !tree.cuts.length) normal
-	else tree.cuts.forEach(leaf => )
-*/
 export function peek(src, pos) {
 	var ops = this.rules
 	if (ops.length === 1) return ops[0].peek(src, pos)
@@ -23,5 +22,9 @@ export function peek(src, pos) {
 	for (var i=0; i<ops.length; ++i) if (tree.add(ops[i].peek(src, tree.j)).err) break
 	return tree
 }
-
-export const {scan, spy} = Tok.prototype
+/* TODO future peek(tree, pos)
+	if (tree.rule !== this || !tree.cuts.length) normal
+	else tree.cuts.forEach(leaf => )
+*/
+Rule.prototype.scan = Tok.prototype.scan
+Rule.prototype.spy = Tok.prototype.spy

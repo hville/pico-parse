@@ -1,5 +1,5 @@
 import {Tree} from './src/_tree.js'
-import {set, peek, spy, scan} from './src/proto.js'
+import {Rule, set, peek} from './src/_rule.js'
 
 export default function() {
 	return set.apply(new And, arguments)
@@ -7,15 +7,11 @@ export default function() {
 function And() {
 	this.rules = []
 }
-And.prototype = {
-	constructor: And,
-	set: set,
+And.prototype = new Rule(And, {
 	peek: function(text, spot) {
 		var next = peek.call(this, text, spot),
 				tree = new Tree(text, this, spot, spot)
 		if (next.err) tree.err = true
 		return tree
-	},
-	scan: scan,
-	spy: spy
-}
+	}
+})
