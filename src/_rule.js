@@ -1,5 +1,4 @@
 import {Tree} from './_tree.js'
-import {Tok} from './_tok.js'
 
 export function Rule(constructor, stuff) {
 	this.constructor = constructor
@@ -11,7 +10,7 @@ export const set = Rule.prototype.set = function() {
 			len = arguments.length
 	for (var i=0; i<len; ++i) {
 		var arg = arguments[i]
-		def.push(arg.peek ? arg : new Tok(arg))
+		def.push(arg.peek ? arg : new Rule.Tok(arg)) //assigned in Tok down the import chain
 	}
 	return this
 }
@@ -26,5 +25,19 @@ export function peek(src, pos) {
 	if (tree.rule !== this || !tree.cuts.length) normal
 	else tree.cuts.forEach(leaf => )
 */
-Rule.prototype.scan = Tok.prototype.scan
-Rule.prototype.spy = Tok.prototype.spy
+Rule.prototype.scan = function(text) {
+	var res = this.peek(text, 0)
+	//complete the result with a failed remaining portion
+	if (res.j !== text.length) res.add(new Tree(text, this, res.j, text.length, true))
+	return res
+}
+Rule.prototype.spy = function(ante, post) {
+	var oldPeek = this.peek
+	this.peek = function(src, pos) {
+		if (ante) ante.call(this, src, pos)
+		var res = oldPeek.call(this, src, pos)
+		if (post) post.call(this, src, pos, res)
+		return res
+	}
+	return this
+}

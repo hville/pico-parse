@@ -1,4 +1,5 @@
 import {Tree} from './_tree.js'
+import {Rule} from './_rule.js'
 
 export function Tok(term) {
 	var isRegX = term.source,
@@ -7,25 +8,8 @@ export function Tok(term) {
 	this.peek = isRegY ? stickyAt : isRegX ? globalAt : textAt
 	if (typeof this.peek !== 'function') throw Error
 }
-Tok.prototype = {
-	constructor: Tok,
-	scan: function(text) {
-		var res = this.peek(text, 0)
-		//complete the result with a failed remaining portion
-		if (res.j !== text.length) res.add(new Tree(text, this, res.j, text.length, true))
-		return res
-	},
-	spy: function(ante, post) {
-		var peek = this.peek
-		this.peek = function(src, pos) {
-			if (ante) ante.call(this, src, pos)
-			var res = peek.call(this, src, pos)
-			if (post) post.call(this, src, pos, res)
-			return res
-		}
-		return this
-	}
-}
+Rule.Tok = Tok
+Tok.prototype = new Rule(Tok)
 
 function textAt(src, pos) {
 	if (pos >= src.length) new Tree(src, this, pos, pos, true)
