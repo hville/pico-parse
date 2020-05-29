@@ -1,32 +1,30 @@
-var ct = require('cotest'),
-		{any, all, rep, opt, few, run, and, not} = require('..'),
-		Box = require('../src/_box')
+import t from 'assert-op'
+import any from '../any.js'
+import all from '../all.js'
 
-function test(t, res, ref) {
-	for (var i=0, ks=Object.keys(ref); i<ks.length; ++i) t('===', res[ks[i]], ref[ks[i]])
+function test(res, ref) {
+	if (ref) for (var i=0, ks=Object.keys(ref); i<ks.length; ++i) t('===', res[ks[i]], ref[ks[i]], ks[i])
+	if (!ref || (ref.err === undefined && ref.j === undefined)) {
+		t('===', res.j, res.text.length, 'j')
+		t('!', res.err, 'err')
+	}
 }
 
-ct('E<-E1|1', t => {
-	var E = any(),
-			B = new Box(E),
-			b = any().box()
-	test(t, B.set(all(B,'1'),'1').peek('111'), { i:0, j:3, err: false })
-	test(t, b.set(all(b,'1'),'1').peek('111'), { i:0, j:3, err: false })
-})
-ct('E<-E1|E2|1|2', t => {
-	var B = new Box(any()),
-			b = any().box()
-	test(t, B.set(all(B,'1'), all(B,'2'),/[12]/).peek('121'), { i:0, j:3, err: false })
-	test(t, B.set(all(B,'1'), all(B,'2'),/[12]/).peek('212'), { i:0, j:3, err: false })
+// E<-E1|1
+var A = any()
+A.set(all(A,'1'),'1')
+test(A.scan('111'))//
 
-	test(t, b.set(all(b,'1'), all(b,'2'),/[12]/).peek('212'), { i:0, j:3, err: false })
-	test(t, b.set(all(b,'1'), all(b,'2'),/[12]/).peek('212'), { i:0, j:3, err: false })
-})
-ct('E<- 1E1|1', t => {
-	var E = any(),
-			B = new Box(E),
-			b = any().box()
-	test(t, B.set(all('1', B,'1'),'1').peek('111'), { i:0, j:3, err: false })
-	test(t, b.set(all('1', b,'1'),'1').peek('111'), { i:0, j:3, err: false })
-	test(t, E.set(all('1', E,'1'),'1').peek('111'), { i:0, j:3, err: false })
-})
+// E<-E1|E2|1|2
+var B = any()
+test(B.set(all(B,'1'), all(B,'2'),/[12]/).scan('121'))
+test(B.set(all(B,'1'), all(B,'2'),/[12]/).scan('212'))
+
+// E<- 1E1|1
+var C = any()
+test(C.set(all('1', C,'1'),'1').scan('111'))
+
+// E<-E1|1|E1
+var D = any()
+D.set(all(D,'1'),'1', all(D,'1'))
+test(D.scan('1111'))

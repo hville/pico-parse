@@ -68,3 +68,4 @@ test(code.scan(`
 x = y "a"
 z = (x | /a/) [b]
 `))
+test(gram.scan('x = (((a) b) c) d (e (f (g)))'))
