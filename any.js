@@ -9,11 +9,12 @@ function Any() {
 	var oldTxt = '',
 			memory = null
 	this.cache = function(code, spot, tree) {
+		//TODO normal|unrap, only the last value (highest i) is needed
+		//TODO for wraped|leftRec past recall occurs
 		if (code !== oldTxt) {
 			oldTxt = code
 			memory = {} // all new cache
 		}
-		if (tree && memory && memory[spot] && tree.j <= memory[spot].j) throw Error
 		return tree ? (memory[spot] = tree) : memory[spot]
 	}
 	this.peek = normPeek
@@ -21,14 +22,14 @@ function Any() {
 function normPeek(code, spot) {
 	var old = this.cache(code, spot)
 	if (old) return old
-	return this.cache(code, spot, flatpeek(this.rules, code, spot))
+	return this.cache(code, spot, flatpeek.call(this, code, spot))
 }
 function wrapPeek(src, pos) {
 	var old = this.cache(src, pos)
 	if (old) return old
 	this.cache(src, pos, new Tree(src, this, pos, pos, true)) //first pass fails
 	var next
-	while ((next = flatpeek(this.rules, src, pos)).j > this.cache(src, pos).j) {
+	while ((next = flatpeek.call(this, src, pos)).j > this.cache(src, pos).j) {
 		this.cache(src, pos, next)
 	}
 	return this.cache(src, pos)
@@ -53,12 +54,14 @@ Any.prototype = {
 	spy: spy
 }
 
-function flatpeek(ops, src, pos) {
+function flatpeek(src, pos) {
+	var ops = this.rules,
+			itm
 	for (var i=0; i<ops.length; ++i) {
-		var itm = ops[i].peek(src, pos)
+		itm = ops[i].peek(src, pos)
 		if (!itm.err) break
 	}
-	return itm //TODO no-rules case itm===undefined
+	return itm || new Tree(src, this, pos, pos)
 }
 /* TODO future
 ? tree reuse (premature optimisation)
@@ -69,4 +72,5 @@ function flatpeek(ops, src, pos) {
 		+ if token unchanged, old tree is still good
 		~ if token changed (pass), replace token, shift all i,j
 		~ if token fails, retry parent, retry parent, retry parent ... all the way to the root
+? this.last; this.text instead of cache
 */
