@@ -1,4 +1,4 @@
-import t from 'assert-op'
+import test from './tester.js'
 import tok from '../tok.js'
 
 var simNoSticky = Object.defineProperty(/abc/, 'sticky', {value: null}),
@@ -8,10 +8,6 @@ var simNoSticky = Object.defineProperty(/abc/, 'sticky', {value: null}),
 		//voidS = tok(/.{0,0}/),
 		voidG = Object.defineProperty(/.{0,0}/, 'sticky', {value: null})
 
-function test(res, ref) {
-	for (var i=0, ks=Object.keys(ref); i<ks.length; ++i) t('===', res[ks[i]], ref[ks[i]], ks[i])
-}
-
 // init sticky/global flags
 test(simNoSticky, {sticky:null})
 test(abcG.term, {sticky:false, global:true})
@@ -20,12 +16,12 @@ test(/abc/, {sticky:false, global:false})
 test(abcS.term, {sticky:true, global:false})
 
 // name
-test(tok('abc').peek('abc', 0), {i:0, j: 3, err: false})
-test(tok(/abc/).peek('abc', 0), {i:0, j: 3, err: false})
-test(tok(simNoSticky).peek('abc', 0), {i:0, j: 3, err: false})
+test(tok('abc').peek('abc', 0))
+test(tok(/abc/).peek('abc', 0))
+test(tok(simNoSticky).peek('abc', 0))
 
 // tok string pass
-test(abcT.scan('abc'), {i:0, j: 3, err: false})
+test(abcT.scan('abc'))
 test(abcT.peek('aabc', 1), {i:1, j: 4, err: false})
 test(tok('').peek('aabc', 1), {i:1, j: 1, err: false})
 // tok string fail

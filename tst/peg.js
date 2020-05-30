@@ -1,4 +1,4 @@
-import t from 'assert-op'
+import test from './tester.js'
 import all from '../all.js'
 import any from '../any.js'
 import run from '../run.js'
@@ -13,14 +13,6 @@ import {nl0} from '../rules/js.js'
 import {nl1} from '../rules/js.js'
 import {ws0} from '../rules/js.js'
 import {ws1} from '../rules/js.js'
-
-function test(res, ref) {
-	if (ref) for (var i=0, ks=Object.keys(ref); i<ks.length; ++i) t('===', res[ks[i]], ref[ks[i]], ks[i])
-	if (!ref || (ref.err === undefined && ref.j === undefined)) {
-		t('===', res.j, res.text.length, 'j')
-		t('!', res.err, 'err')
-	}
-}
 
 const name = tok(id),
 			text = any(all('"', /(?:\\"|[^"])*/,'"'), all('\'', /(?:\\'|[^'])*/,'\'')),

@@ -1,14 +1,6 @@
-import t from 'assert-op'
+import test from './tester.js'
 import any from '../any.js'
 import all from '../all.js'
-
-function test(res, ref) {
-	if (ref) for (var i=0, ks=Object.keys(ref); i<ks.length; ++i) t('===', res[ks[i]], ref[ks[i]], ks[i])
-	if (!ref || (ref.err === undefined && ref.j === undefined)) {
-		t('===', res.j, res.text.length, 'j')
-		t('!', res.err, 'err')
-	}
-}
 
 // E<-E1|1
 var A = any()

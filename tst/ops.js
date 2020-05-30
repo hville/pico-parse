@@ -1,14 +1,10 @@
-import t from 'assert-op'
+import test from './tester.js'
 import all from '../all.js'
 import run from '../run.js'
 import few from '../few.js'
 import opt from '../opt.js'
 import and from '../and.js'
 import not from '../not.js'
-
-function test(res, ref) {
-	for (var i=0, ks=Object.keys(ref); i<ks.length; ++i) t('===', res[ks[i]], ref[ks[i]])
-}
 
 // rep pass
 test(run('ab').peek('x', 0), {i:0, j:0, err: false})
