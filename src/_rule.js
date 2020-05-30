@@ -41,3 +41,10 @@ Rule.prototype.spy = function(ante, post) {
 	}
 	return this
 }
+Rule.prototype.fix = function(acts) {
+	this._fix = acts
+	return this
+}
+
+import {Tok} from './_tok.js'
+Rule.Tok = Tok

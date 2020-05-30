@@ -8,7 +8,6 @@ export function Tok(term) {
 	this.peek = isRegY ? stickyAt : isRegX ? globalAt : textAt
 	if (typeof this.peek !== 'function') throw Error
 }
-Rule.Tok = Tok
 Tok.prototype = new Rule(Tok)
 
 function textAt(src, pos) {
