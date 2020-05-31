@@ -1,70 +1,63 @@
 export function Tree(text, rule, i, j, err) {
 	this.text = text
-	this.rule = rule
 	this.i = i
 	this.j = j
 	this.cuts = []
 	this.err = err || false
+	if (rule._kin) Object.assign(this, rule._kin)
+	if (rule._id) this.id = rule.id
 }
-Tree.prototype.add = function(itm) {
-	this.j = itm.j
-	this.cuts.push(itm)
-	if (itm.err) this.err = true
-	return this
-}
-Tree.prototype.toString = function() {
-	return this.cuts.length ? this.cuts.join('') : this.text.slice(this.i, this.j)
-}
-Tree.prototype.each = function(ante, post) {
-	//loop each children with a transformation on the way down and on the way up
-	var cuts = this.cuts,
-			i = 0
-	this.err = false
-	while(i<cuts.length) {
-		var itm = cuts[i],
-				fix = itm.rule._kin
-		if (ante && fix && fix[ante]) itm = cuts[i] = fix[ante](itm, i)
-		if (itm) {
-			fix = itm.rule._kin
-			itm.each(ante, post)
-			if (post && fix && fix[post]) itm = cuts[i] = fix[post](itm, i)
+Tree.prototype = {
+	constructor: Tree,
+	id: '',
+	add: function(itm) {
+		this.j = itm.j
+		this.cuts.push(itm)
+		if (itm.err) this.err = true
+		return this
+	},
+	item: function(idx) {
+		return idx < 0 ? this.cuts[this.cuts.length-idx] : this.cuts[idx]
+	},
+	toString: function() {
+		return this.cuts.length ? this.cuts.join('') : this.text.slice(this.i, this.j)
+	},
+	each: function(fcn, ctx) {
+		for (var i=0, arr=this.cuts; i<arr.length; ++i) fcn.call(ctx, arr[i], i, arr)
+		return this
+	},
+	foldl: function(fcn, res) {
+		for (var i=0, arr=this.cuts; i<arr.length; ++i) res = fcn(res, arr[i], i, arr)
+		return this
+	},
+	foldr: function(fcn, res) {
+		for (var arr=this.cuts, i=arr.length-1; i>=0; --i) res = fcn(res, arr[i], i, arr)
+		return this
+	},
+	fuse: function() {
+		var src = this.cuts,
+				tgt = []
+		for (var i=0; i<src.length; ++i) {
+			var kid = src[i]
+			// feed the kids first
+			kid.fuse()
+			if (!kid.id || kid.id === this.id)
+				// then eat the orphans and siblings
+				tgt.push(...kid.cuts)
+			else if (i && kid.id === src[i-1].id) {
+				// and match kids that have mutual afinities
+				src[i-1].cuts.push(...kid.cuts)
+				if (kid.err) src[i-1].err = true
+			}
+			else tgt.push(kid) // but leave the loners alone
 		}
-		if (!itm) cuts.splice(i,1)
-		else {
-			if (itm.err) this.err = true
-			++i
-		}
+		this.cuts = tgt
+		return this
+	},
+	walk: function(ante, post, val) {
+		//loop each children with a transformation on the way down and on the way up
+		val = ante(val, this, this.id)
+		for (var i=0,arr=this.cuts; i<arr.length; ++i) val = arr[i].walk(ante, post, val)
+		return post(val, this, this.id)
 	}
-	return this
-}
-Tree.prototype.fold = function(ante, post, result) {
-	//loop each children with a transformation on the way down and on the way up
-	for (var i=0, cuts = this.cuts; i<cuts.length; ++i) {
-		var fix = cuts[i].rule
-		if (ante && fix && fix[ante]) result = fix[ante](result, cuts[i], i)
-		result = cuts[i].fold(ante, post, result)
-		fix = cuts[i].rule
-		if (post && fix && fix[post]) result = fix[post](result, cuts[i], i)
-	}
-	return result
-}
-Tree.prototype.fuse = function() {
-	var src = this.cuts,
-			tgt = []
-	for (var i=0; i<src.length; ++i) {
-		var kid = src[i]
-		// feed the kids first
-		kid.fuse()
-		if (!kid.rule._kin || kid.rule._kin === this.rule._kin)
-			// then eat the orphans and siblings
-			tgt.push(...kid.cuts)
-		else if (i && kid.rule._kin === src[i-1].rule._kin) {
-			// and match kids that have mutual afinities
-			src[i-1].cuts.push(...kid.cuts)
-			if (kid.err) src[i-1].err = true
-		}
-		else tgt.push(kid) // but leave the loners alone
-	}
-	this.cuts = tgt
-	return this
 }

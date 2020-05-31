@@ -4,7 +4,7 @@ import t from 'assert-op'
 import all from '../all.js'
 
 var ab = all('a', 'b'),
-		cd = all('c', 'd').kin(),
+		cd = all('c', 'd').id('cd'),
 		ef = all('e', 'f'),
 		af = all(ab, cd, ef),
 		res = af.scan('abcdef')

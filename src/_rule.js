@@ -41,10 +41,13 @@ Rule.prototype.spy = function(ante, post) {
 	}
 	return this
 }
-Rule.prototype.kin = function(acts) {
-	this._kin = acts || {}
+Rule.prototype.id = function(id) {
+	this._id = id
 	return this
 }
-
+Rule.prototype.kin = function(kin) {
+	this._kin = kin
+	return this
+}
 import {Tok} from './_tok.js'
 Rule.Tok = Tok
