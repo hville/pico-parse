@@ -1,7 +1,7 @@
-import {Rule, set} from './src/_rule.js'
+import {Rule, add} from './src/_rule.js'
 
 export default function() {
-	return set.apply(new All, arguments)
+	return add.apply(new All, arguments)
 }
 function All() {
 	this.rules = []

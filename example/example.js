@@ -6,6 +6,6 @@ const _ = /[ ]*/,
 			value = any(),
 			addition = all('+', _, value),
 			expression = all(value, run( all(_, addition) ), _)
-value.set(integer, label, expression, all('(', _, value, _, ')'))
+value.add(integer, label, expression, all('(', _, value, _, ')'))
 console.log(expression.scan('11 +22'))
 

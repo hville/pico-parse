@@ -1,8 +1,8 @@
 import {Tree} from './src/_tree.js'
-import {Rule, peek, set} from './src/_rule.js'
+import {Rule, add, peek} from './src/_rule.js'
 
 export default function() {
-	return set.apply(new Not, arguments)
+	return add.apply(new Not, arguments)
 }
 function Not() {
 	this.rules = []

@@ -14,13 +14,17 @@ import {nl1} from '../rules/js.js'
 import {ws0} from '../rules/js.js'
 import {ws1} from '../rules/js.js'
 
+function toRule(res, itm, idx) {
+
+}
+
 const name = tok(id),
 			text = any(all('"', /(?:\\"|[^"])*/,'"'), all('\'', /(?:\\'|[^'])*/,'\'')),
 			char = all('[', /(?:\\]|[^\]])*/,']'),
 			rexp = all('/', /(?:\\\/|[^/])*/,'/'),
 			expr = any(),
 			rule = any(text, rexp, char, all('(', nl0, expr, nl0, ')'), name),
-			_all = all(rule, few(any(ws1, nl1), rule, not(nl0, '='))),
+			_all = all(rule, few(any(ws1, nl1), rule, not(nl0, '='))).kin(),
 			_any = all(rule, few(nl0, '|', nl0, rule, not(nl0, '='))),
 			_opt = all(rule, nl0, '?'),
 			_few = all(rule, nl0, '+'),
@@ -30,7 +34,7 @@ const name = tok(id),
 			equl = all(name, nl0, '=', nl0, expr),
 			gram = all(equl, run(nl1, equl)),
 			code = all(nl0, gram, nl0)
-expr.set(_and, _not, _opt, _few, _run, _all, _any, rule)
+expr.add(_and, _not, _opt, _few, _run, _all, _any, rule)
 
 test(text.peek('"xyz"', 0), {i:0, j:5, err: false})
 test(rexp.peek('/xyz/', 0), {i:0, j:5, err: false})

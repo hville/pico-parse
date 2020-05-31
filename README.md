@@ -16,14 +16,14 @@ const _ = /[ ]*/,
       value = any(),
       addition = all('+', _, value),
       expression = all(value, run( all(_, addition) ), _)
-value.set(integer, label, expression, all('(', _, value, _, ')'))
+value.add(integer, label, expression, all('(', _, value, _, ')'))
 console.log(expression.scan('11 +22'))
 /*
 Tree {
   i: 0,
   j: 6,
   err: false,
-  set: [
+  add: [
     Tree { i: 0', j: 2, err: false },
     Tree { i: 2, j: 3, err: false },
     Tree { i: 3, j: 4, err: false },
@@ -51,7 +51,7 @@ Rules are created with the following factories
 
 ### Rule
 
-* `.set(factoryArguments) : this` for recursive rules, allow to define a rule after it is created
+* `.add(factoryArguments) : this` for recursive rules, allow to define a rule after it is created
 * `.spy( function(string, integer):void, function(string, integer, Tree):void) : this` callbacks to be applied before and after applying the rule
 * `.peek(string [, index=0]) : Tree` Used internally to parse a string at a given position
 * `.scan(string) : Tree` parses the complete string

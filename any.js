@@ -1,8 +1,8 @@
-import {Rule, set} from './src/_rule.js'
+import {Rule, add} from './src/_rule.js'
 import {Tree} from './src/_tree.js'
 
 export default function() {
-	return set.apply(new Any, arguments)
+	return add.apply(new Any, arguments)
 }
 function Any() {
 	this.rules = []
@@ -35,8 +35,8 @@ function wrapPeek(src, pos) {
 	return this.cache(src, pos)
 }
 Any.prototype = new Rule(Any, {
-	set: function() {
-		var rule = Rule.prototype.set.apply(this, arguments),
+	add: function() {
+		var rule = add.apply(this, arguments),
 				todo = rule.rules.slice()
 		while (todo.length) {
 			var item = todo.pop()

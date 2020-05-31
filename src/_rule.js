@@ -5,7 +5,7 @@ export function Rule(constructor, stuff) {
 	this.peek = peek // most called function by far... closer up the prototype chain
 	if (stuff) Object.assign(this, stuff)
 }
-export const set = Rule.prototype.set = function() {
+export const add = Rule.prototype.add = function() {
 	var def = this.rules,
 			len = arguments.length
 	for (var i=0; i<len; ++i) {
