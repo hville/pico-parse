@@ -41,8 +41,8 @@ Rule.prototype.spy = function(ante, post) {
 	}
 	return this
 }
-Rule.prototype.fix = function(acts) {
-	this._fix = acts
+Rule.prototype.kin = function(acts) {
+	this._kin = acts || {}
 	return this
 }
 
