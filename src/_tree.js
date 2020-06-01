@@ -12,8 +12,14 @@ Tree.prototype = {
 	id: '',
 	add: function(itm) {
 		this.j = itm.j
-		this.cuts.push(itm)
-		if (itm.err) this.err = true
+		if (itm.err) {
+			this.err = true
+			this.cuts.push(itm)
+		} else if (itm.id && itm.id !== this.id) {
+			var kin = this.item(-1)
+			if (kin && itm.id === kin.id) kin.add(itm)
+			else this.cuts.push(itm)
+		} else this.cuts.push.apply(this.cuts, itm.cuts)
 		return this
 	},
 	item: function(idx) {

@@ -16,7 +16,7 @@ export const add = Rule.prototype.add = function() {
 }
 export function peek(src, pos) {
 	var ops = this.rules
-	if (ops.length === 1) return ops[0].peek(src, pos)
+	if (ops.length === 1 && !this._id && !this._kin) return ops[0].peek(src, pos)
 	var tree = new Tree(src, this, pos, pos)
 	for (var i=0; i<ops.length; ++i) if (tree.add(ops[i].peek(src, tree.j)).err) break
 	return tree
