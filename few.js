@@ -8,16 +8,13 @@ function Few() {
 	this.rules = []
 }
 Few.prototype = new Rule(Few, {
-	peek: function(text, pos) {
-		var tree = new Tree(text, this, pos, pos)
-		for (var i=0; i<text.length; ++i) {
-			var res = peek.call(this, text, tree.j)
-			if (res.err) break
+	peek: function(text, spot) {
+		var tree = new Tree(text, this, spot, spot),
+				res = peek.call(this, text, tree.j)
+		if (!tree.add(res).err) while(tree.j < text.length) {
+			res = peek.call(this, text, tree.j)
+			if (res.err) return tree
 			tree.add(res)
-		}
-		if (tree.cuts.length === 0) {
-			tree.err = true
-			++tree.j
 		}
 		return tree
 	}
