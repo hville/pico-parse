@@ -27,18 +27,31 @@ Tree.prototype = {
 		return idx < 0 ? this.cuts[this.cuts.length-idx] : this.cuts[idx]
 	},
 	toString: function() {
-		return this.cuts.length ? this.cuts.join('') : this.text.slice(this.i, this.j)
+		if (!this.cuts.length) return this.text.slice(this.i, this.j)
+		var j = this.i,
+				cuts = this.cuts,
+				res = ''
+		for (var i=0; i<cuts.length; ++i) {
+			if (cuts[i].i > j) res += this.text.slice(j, cuts[i].i)
+			res += cuts[i].toString()
+			j = cuts[i].j
+		}
+		if (this.j > j) res += this.text.slice(j, this.j)
+		return res
 	},
 	each: function(fcn, ctx) {
 		for (var i=0, arr=this.cuts; i<arr.length; ++i) fcn.call(ctx, arr[i], i, arr)
 		return this
 	},
+	map: function(fcn, ctx) {
+		return this.cuts.map(fcn, ctx||this)
+	},
 	foldl: function(fcn, res) {
 		for (var i=0, arr=this.cuts; i<arr.length; ++i) res = fcn(res, arr[i], i, arr)
-		return this
+		return res
 	},
 	foldr: function(fcn, res) {
 		for (var arr=this.cuts, i=arr.length-1; i>=0; --i) res = fcn(res, arr[i], i, arr)
-		return this
+		return res
 	}
 }
