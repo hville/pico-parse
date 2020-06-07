@@ -1,9 +1,9 @@
 import {Rule, add} from './src/_rule.js'
 
 export default function() {
-	return add.apply(new All, arguments)
+	return add.apply(new Seq, arguments)
 }
-function All() {
+function Seq() {
 	this.rules = []
 }
-All.prototype = new Rule(All)
+Seq.prototype = new Rule(Seq)

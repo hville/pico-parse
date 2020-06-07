@@ -50,9 +50,3 @@ var subT = abcT,
 		subS = abcS
 test(subT.scan('abc'), {i:0, j: 3, err: false})
 test(subS.scan('abc'), {i:0, j: 3, err: false})
-// spy
-function cb(str, pos, res) {
-	res.txt = (''+res).toUpperCase()
-	res.id = this.constructor.name
-}
-test(tok('abc').spy(null, cb).peek('abc', 0), {id:'Tok', i:0, txt:'ABC', j: 3, err: false})

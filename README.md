@@ -8,15 +8,15 @@
 ## Example
 
 ```javascript
-const {any, all, run} = require('pico-parse')
+const {any, seq, run} = require('pico-parse')
 
 const _ = /[ ]*/,
       integer = /[0-9]+/,
       label = /[a-zA-Z$_][a-zA-Z$_0-9]+/,
       value = any(),
-      addition = all('+', _, value),
-      expression = all(value, run( all(_, addition) ), _)
-value.add(integer, label, expression, all('(', _, value, _, ')'))
+      addition = seq('+', _, value),
+      expression = seq(value, run( seq(_, addition) ), _)
+value.add(integer, label, expression, seq('(', _, value, _, ')'))
 console.log(expression.scan('11 +22'))
 /*
 Tree {
@@ -42,7 +42,7 @@ Rules are created with the following factories
 
 * `tok(Rule|String|RegExp) : Rule` converts a string, regular expression or other terminal to a terminal rule
 * `any(...Rule|String|RegExp) : Rule` finds the first passing rule (/ operator)
-* `all(...Rule|String|RegExp) : Rule` chains all rules, all must pass
+* `seq(...Rule|String|RegExp) : Rule` chains all rules, all must pass
 * `few(...Rule|String|RegExp) : Rule` repeat all rules one or more times (+ operator)
 * `run(...Rule|String|RegExp) : Rule` repeat rules any times (* operator)
 * `opt(...Rule|String|RegExp) : Rule` optional rule (? operator)
@@ -52,7 +52,6 @@ Rules are created with the following factories
 ### Rule
 
 * `.add(factoryArguments) : this` for recursive rules, allow to define a rule after it is created
-* `.spy( function(string, integer):void, function(string, integer, Tree):void) : this` callbacks to be applied before and after applying the rule
 * `.peek(string [, index=0]) : Tree` Used internally to parse a string at a given position
 * `.scan(string) : Tree` parses the complete string
 * `.box() : this` allows left-recursive rules by 'boxing' the recursive calls(fails if no recursion)

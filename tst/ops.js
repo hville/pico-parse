@@ -1,5 +1,5 @@
 import test from './tester.js'
-import all from '../all.js'
+import seq from '../seq.js'
 import run from '../run.js'
 import few from '../few.js'
 import opt from '../opt.js'
@@ -27,18 +27,12 @@ test(opt('a', 'b').peek('ab', 0), {i:0, j:2, err: false})
 test(opt('ab').peek('abababX', 0), {i:0, j:2, err: false})
 test(opt('a', 'b').peek('abababX', 0), {i:0, j:2, err: false})
 
-//TODO
-// fuse
-//t('===', all('ab', 'cd').peek('ab').fuse(), 'ab')
-//t('===', all('ab', /[^]*/).peek('abxy').fuse({xxx: txt => txt.toUpperCase() }), 'ABXY')
-//t('===', all('ab', all(/[^]*/)).peek('abxy').fuse({ not: txt=>txt.replace('y', 'z'), all: txt => txt.toUpperCase()}), 'ABXZ')
-
 // and not
 test(and('ab').peek('abc', 0), { i:0, j:0, err: false})
 test(not('ab').peek('abc', 0), { i:0, j:0, err: true })
 test(and('ba').peek('abc', 0), {i:0, j:0, err: true })
 test(not('ba').peek('abc', 0), {i:0, j:0, err: false})
-test(all('a', and('c')).peek('abc', 0), {i:0, err: true})//
-test(all('a', and('b')).peek('abc', 0), {i:0, err: false})
-test(all('a', not('c')).peek('abc', 0), {i:0, err: false})
-test(all('a', not('b')).peek('abc', 0), {i:0, err: true})
+test(seq('a', and('c')).peek('abc', 0), {i:0, err: true})//
+test(seq('a', and('b')).peek('abc', 0), {i:0, err: false})
+test(seq('a', not('c')).peek('abc', 0), {i:0, err: false})
+test(seq('a', not('b')).peek('abc', 0), {i:0, err: true})

@@ -1,6 +1,6 @@
 export {tok} from './tok.js'
 export {any} from './any.js'
-export {all} from './all.js'
+export {seq} from './seq.js'
 export {opt} from './opt.js'
 export {few} from './few.js'
 export {run} from './run.js'

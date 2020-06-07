@@ -1,22 +1,22 @@
 import test from './tester.js'
 import any from '../any.js'
-import all from '../all.js'
+import seq from '../seq.js'
 
 // E<-E1|1
 var A = any()
-A.add(all(A,'1'),'1')
+A.add(seq(A,'1'),'1')
 test(A.scan('111'))//
 
 // E<-E1|E2|1|2
 var B = any()
-test(B.add(all(B,'1'), all(B,'2'),/[12]/).scan('121'))
-test(B.add(all(B,'1'), all(B,'2'),/[12]/).scan('212'))
+test(B.add(seq(B,'1'), seq(B,'2'),/[12]/).scan('121'))
+test(B.add(seq(B,'1'), seq(B,'2'),/[12]/).scan('212'))
 
 // E<- 1E1|1
 var C = any()
-test(C.add(all('1', C,'1'),'1').scan('111'))
+test(C.add(seq('1', C,'1'),'1').scan('111'))
 
 // E<-E1|1|E1
 var D = any()
-D.add(all(D,'1'),'1', all(D,'1'))
+D.add(seq(D,'1'),'1', seq(D,'1'))
 test(D.scan('1111'))

@@ -1,9 +1,9 @@
-export function Tree(code, rule, i, j, err) {
+export function Tree(input, rule, i, j, err) {
 	this.i = i
 	this.j = j
 	this.cuts = []
 	this.err = err || false
-	Object.defineProperty(this, 'code', {value: code})
+	Object.defineProperty(this, 'input', {value: input})
 	if (rule._kin) Object.assign(this, rule._kin)
 	if (rule._id) this.id = rule._id
 }
@@ -11,14 +11,14 @@ Tree.prototype = {
 	constructor: Tree,
 	id: '',
 	get text() {
-		var code = this.root.text
+		var code = this.input
 		if (!this.cuts.length) return code.slice(this.i, this.j)
 		var j = this.i,
 				cuts = this.cuts,
 				res = ''
 		for (var i=0; i<cuts.length; ++i) {
 			if (cuts[i].i > j) res += code.slice(j, cuts[i].i)
-			res += cuts[i].toString()
+			res += cuts[i].text
 			j = cuts[i].j
 		}
 		if (this.j > j) res += code.slice(j, this.j)

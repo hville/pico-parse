@@ -1,11 +1,11 @@
 import test from './tester.js'
 import any from '../any.js'
-import all from '../all.js'
+import seq from '../seq.js'
 
 // any pass
-var fail = all('X', 'Y', 'Z'),
+var fail = seq('X', 'Y', 'Z'),
 		ab = any(fail, fail, fail, 'ab'),
-		rule = any(fail, fail, fail, all(any(fail, fail, ab, 'abc')))
+		rule = any(fail, fail, fail, seq(any(fail, fail, ab, 'abc')))
 test(rule.peek('abc', 0), {i:0, j:2, err: false})
 
 // any fail

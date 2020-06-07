@@ -24,18 +24,8 @@ export function peek(code, pos) {
 Rule.prototype.scan = function(code) {
 	var res = this.peek(code, 0)
 	//complete the result with a failed remaining portion
-	if (res.j !== code.length) res.add(new Tree(root, this, res.j, code.length, true))
+	if (res.j !== code.length) res.add(new Tree(code, this, res.j, code.length, true))
 	return res
-}
-Rule.prototype.spy = function(ante, post) {
-	var oldPeek = this.peek
-	this.peek = function(src, pos) {
-		if (ante) ante.call(this, src, pos)
-		var res = oldPeek.call(this, src, pos)
-		if (post) post.call(this, src, pos, res)
-		return res
-	}
-	return this
 }
 Rule.prototype.id = function(id) {
 	this._id = id
