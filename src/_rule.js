@@ -14,21 +14,17 @@ export const add = Rule.prototype.add = function() {
 	}
 	return this
 }
-export function peek(src, pos) {
+export function peek(code, pos) {
 	var ops = this.rules
-	if (ops.length === 1 && !this._id && !this._kin) return ops[0].peek(src, pos)
-	var tree = new Tree(src, this, pos, pos)
-	for (var i=0; i<ops.length; ++i) if (tree.add(ops[i].peek(src, tree.j)).err) break
+	if (ops.length === 1 && !this._id && !this._kin) return ops[0].peek(code, pos)
+	var tree = new Tree(code, this, pos, pos)
+	for (var i=0; i<ops.length; ++i) if (tree.add(ops[i].peek(code, tree.j)).err) break
 	return tree
 }
-/* TODO future peek(tree, pos)
-	if (tree.rule !== this || !tree.cuts.length) normal
-	else tree.cuts.forEach(leaf => )
-*/
-Rule.prototype.scan = function(text) {
-	var res = this.peek(text, 0)
+Rule.prototype.scan = function(code) {
+	var res = this.peek(code, 0)
 	//complete the result with a failed remaining portion
-	if (res.j !== text.length) res.add(new Tree(text, this, res.j, text.length, true))
+	if (res.j !== code.length) res.add(new Tree(root, this, res.j, code.length, true))
 	return res
 }
 Rule.prototype.spy = function(ante, post) {

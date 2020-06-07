@@ -8,9 +8,9 @@ function Not() {
 	this.rules = []
 }
 Not.prototype = new Rule(Not, {
-	peek: function(text, spot) {
-		var next = peek.call(this, text, spot),
-				tree = new Tree(text, this, spot, spot)
+	peek: function(code, spot) {
+		var next = peek.call(this, code, spot),
+				tree = new Tree(code, this, spot, spot)
 		if (!next.err) tree.err = true
 		return tree
 	}

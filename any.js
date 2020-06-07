@@ -51,23 +51,12 @@ Any.prototype = new Rule(Any, {
 	}
 })
 
-function flatpeek(src, pos) {
+function flatpeek(code, pos) {
 	var ops = this.rules,
 			itm
 	for (var i=0; i<ops.length; ++i) {
-		itm = ops[i].peek(src, pos)
+		itm = ops[i].peek(code, pos)
 		if (!itm.err) break
 	}
-	return itm || new Tree(src, this, pos, pos)
+	return itm || new Tree(code, this, pos, pos)
 }
-/* TODO future
-? tree reuse (premature optimisation)
-		peek(tree, spot)
-		if (tree.rule !== this || !tree.cuts.length) apply rule as normal
-		else just check each leaves, all the way down to tokens
-		+ no branching, just recheck tokens
-		+ if token unchanged, old tree is still good
-		~ if token changed (pass), replace token, shift all i,j
-		~ if token fails, retry parent, retry parent, retry parent ... all the way to the root
-? this.last; this.text instead of cache
-*/

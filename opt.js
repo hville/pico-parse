@@ -8,9 +8,9 @@ function Opt() {
 	this.rules = []
 }
 Opt.prototype = new Rule(Opt, {
-	peek: function(text, pos) {
-		var res = peek.call(this, text, pos)
-		if (res.err) return new Tree(text, this, pos, pos)
+	peek: function(code, pos) {
+		var res = peek.call(this, code, pos)
+		if (res.err) return new Tree(code, this, pos, pos)
 		return res
 	}
 })

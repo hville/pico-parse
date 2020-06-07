@@ -8,10 +8,10 @@ function Run() {
 	this.rules = []
 }
 Run.prototype = new Rule(Run, {
-	peek: function(text, spot) {
-		var tree = new Tree(text, this, spot, spot)
-		while(tree.j < text.length) {
-			var res = peek.call(this, text, tree.j)
+	peek: function(code, spot) {
+		var tree = new Tree(code, this, spot, spot)
+		while(tree.j < code.length) {
+			var res = peek.call(this, code, tree.j)
 			if (res.err) return tree
 			tree.add(res)
 		}

@@ -1,15 +1,29 @@
-export function Tree(text, rule, i, j, err) {
-	this.text = text
+export function Tree(code, rule, i, j, err) {
 	this.i = i
 	this.j = j
 	this.cuts = []
 	this.err = err || false
+	Object.defineProperty(this, 'code', {value: code})
 	if (rule._kin) Object.assign(this, rule._kin)
 	if (rule._id) this.id = rule._id
 }
 Tree.prototype = {
 	constructor: Tree,
 	id: '',
+	get text() {
+		var code = this.root.text
+		if (!this.cuts.length) return code.slice(this.i, this.j)
+		var j = this.i,
+				cuts = this.cuts,
+				res = ''
+		for (var i=0; i<cuts.length; ++i) {
+			if (cuts[i].i > j) res += code.slice(j, cuts[i].i)
+			res += cuts[i].toString()
+			j = cuts[i].j
+		}
+		if (this.j > j) res += code.slice(j, this.j)
+		return res
+	},
 	add: function(itm) {
 		var kids = this.cuts
 		this.j = itm.j
@@ -25,19 +39,6 @@ Tree.prototype = {
 	},
 	item: function(idx) {
 		return idx < 0 ? this.cuts[this.cuts.length-idx] : this.cuts[idx]
-	},
-	toString: function() {
-		if (!this.cuts.length) return this.text.slice(this.i, this.j)
-		var j = this.i,
-				cuts = this.cuts,
-				res = ''
-		for (var i=0; i<cuts.length; ++i) {
-			if (cuts[i].i > j) res += this.text.slice(j, cuts[i].i)
-			res += cuts[i].toString()
-			j = cuts[i].j
-		}
-		if (this.j > j) res += this.text.slice(j, this.j)
-		return res
 	},
 	each: function(fcn, ctx) {
 		for (var i=0, arr=this.cuts; i<arr.length; ++i) fcn.call(ctx, arr[i], i, arr)
