@@ -43,7 +43,7 @@ const kinds = {tok, any, seq, opt, few, run, and, not}
 
 code.kin({
 	toRule: function() {
-		return this.foldl(setRule, {})
+		return this.fold(setRule, {})
 	}
 })
 function setRule(rules, def) {
