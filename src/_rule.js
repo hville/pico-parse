@@ -35,5 +35,15 @@ Rule.prototype.kin = function(kin) {
 	this._kin = kin
 	return this
 }
+Rule.prototype.spy = function(fcn, ctx) {
+	var old = this.peek
+	this.peek = function(src, pos) {
+		var res = old.call(this, src, pos)
+		fcn.call(ctx||this, res)
+		return res
+	}
+	return this
+}
+
 import {Tok} from './_tok.js'
 Rule.Tok = Tok

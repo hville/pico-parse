@@ -22,5 +22,9 @@ var rule = seq('a', seq('b', seq('C'))),
 test(pack, {i:0, j:3, err: true})
 
 // seq scan
-test(seq('abc').peek('abc', 0), {i:0, j: 3, err: false})
-test(seq('abc').scan('abc'), {i:0, j: 3, err: false})
+test(seq('abc').peek('abc', 0))
+test(seq('abc').scan('abc'))
+
+// seq spy
+test(seq('abc').spy(res=>res.err=true).scan('abc'), {i:0, j:3, err: true})
+

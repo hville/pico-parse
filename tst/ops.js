@@ -32,7 +32,7 @@ test(and('ab').peek('abc', 0), { i:0, j:0, err: false})
 test(not('ab').peek('abc', 0), { i:0, j:0, err: true })
 test(and('ba').peek('abc', 0), {i:0, j:0, err: true })
 test(not('ba').peek('abc', 0), {i:0, j:0, err: false})
-test(seq('a', and('c')).peek('abc', 0), {i:0, err: true})//
+test(seq('a', and('c')).peek('abc', 0), {i:0, err: true})
 test(seq('a', and('b')).peek('abc', 0), {i:0, err: false})
 test(seq('a', not('c')).peek('abc', 0), {i:0, err: false})
 test(seq('a', not('b')).peek('abc', 0), {i:0, err: true})
