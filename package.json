@@ -11,7 +11,7 @@
     "cotest": "^4.0.2"
   },
   "scripts": {
-    "test": "cotest ./tst",
+    "test": "node ./tst/test.js",
     "post": "npm test && npm publish --access=public"
   },
   "keywords": [
