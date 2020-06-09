@@ -12,7 +12,7 @@ Tree.prototype = {
 	id: '',
 	get text() {
 		var code = this.input
-		if (!this.cuts.length) return code.slice(this.i, this.j)
+		if (!this.cuts.length) return !this.i && this.j === code.length ? code : code.slice(this.i, this.j)
 		var j = this.i,
 				cuts = this.cuts,
 				res = ''
