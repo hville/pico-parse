@@ -4,7 +4,6 @@ export function Tree(input, rule, i, j, err) {
 	this.cuts = []
 	this.err = err || false
 	Object.defineProperty(this, 'input', {value: input})
-	if (rule._kin) Object.assign(this, rule._kin)
 	if (rule._id) this.id = rule._id
 }
 Tree.prototype = {
@@ -27,14 +26,14 @@ Tree.prototype = {
 	add: function(itm) {
 		var kids = this.cuts
 		this.j = itm.j
-		if (itm.err) {
+		if (itm.err) { //simple add to keep the error (and minimize work)
 			this.err = true
 			kids.push(itm)
 		} else if (itm.id && itm.id !== this.id) {
 			var kin = this.item(-1)
-			if (kids.length && kin && itm.id === kin.id) kin.add(itm)
-			else kids.push(itm)
-		} else kids.push.apply(kids, itm.cuts)
+			if (kin && itm.id === kin.id) kin.cuts.push.apply(kin.cuts, itm.cuts) //drop the middle man, fuse with elder brother
+			else kids.push(itm) //simple add - itm is one of a kind
+		} else kids.push.apply(kids, itm.cuts) //drop the middle man, fuse to self
 		return this
 	},
 	item: function(idx) {

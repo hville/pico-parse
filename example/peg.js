@@ -41,11 +41,8 @@ export {_seq, _any, _opt, _few, _run, _and, _not}
 
 const kinds = {tok, any, seq, opt, few, run, and, not}
 
-code.kin({
-	toRule: function() {
-		return this.fold(setRule, {})
-	}
-})
+code.spy(tree => tree.toRule = tree.fold.bind(tree, setRule, {}))
+
 function setRule(rules, def) {
 	var name = def.item(0).text
 	rules[name] = parseRule.call(rules, def.item(1)).id(name)
