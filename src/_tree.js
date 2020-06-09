@@ -47,12 +47,8 @@ Tree.prototype = {
 	map: function(fcn, ctx) {
 		return this.cuts.map(fcn, ctx||this)
 	},
-	foldl: function(fcn, res) {
+	fold: function(fcn, res) {
 		for (var i=0, arr=this.cuts; i<arr.length; ++i) res = fcn(res, arr[i], i, arr)
-		return res
-	},
-	foldr: function(fcn, res) {
-		for (var arr=this.cuts, i=arr.length-1; i>=0; --i) res = fcn(res, arr[i], i, arr)
 		return res
 	}
 }
