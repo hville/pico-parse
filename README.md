@@ -62,8 +62,9 @@ Rules are created with the following factories
 * `.j : number` start position of the next token after the tree in the input string
 * `.cuts : Array<Tree>` the sub trees
 * `.err : boolean` if the result is an error
-* `.fuse([transforms:Object]) : string` returns the transformed tree text after transforming the leaves
-* `.fold( (target:any, item: Pack) => any, target:any) : any` fold/reduce to parse tree
+* `.each( (item: Tree) => void, context:any) : this` like forEach, return `this`
+* `.fold( (target:any, item: Tree) => any, target:any) : any` fold/reduce to parse tree
+* `.toString() : string` can also take an optional transform `string => string` binded to the tree
 
 ## License
 
