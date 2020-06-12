@@ -27,4 +27,3 @@ test(seq('abc').scan('abc'))
 
 // seq spy
 test(seq('abc').spy(res=>res.err=true).scan('abc'), {i:0, j:3, err: true})
-

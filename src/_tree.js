@@ -9,19 +9,20 @@ export function Tree(input, rule, i, j, err) {
 Tree.prototype = {
 	constructor: Tree,
 	id: '',
-	get text() {
+	toString: function(xfo) {
 		var code = this.input
-		if (!this.cuts.length) return !this.i && this.j === code.length ? code : code.slice(this.i, this.j)
+		if (!xfo) return !this.i && this.j === code.length ? code : code.slice(this.i, this.j)
+		if (!this.cuts.length) return xfo.call(this, !this.i && this.j === code.length ? code : code.slice(this.i, this.j))
 		var j = this.i,
 				cuts = this.cuts,
 				res = ''
 		for (var i=0; i<cuts.length; ++i) {
 			if (cuts[i].i > j) res += code.slice(j, cuts[i].i)
-			res += cuts[i].text
+			res += cuts[i].toString(xfo)
 			j = cuts[i].j
 		}
 		if (this.j > j) res += code.slice(j, this.j)
-		return res
+		return xfo.call(this, res)
 	},
 	add: function(itm) {
 		var kids = this.cuts

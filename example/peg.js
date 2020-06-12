@@ -44,13 +44,13 @@ const kinds = {tok, any, seq, opt, few, run, and, not}
 code.spy(tree => tree.toRule = tree.fold.bind(tree, setRule, {}))
 
 function setRule(rules, def) {
-	var name = def.item(0).text
+	var name = def.item(0).toString()
 	rules[name] = parseRule.call(rules, def.item(1)).id(name)
 	return rules
 }
 function parseRule(item) {
 	var kin = item.id,
-			txt = item.text
+			txt = item.toString()
 	return kin === 'x' ? this[txt]
 		: kin === 'text' ? tok(txt)
 		: kin === 'regx' ? tok(new RegExp(txt))
