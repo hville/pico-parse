@@ -11,18 +11,17 @@ Tree.prototype = {
 	id: '',
 	toString: function(xfo) {
 		var code = this.input
-		if (!xfo) return !this.i && this.j === code.length ? code : code.slice(this.i, this.j)
-		if (!this.cuts.length) return xfo.call(this, !this.i && this.j === code.length ? code : code.slice(this.i, this.j))
+		if (!xfo || !this.cuts.length) return !this.i && this.j === code.length ? code : code.slice(this.i, this.j)
 		var j = this.i,
 				cuts = this.cuts,
 				res = ''
 		for (var i=0; i<cuts.length; ++i) {
 			if (cuts[i].i > j) res += code.slice(j, cuts[i].i)
-			res += cuts[i].toString(xfo)
+			res += xfo.call(this, cuts[i])
 			j = cuts[i].j
 		}
 		if (this.j > j) res += code.slice(j, this.j)
-		return xfo.call(this, res)
+		return res
 	},
 	add: function(itm) {
 		var kids = this.cuts
