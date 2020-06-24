@@ -1,66 +1,98 @@
-import {seq, any, run, few, opt, tok} from 'pico-parse'
-import {nb, id, nl0, nl1} from 'pico-parse/rules/js.js'
+import {seq, any, run, few, opt, tok, not, max} from '../index.js'
+import {nb, id, nl0, nl1, ci, cm} from '../rules/js.js'
 
+function name(obj) { //TODO nice?!
+	Object.keys(obj).forEach(k => obj[k].id(k))
+}
+//TODO add comments to lines
+//constants
+const nmbr = tok(nb).id('9'),
+			cexp = seq().id('exp'),
+			cls0 = opt(cexp, run(nl0, ',', nl0, cexp)),
+			cfcn = seq(seq(/Math.(?!random)/, tok(id)), '(', nl0, cls0, nl0, ')').id('fcn'),
+			cval = seq(opt(/[+-]/, nl0), any(nmbr, cfcn, seq('(', nl0, cexp, nl0, ')'), seq(id, not(nl0, '(')).id('cst')))
+cexp.add(cval, run(nl0, /\*{1,2}|\+(?!\+)|-(?!-)|[/%]/, nl0, cval))
+
+name({})
+
+//random objects
+const conf = seq(cexp, nl0, ',', nl0, cexp),
+			corl = seq(id, nl0, ',', nl0, cexp),
+			rvar = seq(/[NLWD]/, '(', nl0, conf, run(nl0, ',', nl0, corl), opt(nl0, ',', nl0, id), nl0, ')').id('gen')
 //values
-const nmb = tok(nb).id('9'),
-			exp = seq().id('exp'),
-			ls0 = opt(exp, run(nl0, ',', nl0, exp)),
-			ls2 = seq(exp, few(nl0, ',', nl0, exp)).id('ls2'),
-			gen = seq(/[NLWD]/, '(', nl0, ls2.spy(forceCst), nl0, ')').id('gen'),
-			fcn = seq(seq('Math.', tok(id).id('f')), '(', nl0, ls0, nl0, ')').id('fcn'),
-			val = seq(opt(/[+-]/, nl0), any(nmb, gen, fcn, seq('(', nl0, exp, nl0, ')'), tok(id).id('x')))
-exp.add(val, run(nl0, /\*{1,2}|\+(?!\+)|-(?!-)|[/%]/, nl0, val))
+const vexp = seq().id('exp'),
+			vls0 = opt(vexp, run(nl0, ',', nl0, vexp)),
+			vfcn = seq(seq('Math.', tok(id)), '(', nl0, vls0, nl0, ')').id('fcn'),
+			vval = seq(opt(/[+-]/, nl0), any(cval, rvar, vfcn, seq('(', nl0, vexp, nl0, ')'), seq(id, not('(')).id('val')))
+vexp.add(vval, run(nl0, /\*{1,2}|\+(?!\+)|-(?!-)|[/%]/, nl0, vval))
 
 //assignment
 const y = tok(id).id('y'),
-			eql = seq(y, nl0, '=', nl0, exp).id('eql').spy(validate), //hoist generator
-			def = seq(y, nl0, ':', nl0, exp).id('def').spy(validate) //hoist generator
+			ycst = seq(y, nl0, '=', nl0, cexp).id('ycst'),
+			yrnd = seq(y, nl0, '=', nl0, rvar).id('yrnd'),
+			yvar = seq(y, nl0, '=', nl0, vexp).id('yvar')
+
+//exports
+const ecst = seq(y, nl0, ':', nl0, cexp).id('ecst'),
+			ernd = seq(y, nl0, ':', nl0, rvar).id('ernd'),
+			evar = seq(y, nl0, ':', nl0, vexp).id('evar')
+
+//code
+const __0 = seq(run(nl0, ';'), nl0),
+			__1 = any(few(nl0, ';', nl0), nl1),
+			ln1 = max(ycst, ecst, yrnd, ernd, yvar, evar), //TODO
+			cmt = opt(__0, any(ci, cm)),
+			all = seq(__0, ln1, cmt, run(__1, ln1, cmt), __0),
+			oldscan = all.scan
 
 const constants = new Set,
 			lines = [[],[],[]]
 let idx = 0
 
-const __0 = any(nl0, run(';', nl0)),
-			__1 = any(nl1, few(nl0, ';', nl0)),
-			ln1 = any(eql, def),
-			all = seq(__0, ln1, run(__1, ln1), __0),
-			oldscan = all.scan
-
+function toConst(defs) {
+	return !defs.length ? '' : `const ${defs.join(',') };`
+}
 all.scan = function(input) {
 	constants.clear()
 	idx = lines[0].length = lines[1].length = lines[2].length = 0
 	const tree = oldscan.call(this, input)
-	tree.code = `const ${ lines[0].join(',') };return function(){const ${ lines[1].join(',') };return{${ lines[2].join(',') }}}`
+	tree.each(validate)
+	tree.code = `${ toConst(lines[0]) };return function(){${ toConst(lines[1]) }return{${ lines[2].join(',') }}}`
 	tree.toFunction = function() { return new Function('{N,L,W,D}', tree.code) }
 	return tree
 }
 export default all
-
 function isCst(tree) {
 	switch (tree.id) {
 		case '9': return true
-		case 'x': return constants.has(tree.toString())
-		case 'fcn': return tree.toString() === 'random' ? false : tree.cuts.every(isCst)
 		case 'gen': return false
-		default: return tree.cuts.every(isCst)
+		case 'cst': case 'val': return constants.has(tree.toString())
+		default:
+			for (var i=0; i<tree.cuts.length; ++i) if (!isCst(tree.cuts[i])) return false
+			return true
 	}
 }
-function forceCst(tree) {
-	const items = tree.cuts
-	if (!isCst(items[0])) return tree.err = true
-	for (var i=1; i<items.length; i+=2) if (!isCst(items[i])) return tree.err = true
-}
-function validate(tree) {
+function validate(tree) { //cst,rnd,var, y, e
 	if (tree.err) return
 	var name = tree.item(0).toString()
-	if (isCst(tree.item(1))) {
-		constants.add(name)
-		lines[0].push(name+'='+tree.item(1).toString())
-		if (tree.id === 'def') lines[2].push(name)
-	} else {
-		const code = tree.item(1).toString(hoistRnd)
-		lines[1].push(name+'='+code)
-		if (tree.id === 'def') lines[2].push(name)
+	switch (tree.id) {
+		case 'ycst': case 'ecst':
+			if (isCst(tree)) {
+				constants.add(name)
+				lines[0].push(name + '=' + tree.item(1).toString())
+			} else {
+				lines[1].push(name + '=' + tree.item(1).toString(hoistRnd))
+			}
+			break
+		case 'yrnd': case 'ernd':
+			lines[0].push(name + '=' + tree.item(1).toString())
+			break
+		case 'yvar': case 'evar':
+			lines[1].push(name + '=' + tree.item(1).toString(hoistRnd))
+			break
+	}
+	if (tree.id[0] === 'e') {
+		lines[2].push(name)
 	}
 }
 function hoistRnd(tree) {
