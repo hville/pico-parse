@@ -58,5 +58,5 @@ function flatpeek(code, pos) {
 		itm = ops[i].peek(code, pos)
 		if (!itm.err) break
 	}
-	return itm || new Tree(code, this, pos, pos)
+	return !itm ? new Tree(code, this, pos, pos) : this._id ? (new Tree(code, this, pos, pos)).add(itm) : itm
 }

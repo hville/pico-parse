@@ -11,6 +11,6 @@ Opt.prototype = new Rule(Opt, {
 	peek: function(code, pos) {
 		var res = peek.call(this, code, pos)
 		if (res.err) return new Tree(code, this, pos, pos)
-		return res
+		return this._id ? (new Tree(code, this, pos, pos)).add(res) : res
 	}
 })
