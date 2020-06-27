@@ -9,7 +9,7 @@ export function Tree(input, rule, i, j, err) {
 Tree.prototype = {
 	constructor: Tree,
 	id: '',
-	toString: function(xfo) {
+	toString: function(xfo, ctx) {
 		var code = this.input
 		if (!xfo || !this.cuts.length) return !this.i && this.j === code.length ? code : code.slice(this.i, this.j)
 		var j = this.i,
@@ -17,7 +17,7 @@ Tree.prototype = {
 				res = ''
 		for (var i=0; i<cuts.length; ++i) {
 			if (cuts[i].i > j) res += code.slice(j, cuts[i].i)
-			res += xfo.call(this, cuts[i])
+			res += xfo.call(ctx||this, cuts[i])
 			j = cuts[i].j
 		}
 		if (this.j > j) res += code.slice(j, this.j)
