@@ -6,7 +6,6 @@ export function Tok(term) {
 			isRegY = isRegX && term.sticky != null
 	this.term = isRegX ? new RegExp(term.source, isRegY ? 'y' : 'g') : term
 	this.peek = isRegY ? stickyAt : isRegX ? globalAt : textAt
-	if (typeof this.peek !== 'function') throw Error
 }
 Tok.prototype = new Rule(Tok)
 
