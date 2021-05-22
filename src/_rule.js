@@ -1,7 +1,6 @@
 import {Tree} from './_tree.js'
 
-export function Rule(constructor, stuff) {
-	this.constructor = constructor
+export function Rule(stuff) {
 	this.peek = peek // most called function by far... closer up the prototype chain
 	if (stuff) Object.assign(this, stuff)
 }

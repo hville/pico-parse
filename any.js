@@ -34,7 +34,7 @@ function wrapPeek(src, pos) {
 	}
 	return this.cache(src, pos)
 }
-Any.prototype = new Rule(Any, {
+Any.prototype = new Rule({
 	add: function() {
 		var rule = add.apply(this, arguments),
 				todo = rule.rules.slice()

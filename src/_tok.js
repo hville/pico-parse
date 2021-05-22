@@ -7,7 +7,7 @@ export function Tok(term) {
 	this.term = isRegX ? new RegExp(term.source, isRegY ? 'y' : 'g') : term
 	this.peek = isRegY ? stickyAt : isRegX ? globalAt : textAt
 }
-Tok.prototype = new Rule(Tok)
+Tok.prototype = new Rule()
 
 function textAt(src, pos) {
 	if (pos >= src.length) new Tree(src, this, pos, pos, true)

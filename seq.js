@@ -6,4 +6,4 @@ export default function() {
 function Seq() {
 	this.rules = []
 }
-Seq.prototype = new Rule(Seq)
+Seq.prototype = new Rule()

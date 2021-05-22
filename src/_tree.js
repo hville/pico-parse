@@ -7,7 +7,6 @@ export function Tree(input, rule, i, j, err) {
 	if (rule._id) this.id = rule._id
 }
 Tree.prototype = {
-	constructor: Tree,
 	id: '',
 	toString: function(xfo, ctx) {
 		var code = this.input

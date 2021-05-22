@@ -7,7 +7,7 @@ export default function() {
 function Opt() {
 	this.rules = []
 }
-Opt.prototype = new Rule(Opt, {
+Opt.prototype = new Rule({
 	peek: function(code, pos) {
 		var res = peek.call(this, code, pos)
 		if (res.err) return new Tree(code, this, pos, pos)

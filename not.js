@@ -7,7 +7,7 @@ export default function() {
 function Not() {
 	this.rules = []
 }
-Not.prototype = new Rule(Not, {
+Not.prototype = new Rule({
 	peek: function(code, spot) {
 		var next = peek.call(this, code, spot),
 				tree = new Tree(code, this, spot, spot)

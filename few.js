@@ -7,7 +7,7 @@ export default function() {
 function Few() {
 	this.rules = []
 }
-Few.prototype = new Rule(Few, {
+Few.prototype = new Rule({
 	peek: function(code, spot) {
 		var tree = new Tree(code, this, spot, spot),
 				res = peek.call(this, code, tree.j)

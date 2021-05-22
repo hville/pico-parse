@@ -7,7 +7,7 @@ export default function() {
 function And() {
 	this.rules = []
 }
-And.prototype = new Rule(And, {
+And.prototype = new Rule({
 	peek: function(code, spot) {
 		var next = peek.call(this, code, spot),
 				tree = new Tree(code, this, spot, spot)

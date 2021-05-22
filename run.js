@@ -7,7 +7,7 @@ export default function() {
 function Run() {
 	this.rules = []
 }
-Run.prototype = new Rule(Run, {
+Run.prototype = new Rule({
 	peek: function(code, spot) {
 		var tree = new Tree(code, this, spot, spot)
 		while(tree.j < code.length) {
