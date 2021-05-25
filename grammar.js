@@ -1,7 +1,7 @@
 import { tok,seq,any,few,not } from './parsers.js'
-import { identifier } from './regexp.js'
 
 //FIXME must use string.raw for the char definition AND maybe regexp is not a good idea?
+const identifier = /[\p{ID_Start}\$_][\p{ID_Continue}\$_\u200C\u200D]*/u
 
 const //# Lexical syntax
 	_ = tok(/(?:\s*#[^\n\r]*(?:\r\n|\n|\r)+)?\s*/),
