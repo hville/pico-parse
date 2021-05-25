@@ -1,38 +1,36 @@
-import test from './tester.js'
-import seq from '../seq.js'
-import run from '../run.js'
-import few from '../few.js'
-import opt from '../opt.js'
-import and from '../and.js'
-import not from '../not.js'
+import t from './tester.js'
+import { and, any, few, not, opt, run, seq } from '../index.js'
 
 // rep pass
-test(run('ab').peek('x', 0), {i:0, j:0, err: false})
-test(run('ab').peek('ab', 0), {i:0, j:2, err: false})
-test(run('ab').peek('abababX', 0), {i:0, j:6, err: false})
-test(run('a', 'b').peek('abababX', 0), {i:0, j:6, err: false})
+t(run('ab').peek('x', 0), [0,0])
+t(run('ab').peek('ab', 0), [0,2])
+t(run('ab').peek('abababX', 0), [0,6])
+t(run('a', 'b').peek('abababX', 0), [0,6])
 
 // few pass
-test(few('ab').peek('abababX', 0), {i:0, j:6, err: false})
-test(few('a', 'b').peek('abababX', 0), {i:0, j:6, err: false})
+t(few('ab').peek('abababX', 0), [0,6])
+t(few('a', 'b').peek('abababX', 0), [0,6])
 
 // few fail
-test(few('ab').peek('x', 0), {i:0, j:1, err: true})
+t(few('ab').peek('x', 0))
 
 // opt pass
-test(opt('ab').peek('x', 0), {i:0, j:0, err: false})
-test(opt('a', 'b').peek('x', 0), {i:0, j:0, err: false})
-test(opt('ab').peek('ab', 0), {i:0, j:2, err: false})
-test(opt('a', 'b').peek('ab', 0), {i:0, j:2, err: false})
-test(opt('ab').peek('abababX', 0), {i:0, j:2, err: false})
-test(opt('a', 'b').peek('abababX', 0), {i:0, j:2, err: false})
+t(opt('ab').peek('x', 0), [0,0])
+t(opt('a', 'b').peek('x', 0), [0,0])
+t(opt('ab').peek('ab', 0), [0,2])
+t(opt('a', 'b').peek('ab', 0), [0,2])
+t(opt('ab').peek('abababX', 0), [0,2])
+t(opt('a', 'b').peek('abababX', 0), [0,2])
+
+// any pass
+t(any('x','ab','abab').peek('abababX', 0), [0,2])
 
 // and not
-test(and('ab').peek('abc', 0), { i:0, j:0, err: false})
-test(not('ab').peek('abc', 0), { i:0, j:0, err: true })
-test(and('ba').peek('abc', 0), {i:0, j:0, err: true })
-test(not('ba').peek('abc', 0), {i:0, j:0, err: false})
-test(seq('a', and('c')).peek('abc', 0), {i:0, err: true})
-test(seq('a', and('b')).peek('abc', 0), {i:0, err: false})
-test(seq('a', not('c')).peek('abc', 0), {i:0, err: false})
-test(seq('a', not('b')).peek('abc', 0), {i:0, err: true})
+t(and('ab').peek('abc', 0), [0,0])
+t(not('ab').peek('abc', 0))
+t(and('ba').peek('abc', 0))
+t(not('ba').peek('abc', 0), [0,0])
+t(seq('a', and('c')).peek('abc', 0))
+t(seq('a', and('b')).peek('abc', 0), [0,1])
+t(seq('a', not('c')).peek('abc', 0), [0,1])
+t(seq('a', not('b')).peek('abc', 0))

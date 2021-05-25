@@ -2,24 +2,23 @@
   "name": "pico-parse",
   "type": "module",
   "main": "index.js",
-  "module": "index.js",
-  "version": "0.9.0",
-  "description": "small lexer and parser",
+  "browser": "index.js",
+  "version": "0.10.0",
+  "description": "small top-down parser combinator and PEG parser",
   "devDependencies": {
-    "@types/node": "^11.11.0",
-    "assert-op": "^0.5.1",
-    "cotest": "^4.0.2"
+    "@types/node": "^11.15.54",
+    "assert-op": "^0.8.0"
   },
   "scripts": {
     "test": "node ./tst/test.js",
-    "post": "npm test && npm publish --access=public"
+    "post": "npm test && npm publish"
   },
   "keywords": [
     "parser",
     "parse",
-    "token",
-    "tokenizer",
-    "lexer"
+    "PEG",
+    "recursive descent",
+    "parser combinator"
   ],
   "author": "Hugo Villeneuve",
   "license": "MIT",

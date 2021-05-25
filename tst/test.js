@@ -1,7 +1,3 @@
 import './tok.js'
-import './seq.js'
-import './any.js'
 import './ops.js'
 import './peg.js'
-import './box.js'
-import './tree.js'
