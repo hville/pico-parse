@@ -8,7 +8,7 @@ export default function(peg) {
 				ctx = {map, peg}
 	for (const def of prs) {
 		const id = peg.slice.apply(peg, def[3]),
-					nt = map[id] || (map[id] = fs.seq.call(id)),
+					nt = map[id] || (map[id] = fs.seq`${id}`()),
 					pr = bld.call(ctx,def[4])
 		if (pr.id) nt.rs.push(pr)
 		else Object.assign(nt, pr)
@@ -21,5 +21,5 @@ function bld([i,j,f,...a]) {
 	const tok = this.peg.slice(i,j)
 	return f==='txt' ? fs.tok(tok)
 		: f==='reg' ? fs.tok(RegExp(tok, 'uy'))
-		: /* id */ this.map[tok] || (this.map[tok] = fs.seq.call(tok))
+		: /* id */ this.map[tok] || (this.map[tok] = fs.seq`${tok}`())
 }
