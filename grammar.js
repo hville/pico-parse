@@ -5,13 +5,13 @@ const identifier = /[\p{ID_Start}\$_][\p{ID_Continue}\$_\u200C\u200D]*/u
 
 const //# Lexical syntax
 	_ = tok(/(?:\s*#[^\n\r]*(?:\r\n|\n|\r)+)?\s*/),
-	LIT = any([`'`,tok.call('txt', /[^']+/),`'`], ['"',tok.call('txt', /[^"]+/),'"'], ['’',tok.call('txt', /[^’]+/),'’']), // " "/’ ’ primary 5 Literal string
+	LIT = any(seq(`'`,tok.call('txt', /[^']+/),`'`), seq('"',tok.call('txt', /[^"]+/),'"'), seq('’',tok.call('txt', /[^’]+/),'’')), // " "/’ ’ primary 5 Literal string
 	DOT = tok.call('reg', '.'), //. primary 5 Any character
 	CHR = tok.call('reg', /\[(?:(?:\\[^])|[^\]])+\]/) // [ ] primary 5 Character class, TODO tricky to use regexp for this
 const //# Hierarchical syntax
 	exp = any(),
 	ID = tok.call('id',identifier),
-	prm = seq(any(['(',_, exp, _, ')'], LIT, CHR, DOT, seq(ID, _, not('<-'))), _), //Primary <- Identifier !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
+	prm = seq(any(seq('(',_, exp, _, ')'), LIT, CHR, DOT, seq(ID, _, not('<-'))), _), //Primary <- Identifier !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
 	RUN = seq.call('run', prm, '*'), //e* unary suffix 4 Zero-or-more
 	OPT = seq.call('opt', prm, '?'), //e? unary suffix 4 Optional
 	FEW = seq.call('few', prm, '+'), //e+ unary suffix 4 One-or-more

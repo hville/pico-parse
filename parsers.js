@@ -1,4 +1,4 @@
-const resolve = r => r.rs ? r : Array.isArray(r) ? seq(...r) : tok(r)
+const resolve = r => r.rs ? r : tok(r)
 
 const proto = {
 	id: '',

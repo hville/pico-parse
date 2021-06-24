@@ -49,7 +49,6 @@ export default seq(_, any(few.call('peg',DEF, _), few.call('Xpeg',any(DEF,XDEF),
 ### Rule factories
 
 Rules are created with the following factories
-* `tok(String|RegExp) : Rule` converts a string, regular expression or other terminal to a terminal rule
 * `any(...Rule|Array|String|RegExp) : Rule` finds the first passing rule (/ operator)
 * `seq(...Rule|Array|String|RegExp) : Rule` chains all rules, all must pass
 * `few(...Rule|Array|String|RegExp) : Rule` repeat all rules one or more times (+ operator)
@@ -61,8 +60,7 @@ Rules are created with the following factories
 Rules can have a name by calling them: `named = any.call('myname', e0, e1, ...childRules)`
 
 Arguments
-* `String` and `RegExp` arguments are converted to terminal token rules (eg. `'a'` becomes `tok('a')`)
-* `Array` arguments are converted to a sequence rule (eg. `['a', /b/]` becomes `seq(tok('a'), tok(/b/))`
+* `String` and `RegExp` arguments are converted to terminal litteral token rules
 
 ### Rule
 
