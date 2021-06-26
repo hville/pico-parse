@@ -8,7 +8,43 @@ function pegTest(txt) {
 	console.assert(tree[2]==='peg', `parsed ${txt} as valid`)
 }
 
-pegTest(`G <- 'a'`)
+pegTest(`
+B <- A
+A <- 'a'
+`)
+pegTest(`
+B ← A
+A ← 'a'
+`)
+
+//https://en.wikipedia.org/wiki/Parsing_expression_grammar#Examples
+pegTest(`
+Expr    ← Sum
+Sum     ← Product (('+' / '-') Product)*
+Product ← Power (('*' / '/') Power)*
+Power   ← Value ('^' Power)?
+Value   ← [0-9]+ / '(' Expr ')'
+`)
+
+pegTest(`S ← 'if' C 'then' S 'else' S / 'if' C 'then' S`)
+
+pegTest(`
+Begin ← '(*'
+End   ← '*)'
+C     ← Begin N* End
+N     ← C / (!Begin !End Z)
+Z     ← .
+`)
+
+pegTest(`
+S ← &(A 'c') 'a'+ B !.
+A ← 'a' A? 'b'
+B ← 'b' B? 'c'
+`)
+
+
+//simple
+pegTest(`G 	<- 'a'`)
 
 pegTest(`Grammar <- Spacing Definition+ EndOfFile
 Definition <- Identifier LEFTARROW Expression`)
@@ -23,6 +59,7 @@ pegTest(String.raw`
 Char <- [nrt’"\[\]\\]
 `)
 
+//original peg grammar
 pegTest(String.raw`# Hierarchical syntax
 Grammar <- Spacing Definition+ EndOfFile
 Definition <- Identifier LEFTARROW Expression
