@@ -1,13 +1,14 @@
 const resolve = r => r.rs ? r : tok(r)
 
-const proto = {
-	id: '',
+class R {
+	constructor(ctx) { Object.assign(this, ctx) }
+	static id = ''
 	scan(t) {
 		const res = this.peek(t,0)
 		if (res[1] !== t.length) res[1] = -1
 		else if (!res[2] && res.length === 4) return res[3]
 		return res
-	},
+	}
 	/* tree: [i,j,n,..tree] || [i,j,n] || [i,-1] */
 	out(i,j,subs) {
 		//flatten
@@ -23,7 +24,7 @@ const proto = {
 /* terminal tokens */
 function tok(re) {
 	if (Array.isArray(re)) return tok.bind({id: String.raw(...arguments)})
-	const term = Object.create(proto)
+	const term = new R
 	term.peek = re.source ? regP : txtP
 	term.rs = !re.source ? re : !re.sticky ? RegExp(re.source, 'y'+re.flags) : re
 	if (this?.id) term.id = this.id
@@ -32,15 +33,8 @@ function tok(re) {
 function regP(t,i=0) {
 	const r = this.rs
 	r.lastIndex = i
-	let j = r.test(t) ? r.lastIndex : -1
-	if (j===0) {
-		//TODO ambiguity since lastIndex resets... j=0||t.length?
-		if (i===0) {
-			r.lastIndex = i
-			j = r.exec(t)[0].length
-		}
-		else j = t.length
-	}
+	// check if reset from t.length => 0 occured
+	let j = !r.test(t) ? -1 : r.lastIndex !== 0 ? r.lastIndex : i !== 0 ? t.length : r.exec(t)[0].length
 	return this.out(i, j)
 }
 function txtP(t,i=0) {
@@ -52,8 +46,8 @@ function txtP(t,i=0) {
 function ruleOfN(...rs) {
 	if (Array.isArray(rs[0])) return ruleOfN.bind({peek:this.peek, id:String.raw(...rs)})
 	return Object.assign(
-		this.set ? this : Object.assign(Object.create(proto), this),
-		rs.length === 0 ? {rs: [], set:ruleOfN}
+		this instanceof R ? this : new R(this),
+		rs.length === 0 ? {rs, set:ruleOfN}
 		: rs.length === 1 && !(this.id && rs[0].id) ? resolve(rs[0])
 		: {rs: rs.map( resolve )}
 	)
@@ -64,7 +58,7 @@ export const any = ruleOfN.bind({peek: function(t,i=0) {
 	for (const r of this.rs) {
 		const leaf = r.peek(t,i),
 					j = leaf[1]
-		if (j >= 0) return this.id ? this.out(i,j,leaf) : leaf  //TODO already flattened in out?
+		if (j >= 0) return this.id ? this.out(i,j,leaf) : leaf
 	}
 	return this.out(i,-1)
 }})
@@ -78,7 +72,7 @@ export const seq = ruleOfN.bind({peek: function(t,i=0) {
 		j = leaf[1]
 		if (j < 0) break
 		else if (leaf[2]) tree.push(leaf)
-		else if (leaf.length > 3) for(let i=3; i<leaf.length; ++i) tree.push(leaf[i]) //TODO already flattened in out?
+		else if (leaf.length > 3) for(let i=3; i<leaf.length; ++i) tree.push(leaf[i])
 	} else j = -1
 	return this.out(i,j,tree)
 }})
@@ -87,7 +81,7 @@ export const seq = ruleOfN.bind({peek: function(t,i=0) {
 function ruleOf1(...rs) {
 	if (Array.isArray(rs[0])) return ruleOf1.bind({peek:this.peek, id:String.raw(...rs)})
 	return Object.assign(
-		this.set ? this : Object.assign(Object.create(proto), this),
+		this instanceof R ? this : new R(this),
 		rs.length === 0 ? {set: ruleOf1}
 		: rs.length === 1 ? {rs: resolve(rs[0])}
 		: {rs: seq(...rs)}

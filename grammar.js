@@ -1,13 +1,13 @@
 import { seq,any,few,not } from './parsers.js'
 
-//FIXME must use string.raw for the char definition AND maybe regexp is not a good idea?
 const identifier = /[\p{ID_Start}\$_][\p{ID_Continue}\$_\u200C\u200D]*/u
 
 const //# Lexical syntax
 	_ = seq(/(?:\s*#[^\n\r]*(?:\r\n|\n|\r)+)?\s*/),
 	LIT = any(seq(`'`,seq`txt`(/[^']+/),`'`), seq('"',seq`txt`(/[^"]+/),'"'), seq('’',seq`txt`(/[^’]+/),'’')), // " "/’ ’ primary 5 Literal string
 	DOT = seq`reg`('.'), //. primary 5 Any character
-	CHR = seq`reg`(/\[(?:(?:\\[^])|[^\]])+\]/) // [ ] primary 5 Character class, TODO tricky to use regexp for this
+	CHR = seq`reg`(/\[(?:(?:\\[^])|[^\]])+\]/) // [ ] primary 5 Character class
+
 const //# Hierarchical syntax
 	exp = any(),
 	ID = seq`id`(identifier),

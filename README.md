@@ -11,37 +11,38 @@
 Below is the actual code to parse [PEG](https://bford.info/pub/lang/peg.pdf) grammar
 
 ```javascript
-import { tok,seq,any,few,not } from './parsers.js'
-import { identifier } from './regexp.js'
+import { seq,any,few,not } from './parsers.js'
+
+const identifier = /[\p{ID_Start}\$_][\p{ID_Continue}\$_\u200C\u200D]*/u
 
 const //# Lexical syntax
-  _ = tok(/(?:\s*#[^\n\r]*(?:\r\n|\n|\r)+)?\s*/),
-  LIT = any([`'`,tok.call('txt', /[^']+/),`'`], ['"',tok.call('txt', /[^"]+/),'"'], ['’',tok.call('txt', /[^’]+/),'’']),
-  DOT = tok.call('reg', '.'), // . any character
-  CHR = tok.call('reg', /\[(?:(?:\\[^])|[^\]])+\]/) // [.] Character class
+  _ = seq(/(?:\s*#[^\n\r]*(?:\r\n|\n|\r)+)?\s*/),
+  LIT = any(seq(`'`,seq`txt`(/[^']+/),`'`), seq('"',seq`txt`(/[^"]+/),'"'), seq('’',seq`txt`(/[^’]+/),'’')), // " "/’ ’ primary 5 Literal string
+  DOT = seq`reg`('.'), //. primary 5 Any character
+  CHR = seq`reg`(/\[(?:(?:\\[^])|[^\]])+\]/) // [ ] primary 5 Character class
+
 const //# Hierarchical syntax
   exp = any(),
-  ID = tok.call('id',identifier),
-  //Primary <- Identifier !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
-  prm = seq(any(['(',_, exp, _, ')'], LIT, CHR, DOT, seq(ID, _, not('<-'))), _),
-  RUN = seq.call('run', prm, '*'), //e* unary suffix Zero-or-more
-  OPT = seq.call('opt', prm, '?'), //e? unary suffix Optional
-  FEW = seq.call('few', prm, '+'), //e+ unary suffix One-or-more
+  ID = seq`id`(identifier),
+  prm = seq(any(seq('(',_, exp, _, ')'), LIT, CHR, DOT, seq(ID, _, not('<-'))), _), //Primary <- Identifier !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
+  RUN = seq`run`(prm, '*'), //e* unary suffix 4 Zero-or-more
+  OPT = seq`opt`(prm, '?'), //e? unary suffix 4 Optional
+  FEW = seq`few`(prm, '+'), //e+ unary suffix 4 One-or-more
   suf = any(FEW,OPT,RUN,prm), //Suffix <- Primary (QUESTION / STAR / PLUS)?
-  NOT = seq.call('not', '!', suf), //!e unary prefix Not-predicate
-  AND = seq.call('and', '&', suf), //&e unary prefix And-predicate
+  NOT = seq`not`('!', suf), //!e unary prefix 3 Not-predicate
+  AND = seq`and`('&', suf), //&e unary prefix 3 And-predicate
   pre = any(AND,NOT,suf), //Prefix <- (AND / NOT)? Suffix
-  SEQ = seq.call('seq', pre, few(_, pre), _), //e1 e2 binary Sequence ////Sequence <- Prefix*
+  SEQ = seq`seq`(pre, few(_, pre), _), //e1 e2 binary 2 Sequence ////Sequence <- Prefix*
   itm = any(SEQ,pre),
-  ANY = seq.call('any', itm, few(_, '/', _, itm)), //e1 / e2 binary Prioritized Choice : Expression <- Sequence (SLASH Sequence)*
-  DEF = seq.call('def', ID, _, '<-', _, exp)//Definition <- Identifier LEFTARROW Expression
-exp.rs.push(ANY,itm)
+  ANY = seq`any`(itm, few(_, '/', _, itm)), //e1 / e2 binary 1 Prioritized Choice //Expression <- Sequence (SLASH Sequence)*
+  DEF = seq`def`(ID, _, '<-', _, exp)//Definition <- Identifier LEFTARROW Expression
+exp.set(ANY,itm)
 
 const // Error Management
-  Xexp = seq(_, tok.call('Xexp',/[^\s]*/), _),//Grammar <- Spacing Definition+ EndOfFile
-  XDEF = any.call('Xdef', [ID, _, '<-', _, Xexp], Xexp)//Definition <- Identifier LEFTARROW Expression
+  Xexp = seq(_, seq`Xexp`(/[^\s]*/), _),//Grammar <- Spacing Definition+ EndOfFile
+  XDEF = any`Xdef`('Xdef', seq(ID, _, '<-', _, Xexp), Xexp)//Definition <- Identifier LEFTARROW Expression
 
-export default seq(_, any(few.call('peg',DEF, _), few.call('Xpeg',any(DEF,XDEF),_) ) ) //Grammar <- Spacing Definition+ EndOfFile
+export default seq(_, any(few`peg`(DEF, _), few`Xpeg`(any(DEF,XDEF),_) ) ) //Grammar <- Spacing Definition+ EndOfFile
 ```
 
 ## API

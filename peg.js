@@ -2,21 +2,19 @@ import * as fs from './parsers.js'
 import PEG from './grammar.js'
 
 export default function(peg) {
-	const [,,kin,...prs] = PEG.scan(peg)
-	if (kin[0]==='X') return 'TODO FAILED'
+	const [,,kin,...rules] = PEG.scan(peg)
+	if (kin[0]==='X') return null
 	const map = {},
 				ctx = {map, peg}
-	for (const def of prs) {
-		const id = peg.slice.apply(peg, def[3]),
-					nt = map[id] || (map[id] = fs.seq`${id}`()),
-					pr = bld.call(ctx,def[4])
-		if (pr.id) nt.set(pr)
-		else Object.assign(nt, pr)
+	for (const def of rules) {
+		const id = peg.slice(def[3][0], def[3][1])
+		map[id] = fs.seq`${id}`()
+		map[id].set( buildRule.call(ctx,def[4]) )
 	}
 	return map[Object.keys(map)[0]]
 }
-function bld([i,j,f,...a]) {
-	if (a.length) return fs[f]( ...a.map(bld,this) )
+function buildRule([i,j,f,...a]) {
+	if (a.length) return fs[f]( ...a.map(buildRule,this) )
 
 	const tok = this.peg.slice(i,j)
 	return f==='txt' ? fs.seq(tok)
