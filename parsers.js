@@ -1,5 +1,3 @@
-const resolve = r => r.rs ? r : tok(r)
-
 class R {
 	constructor(ctx) { Object.assign(this, ctx) }
 	static id = ''
@@ -20,14 +18,16 @@ class R {
 		return subs?.length ? [i,j,this.id||'', ...subs] : this.id ? [i,j,this.id] : [i,j]
 	}
 }
+function toRule(r) {
+	return r instanceof R ? r : tok(r)
+}
 
 /* terminal tokens */
 function tok(re) {
 	if (Array.isArray(re)) return tok.bind({id: String.raw(...arguments)})
-	const term = new R
+	const term = new R(this)
 	term.peek = re.source ? regP : txtP
 	term.rs = !re.source ? re : !re.sticky ? RegExp(re.source, 'y'+re.flags) : re
-	if (this?.id) term.id = this.id
 	return term
 }
 function regP(t,i=0) {
@@ -47,9 +47,9 @@ function ruleOfN(...rs) {
 	if (Array.isArray(rs[0])) return ruleOfN.bind({peek:this.peek, id:String.raw(...rs)})
 	return Object.assign(
 		this instanceof R ? this : new R(this),
-		rs.length === 0 ? {rs, set:ruleOfN}
-		: rs.length === 1 && !(this.id && rs[0].id) ? resolve(rs[0])
-		: {rs: rs.map( resolve )}
+		rs.length === 0 ? {rs, set: ruleOfN}
+		: rs.length === 1 && !(this.id && rs[0].id) ? toRule(rs[0])
+		: {rs: rs.map( toRule )}
 	)
 }
 
@@ -82,8 +82,8 @@ function ruleOf1(...rs) {
 	if (Array.isArray(rs[0])) return ruleOf1.bind({peek:this.peek, id:String.raw(...rs)})
 	return Object.assign(
 		this instanceof R ? this : new R(this),
-		rs.length === 0 ? {set: ruleOf1}
-		: rs.length === 1 ? {rs: resolve(rs[0])}
+		rs.length === 0 ? {rs, set: ruleOf1}
+		: rs.length === 1 ? {rs: toRule(rs[0])}
 		: {rs: seq(...rs)}
 	)
 }

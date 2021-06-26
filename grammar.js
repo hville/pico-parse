@@ -1,11 +1,20 @@
 import { seq,any,few,not } from './parsers.js'
+/*
+TODO
+standardize
+https://www.python.org/dev/peps/pep-0617/#the-new-proposed-peg-parser
+	S: 't' | X { action }
+https://github.com/pegjs/pegjs/tree/master/docs/grammar
+	S= 't' / left:multiplicative "+" right:additive { return left + right; }
+*/
 
 const identifier = /[\p{ID_Start}\$_][\p{ID_Continue}\$_\u200C\u200D]*/u
 
 const //# Lexical syntax
 	_ = seq(/(?:\s*#[^\n\r]*(?:\r\n|\n|\r)+)?\s*/),
-	set = seq(/←|(?:<-)/),
-	LIT = any(seq(`'`,seq`txt`(/[^']+/),`'`), seq('"',seq`txt`(/[^"]+/),'"'), seq('’',seq`txt`(/[^’]+/),'’')), // " "/’ ’ primary 5 Literal string
+	set = seq(/[=:←]|(?:<-)/),
+	sep = seq(/[|\/]/),
+	LIT = any(seq(`'`,seq`txt`(/(?:[^']|\\[^])+/),`'`), seq('"',seq`txt`(/(?:[^"]|\\[^])+/),'"'), seq('’',seq`txt`(/(?:[^’]|\\[^])+/),'’')), // " "/’ ’ primary 5 Literal string
 	DOT = seq`reg`('.'), //. primary 5 Any character
 	CHR = seq`reg`(/\[(?:(?:\\[^])|[^\]])+\]/) // [ ] primary 5 Character class
 
@@ -22,7 +31,7 @@ const //# Hierarchical syntax
 	pre = any(AND,NOT,suf), //Prefix <- (AND / NOT)? Suffix
 	SEQ = seq`seq`(pre, few(_, pre), _), //e1 e2 binary 2 Sequence ////Sequence <- Prefix*
 	itm = any(SEQ,pre),
-	ANY = seq`any`(itm, few(_, '/', _, itm)), //e1 / e2 binary 1 Prioritized Choice //Expression <- Sequence (SLASH Sequence)*
+	ANY = seq`any`(itm, few(_, sep, _, itm)), //e1 / e2 binary 1 Prioritized Choice //Expression <- Sequence (SLASH Sequence)*
 	DEF = seq`def`(ID, _, set, _, exp)//Definition <- Identifier LEFTARROW Expression
 exp.set(ANY,itm)
 
