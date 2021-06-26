@@ -22,11 +22,11 @@ const proto = {
 
 /* terminal tokens */
 export function tok(re) {
+	if (Array.isArray(re)) return tok.bind({id: String.raw(...arguments)})
 	const term = Object.create(proto)
 	term.peek = re.source ? regP : txtP
-	//TODO excape characters []-^...
 	term.rs = !re.source ? re : !re.sticky ? RegExp(re.source, 'y'+re.flags) : re
-	if (this?.startsWith) term.id = this
+	if (this?.id) term.id = this.id
 	return term
 }
 function regP(t,i=0) {

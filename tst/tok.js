@@ -2,7 +2,7 @@ import t from './tester.js'
 import {tok} from '../index.js'
 
 const abcT = tok('abc'),
-			abcR = tok.call('r',/abc/)
+			abcR = tok`r`(/abc/)
 
 // name
 t(tok('abc').peek('abc', 0), [0,3])
