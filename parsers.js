@@ -21,7 +21,7 @@ const proto = {
 }
 
 /* terminal tokens */
-export function tok(re) {
+function tok(re) {
 	if (Array.isArray(re)) return tok.bind({id: String.raw(...arguments)})
 	const term = Object.create(proto)
 	term.peek = re.source ? regP : txtP
@@ -51,8 +51,12 @@ function txtP(t,i=0) {
 /* rules of many : seq any */
 function ruleOfN(...rs) {
 	if (Array.isArray(rs[0])) return ruleOfN.bind({peek:this.peek, id:String.raw(...rs)})
-	if (!this.id && rs.length === 1) return resolve(rs[0])
-	return Object.assign(Object.create(proto), this, {rs: rs.map( resolve )})
+	return Object.assign(
+		this.set ? this : Object.assign(Object.create(proto), this),
+		rs.length === 0 ? {rs: [], set:ruleOfN}
+		: rs.length === 1 && !(this.id && rs[0].id) ? resolve(rs[0])
+		: {rs: rs.map( resolve )}
+	)
 }
 
 /* any e0 / e1 / ... / en */
@@ -82,9 +86,12 @@ export const seq = ruleOfN.bind({peek: function(t,i=0) {
 /* rules of one : and few not opt run */
 function ruleOf1(...rs) {
 	if (Array.isArray(rs[0])) return ruleOf1.bind({peek:this.peek, id:String.raw(...rs)})
-	const r = Object.assign(Object.create(proto), this)
-	r.rs = rs.length > 1 ? seq(...rs) : resolve(rs[0])
-	return r
+	return Object.assign(
+		this.set ? this : Object.assign(Object.create(proto), this),
+		rs.length === 0 ? {set: ruleOf1}
+		: rs.length === 1 ? {rs: resolve(rs[0])}
+		: {rs: seq(...rs)}
+	)
 }
 
 /* &(e0 ... en) */
