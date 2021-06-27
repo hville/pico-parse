@@ -24,7 +24,7 @@ function toRule(r) {
 
 /* terminal tokens */
 function tok(re) {
-	if (Array.isArray(re)) return tok.bind({id: String.raw(...arguments)})
+	if (isTag(re)) return tok.bind({id: t(...arguments)})
 	const term = new R(this)
 	term.peek = re.source ? regP : txtP
 	term.rs = !re.source ? re : !re.sticky ? RegExp(re.source, 'y'+re.flags) : re
@@ -44,7 +44,7 @@ function txtP(t,i=0) {
 
 /* rules of many : seq any */
 function ruleOfN(...rs) {
-	if (Array.isArray(rs[0])) return ruleOfN.bind({peek:this.peek, id:String.raw(...rs)})
+	if (isTag(rs[0])) return ruleOfN.bind({peek: this.peek, id: t(...rs)})
 	return Object.assign(
 		this instanceof R ? this : new R(this),
 		rs.length === 0 ? {rs, set: ruleOfN}
@@ -77,9 +77,17 @@ export const seq = ruleOfN.bind({peek: function(t,i=0) {
 	return this.out(i,j,tree)
 }})
 
+/* tie(seperator, ...items) : Rule` same as `seq(any(...items), run(seperator, any(...items))) */
+export function tie(sep, ...itms) {
+	if (isTag(sep)) return tie.bind({id: t(...arguments)})
+	const itm = itms.length === 1 ? itms[0] : any(...itms),
+				fcn = this?.id ? seq`${this.id}` : seq
+	return fcn(itm, run(sep, itm))
+}
+
 /* rules of one : and few not opt run */
 function ruleOf1(...rs) {
-	if (Array.isArray(rs[0])) return ruleOf1.bind({peek:this.peek, id:String.raw(...rs)})
+	if (isTag(rs[0])) return ruleOf1.bind({peek: this.peek, id: t(...rs)})
 	return Object.assign(
 		this instanceof R ? this : new R(this),
 		rs.length === 0 ? {rs, set: ruleOf1}
@@ -135,3 +143,12 @@ export const opt = ruleOf1.bind({peek: function(t,i=0) {
 	let leaf = this.rs.peek(t,i)
 	return leaf[1] <0 ? this.out(i,i) : this.out(i,leaf[1],[leaf])
 }})
+
+function isTag(a0) {
+  return Array.isArray(a0) && Array.isArray(a0.raw)
+}
+function t(a0, ...as) {
+	let	t=a0[0], i=0
+	while(i<a0.length-1) t += as[i]+a0[++i]
+	return t
+}

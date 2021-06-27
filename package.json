@@ -6,8 +6,7 @@
   "version": "0.12.0",
   "description": "small top-down parser combinator and PEG parser",
   "devDependencies": {
-    "@types/node": "^11.15.54",
-    "assert-op": "^0.8.0"
+    "assert-op": "^1.1.0"
   },
   "scripts": {
     "test": "node ./tst/test.js",

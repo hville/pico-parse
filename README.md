@@ -57,6 +57,7 @@ Rules are created with the following factories
 * `opt(...Rule|Array|String|RegExp) : Rule` optional rule (? operator)
 * `and(...Rule|Array|String|RegExp) : Rule` pass if lookahead passes (& operator)
 * `not(...Rule|Array|String|RegExp) : Rule` pass if lookahead fails (! operator)
+* `tie(seperator, ...items) : Rule` same as `seq(any(...items), run(seperator, any(...items)))`
 
 Rules can have a name by calling them: `named = any.call('myname', e0, e1, ...childRules)`
 
