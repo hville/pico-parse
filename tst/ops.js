@@ -1,5 +1,5 @@
 import test from 'assert-op'
-import { and, any, few, not, opt, run, seq, tie } from '../index.js'
+import { and, any, few, not, opt, run, seq } from '../index.js'
 
 test('run', a => {
 	a`{===}`(run('ab').peek('x', 0), [0,0])
@@ -55,6 +55,7 @@ test('consistent reduction', a => {
 	a`{===}`(any(seq`n`('a')), seq`n`('a'))
 })
 
+/*
 test('tie', a => {
 	//anonymous
 	a`{===}`(tie('.','a').peek('a.b', 0), [0,1])
@@ -69,3 +70,4 @@ test('tie', a => {
 	a`{===}`(tie`n`('.','a').peek('a.a.b', 0), [0,3,'n'])
 	a`{===}`(tie`n`('.','a').peek('a.a.a.b', 0), [0,5,'n'])
 })
+*/

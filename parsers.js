@@ -77,14 +77,6 @@ export const seq = ruleOfN.bind({peek: function(t,i=0) {
 	return this.out(i,j,tree)
 }})
 
-/* tie(seperator, ...items) : Rule` same as `seq(any(...items), run(seperator, any(...items))) */
-export function tie(sep, ...itms) {
-	if (isTag(sep)) return tie.bind({id: t(...arguments)})
-	const itm = itms.length === 1 ? itms[0] : any(...itms),
-				fcn = this?.id ? seq`${this.id}` : seq
-	return fcn(itm, run(sep, itm))
-}
-
 /* rules of one : and few not opt run */
 function ruleOf1(...rs) {
 	if (isTag(rs[0])) return ruleOf1.bind({peek: this.peek, id: t(...rs)})
