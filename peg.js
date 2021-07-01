@@ -2,22 +2,24 @@ import * as fs from './parsers.js'
 import PEG from './grammar.js'
 
 export default function(peg) {
-	const [,,kin,...rules] = PEG.scan(peg)
-	if (kin[0]==='X') return null
+	const tree = PEG.scan(peg),
+				{id,cuts} = tree
+	if (id?.[0]==='X') return null
 	const map = {},
 				ctx = {map, peg}
-	for (const def of rules) {
-		const id = peg.slice(def[3][0], def[3][1])
+	if (cuts) for (const def of cuts) {
+		const [idT, expT] = def.cuts,
+					id = peg.slice(idT.i, idT.j)
 		map[id] = fs.seq`${id}`()
-		map[id].set( buildRule.call(ctx,def[4]) )
+		map[id].set( buildRule.call(ctx,expT) )
 	}
 	return map[Object.keys(map)[0]]
 }
-function buildRule([i,j,f,...a]) {
-	if (a.length) return fs[f]( ...a.map(buildRule,this) )
+function buildRule({i,j,id,cuts}) {
+	if (cuts?.length) return fs[id]( cuts.map(buildRule,this) )
 
 	const tok = this.peg.slice(i,j)
-	return f==='txt' ? fs.seq(tok)
-		: f==='reg' ? fs.seq(RegExp(tok, 'uy'))
+	return id==='txt' ? fs.seq(tok)
+		: id==='reg' ? fs.seq(RegExp(tok, 'uy'))
 		: /* id */ this.map[tok] || (this.map[tok] = fs.seq`${tok}`())
 }

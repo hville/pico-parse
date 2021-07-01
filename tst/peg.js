@@ -4,10 +4,10 @@ import PEG from '../grammar.js'
 
 function pegTest(name, txt) {
 	t(name, a => {
-		const tree = PEG.scan(txt)
+		const {j,id} = PEG.scan(txt)
 		//console.log(peg.peek(txt))
-		a`===`(tree[1], txt.length, `parsed ${txt} until ${tree[1]}`)
-		a`===`(tree[2], 'peg', `parsed ${txt} as valid`)
+		a`===`(j, txt.length, `parsed ${txt} until ${j}`)
+		a`===`(id, 'peg', `parsed ${txt} as valid`)
 	})
 }
 
