@@ -87,4 +87,3 @@ add <- nbr '+' exp
 exp <- add / nbr
 nbr <- [0-9]+
 `).scan('12+3').id === 'add', 'compile PEG')
-

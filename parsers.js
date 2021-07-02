@@ -3,7 +3,7 @@ function trim(tree) {
 		const cuts = []
 		for (const c of tree.cuts) {
 			if (c.id) cuts.push(trim(c))
-			else if (c.cuts) cuts.push(...trim(c).cuts)
+			else if (c.cuts && trim(c).cuts) cuts.push(...c.cuts)
 		}
 		if (!cuts.length) delete tree.cuts
 		else tree.cuts = cuts
