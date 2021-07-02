@@ -1,9 +1,9 @@
 {
   "name": "pico-parse",
   "type": "module",
-  "main": "index.js",
-  "browser": "index.js",
-  "version": "0.14.0",
+  "main": "parsers.js",
+  "browser": "parsers.js",
+  "version": "0.15.0",
   "description": "small top-down parser combinator and PEG parser",
   "devDependencies": {
     "assert-op": "^1.1.0"

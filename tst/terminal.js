@@ -1,4 +1,4 @@
-import {seq, any} from '../index.js'
+import {seq, any} from '../parsers.js'
 import test from 'assert-op'
 
 	withRofN(seq, 'seq')

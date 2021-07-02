@@ -1,5 +1,5 @@
 import test from 'assert-op'
-import { and, any, few, not, opt, run, seq } from '../index.js'
+import { and, any, few, not, opt, run, seq } from '../parsers.js'
 
 test('run', a => {
 	a`{===}`(run('ab').peek('x', 0), {i:0,j:0})

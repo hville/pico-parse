@@ -1,5 +1,5 @@
 import t from 'assert-op'
-import {peg} from '../index.js'
+import peg from '../peg.js'
 import PEG from '../grammar.js'
 
 function pegTest(name, txt) {

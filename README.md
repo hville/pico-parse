@@ -70,10 +70,10 @@ Arguments
 * `.peek(string, index=0) : Tree` Used internally to parse a string at a given position
 * `.scan(string) : Tree` parses the complete string
 
-### Abstract Syntax Tree
+### Capture Tree
 
 The resulting tree does not hold the token, only the indices where they are found
-* `tree: [i, j, id, ...childTrees]`
+* `tree: {i, j [, id] [, cuts]}`
 * `i : number` start position of the tree
 * `j : number` next position in the tree
 
@@ -81,7 +81,7 @@ notes
 * to get the token, `source.slice(i,j)`
 * unamed empty trees are removed
 * unamed trees are flattened
-* failed token have negative j. A token of `[4,-1,'id']` means that at `source[4]` the rule named `id` failed
+* failed token have negative j
 
 ## Notes
 
