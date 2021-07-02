@@ -3,15 +3,15 @@ import { and, any, few, not, opt, run, seq } from '../index.js'
 
 test('run', a => {
 	a`{===}`(run('ab').peek('x', 0), {i:0,j:0})
-	a`{===}`(run('ab').peek('ab', 0), {i:0,j:2})
-	a`{===}`(run('ab').peek('abababX', 0), {i:0,j:6})
-	a`{===}`(run('a', 'b').peek('abababX', 0), {i:0,j:6})
+	a`{===}`(run('ab').scan('ab'), {i:0,j:2})
+	a`{===}`(run('ab').scan('ababab'), {i:0,j:6})
+	a`{===}`(run('a', 'b').scan('ababab'), {i:0,j:6})
 })
 
 test('few', a => {
 	//pass
-	a`{===}`(few('ab').peek('abababX', 0), {i:0,j:6})
-	a`{===}`(few('a', 'b').peek('abababX', 0), {i:0,j:6})
+	a`{===}`(few('ab').scan('ababab'), {i:0,j:6})
+	a`{===}`(few('a', 'b').scan('ababab'), {i:0,j:6})
 	// few fail
 	a`{===}`(few('ab').peek('x', 0), {i:0,j:-1})
 })
@@ -20,10 +20,8 @@ test('opt', a => {
 	// opt pass
 	a`{===}`(opt('ab').peek('x', 0), {i:0,j:0})
 	a`{===}`(opt('a', 'b').peek('x', 0), {i:0,j:0})
-	a`{===}`(opt('ab').peek('ab', 0), {i:0,j:2})
-	a`{===}`(opt('a', 'b').peek('ab', 0), {i:0,j:2})
-	a`{===}`(opt('ab').peek('abababX', 0), {i:0,j:2})
-	a`{===}`(opt('a', 'b').peek('abababX', 0), {i:0,j:2})
+	a`{===}`(opt('ab').scan('ab'), {i:0,j:2})
+	a`{===}`(opt('a', 'b').scan('ab'), {i:0,j:2})
 })
 
 test('any', a => {
