@@ -5,7 +5,6 @@ import PEG from '../grammar.js'
 function pegTest(name, txt) {
 	t(name, a => {
 		const {j,id} = PEG.scan(txt)
-		//console.log(peg.peek(txt))
 		a`===`(j, txt.length, `parsed ${txt} until ${j}`)
 		a`===`(id, 'peg', `parsed ${txt} as valid`)
 	})
@@ -87,4 +86,5 @@ console.assert( peg(`
 add <- nbr '+' exp
 exp <- add / nbr
 nbr <- [0-9]+
-`).scan('12+3')[2] === 'add', 'compile PEG')
+`).scan('12+3').id === 'add', 'compile PEG')
+
