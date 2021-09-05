@@ -13,7 +13,7 @@ test('few', a => {
 	a`{===}`(few('ab').scan('ababab'), {i:0,j:6})
 	a`{===}`(few('a', 'b').scan('ababab'), {i:0,j:6})
 	// few fail
-	a`{===}`(few('ab').peek('x', 0), {i:0,j:-1})
+	a`===`(few('ab').peek('x', 0), null)
 })
 
 test('opt', a => {
@@ -31,16 +31,16 @@ test('any', a => {
 
 test('and', a => {
 	a`{===}`(and('ab').peek('abc', 0), {i:0,j:0})
-	a`{===}`(and('ba').peek('abc', 0), {i:0,j:-1})
-	a`{===}`(seq('a', and('c')).peek('abc', 0), {i:0,j:-1})
+	a`===`(and('ba').peek('abc', 0), null)
+	a`===`(seq('a', and('c')).peek('abc', 0), null)
 	a`{===}`(seq('a', and('b')).peek('abc', 0), {i:0,j:1})
 })
 
 test('not', a => {
-	a`{===}`(not('ab').peek('abc', 0), {i:0,j:-1})
+	a`===`(not('ab').peek('abc', 0), null)
 	a`{===}`(not('ba').peek('abc', 0), {i:0,j:0})
 	a`{===}`(seq('a', not('c')).peek('abc', 0), {i:0,j:1})
-	a`{===}`(seq('a', not('b')).peek('abc', 0), {i:0,j:-1})
+	a`===`(seq('a', not('b')).peek('abc', 0), null)
 })
 
 test('consistent reduction', a => {

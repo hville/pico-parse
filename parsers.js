@@ -18,9 +18,10 @@ class R {
 	}
 	static id = ''
 	scan(t) {
-		const res = trim(this.peek(t,0))
-		if (res.j !== t.length) res.j = -1
-		else if (!res.id && res.cuts?.length === 1 && res.cuts[0].j === res.j) return res.cuts[0]
+		const res = this.peek(t,0)
+		if (res === null || res.j !== t.length) return null
+		trim(res)
+		if (!res.id && res.cuts?.length === 1 && res.cuts[0].j === res.j) return res.cuts[0]
 		return res
 	}
 	tree(i,j,cuts,id=this.id) {
@@ -37,13 +38,13 @@ function toRule(r) {
 function regP(t,i=0) {
 	const r = this.rs
 	r.lastIndex = i
-	// check if reset from t.length => 0 occured
-	let j = !r.test(t) ? -1 : r.lastIndex !== 0 ? r.lastIndex : i !== 0 ? t.length : r.exec(t)[0].length
-	return this.tree(i, j)
+	return !r.test(t) ? null
+		// check if reset from t.length => 0 occured
+		: this.tree(i, r.lastIndex !== 0 ? r.lastIndex : i !== 0 ? t.length : r.exec(t)[0].length)
 }
 function txtP(t,i=0) {
 	const r = this.rs
-	return this.tree(i, t.startsWith(r,i) ? i+r.length : -1)
+	return t.startsWith(r,i) ? this.tree(i, i+r.length) : null
 }
 
 /* rules of many : seq any */
@@ -60,11 +61,10 @@ function ruleOfN(...rs) {
 /* any e0 / e1 / ... / en */
 export const any = ruleOfN.bind({peek: function(t,i=0) {
 	for (const r of this.rs) {
-		const leaf = r.peek(t,i),
-					j = leaf.j
-		if (j >= 0) return this.id ? this.tree(i,j,leaf) : leaf
+		const leaf = r.peek(t,i)
+		if (leaf !== null) return this.id ? this.tree(i,leaf.j,leaf) : leaf
 	}
-	return this.tree(i,-1)
+	return null
 }})
 
 /* sequence e0 e1 ... en */
@@ -73,11 +73,11 @@ export const seq = ruleOfN.bind({peek: function(t,i=0) {
 	let j = i
 	if (j<t.length) for (const r of this.rs) {
 		const leaf = r.peek(t,j)
+		if (leaf === null) return leaf
 		j = leaf.j
-		if (j < 0) break
-		else if (leaf.id) tree.push(leaf)
+		if (leaf.id) tree.push(leaf)
 		else if (leaf.cuts) for(const cut of leaf.cuts) tree.push(cut)
-	} else j = -1
+	} else return null
 	return this.tree(i,j,tree)
 }})
 
@@ -94,50 +94,39 @@ function ruleOf1(...rs) {
 
 /* &(e0 ... en) */
 export const and = ruleOf1.bind({peek: function(t,i=0) {
-	const j = this.rs.peek(t,i).j
-	return j<0 ? this.tree(i,j) : this.tree(i,i)
+	if (this.rs.peek(t,i) === null) return null
+	return this.tree(i,i)
 }})
 
 /* !(e0 ... en) */
 export const not = ruleOf1.bind({peek: function(t,i=0) {
-	return i>t.length ? this.tree(i,-1)
-		: this.rs.peek(t,i).j<0 ? this.tree(i,i) : this.tree(i,-1)
+	return (i>t.length || this.rs.peek(t,i)!==null) ? null :  this.tree(i,i)
 }})
 
 /* (e0 ... en)+ */
 export const few = ruleOf1.bind({peek: function(t,i=0) {
 	const tree = [],
 				r = this.rs
-	let j = i,
-			leaf = r.peek(t,j)
-	while(leaf.j>j) {
-		tree.push(leaf)
-		j = leaf.j
-		leaf = r.peek(t,j)
-	}
-	return tree.length > 0 ? this.tree(i,leaf.i,tree) : this.tree(i,-1)
+	let leaf = {j:i}
+	while(leaf = r.peek(t, leaf.j)) tree.push(leaf)
+	return tree.length > 0 ? this.tree(i,tree[tree.length-1].j,tree) : null
 }})
 
 /* (e0 ... en)* */
 export const run = ruleOf1.bind({peek: function(t,i=0) {
-	if (i>t.length) return this.tree(i,-1)
+	if (i>t.length) return null
 	const tree = [],
 				r = this.rs
-	let j = i,
-			leaf = r.peek(t,j)
-	while(leaf.j>j) {
-		tree.push(leaf)
-		j = leaf.j
-		leaf = r.peek(t,j)
-	}
-	return this.tree(i,leaf.i,tree)
+	let leaf = {j:i}
+	while(leaf = r.peek(t,leaf.j)) tree.push(leaf)
+	return this.tree(i, tree.length ? tree[tree.length-1].j : i,tree)
 }})
 
 /* (e0 ... en)? */
 export const opt = ruleOf1.bind({peek: function(t,i=0) {
-	if (i>t.length) return this.tree(i,-1)
+	if (i>t.length) return null
 	let leaf = this.rs.peek(t,i)
-	return leaf.j <0 ? this.tree(i,i) : this.tree(i,leaf.j,[leaf])
+	return leaf === null ? this.tree(i,i) : this.tree(i,leaf.j,[leaf])
 }})
 
 function isTag(a0) {

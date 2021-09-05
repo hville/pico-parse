@@ -28,12 +28,13 @@ const //# Hierarchical syntax
 	suf = any(FEW,OPT,RUN,prm), //Suffix <- Primary (QUESTION / STAR / PLUS)?
 	NOT = seq`not`('!', suf), //!e unary prefix 3 Not-predicate
 	AND = seq`and`('&', suf), //&e unary prefix 3 And-predicate
-	pre = any(AND,NOT,suf), //Prefix <- (AND / NOT)? Suffix
-	SEQ = seq`seq`(pre, few(_, pre), _), //e1 e2 binary 2 Sequence ////Sequence <- Prefix*
+	KIN = seq`kin`(ID, _, ':', _, any(AND,NOT,suf)),
+	pre = any(KIN,AND,NOT,suf), //Prefix <- (AND / NOT)? Suffix
+	SEQ = seq`seq`(pre, few(_, pre)), //e1 e2 binary 2 Sequence ////Sequence <- Prefix*
 	itm = any(SEQ,pre),
 	ANY = seq`any`(itm, few(_, sep, _, itm)), //e1 / e2 binary 1 Prioritized Choice //Expression <- Sequence (SLASH Sequence)*
 	DEF = seq`def`(ID, _, set, _, exp)//Definition <- Identifier LEFTARROW Expression
-exp.set(ANY,itm)
+exp.set(ANY,SEQ,KIN,AND,NOT,FEW,OPT,RUN,prm)
 
 const // Error Management
 	Xexp = seq(_, seq`Xexp`(/[^\s]*/), _),//Grammar <- Spacing Definition+ EndOfFile
