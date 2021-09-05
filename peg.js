@@ -1,8 +1,9 @@
 import * as fs from './parsers.js'
 import PEG from './grammar.js'
 
-export default function(peg) {
-	const tree = PEG.scan(peg),
+export default function(source) {
+	const peg = Array.isArray(source) && Array.isArray(source.raw) ? String.raw.apply(String, source) : source,
+				tree = PEG.scan(peg),
 				{id,cuts} = tree
 	if (id?.[0]==='X') return null
 	const map = {},

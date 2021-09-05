@@ -11,7 +11,11 @@ function trim(tree) {
 	return tree
 }
 class R {
-	constructor(ctx) { Object.assign(this, ctx) }
+	constructor(peek, rule, id) {
+		this.peek = peek
+		this.rs = rule
+		if (id) this.id = id
+	}
 	static id = ''
 	scan(t) {
 		const res = trim(this.peek(t,0))
@@ -25,8 +29,8 @@ class R {
 }
 function toRule(r) {
 	return r instanceof R ? r
-		: r.source ? new R({peek:regP, rs:r.sticky ? r : RegExp(r.source, 'y'+r.flags)})
-		: new R({peek:txtP, rs:r})
+		: r.source ? new R(regP, r.sticky ? r : RegExp(r.source, 'y'+r.flags))
+		: new R(txtP, r)
 }
 
 /* terminal tokens */
@@ -46,7 +50,7 @@ function txtP(t,i=0) {
 function ruleOfN(...rs) {
 	if (isTag(rs[0])) return ruleOfN.bind({peek: this.peek, id: t(...rs)})
 	return Object.assign(
-		this instanceof R ? this : new R(this),
+		this instanceof R ? this : new R(this.peek, this.rs, this.id),
 		rs.length === 0 ? {rs, set: ruleOfN}
 		: rs.length === 1 && !(this.id && rs[0].id) ? toRule(rs[0])
 		: {rs: rs.map( toRule )}
@@ -81,7 +85,7 @@ export const seq = ruleOfN.bind({peek: function(t,i=0) {
 function ruleOf1(...rs) {
 	if (isTag(rs[0])) return ruleOf1.bind({peek: this.peek, id: t(...rs)})
 	return Object.assign(
-		this instanceof R ? this : new R(this),
+		this instanceof R ? this : new R(this.peek, this.rs, this.id),
 		rs.length === 0 ? {rs, set: ruleOf1}
 		: rs.length === 1 ? {rs: toRule(rs[0])}
 		: {rs: seq(...rs)}
