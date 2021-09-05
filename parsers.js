@@ -1,13 +1,11 @@
 function trim(tree) {
-	if (tree.cuts) {
-		const cuts = []
-		for (const c of tree.cuts) {
-			if (c.id) cuts.push(trim(c))
-			else if (c.cuts && trim(c).cuts) cuts.push(...c.cuts)
-		}
-		if (!cuts.length) delete tree.cuts
-		else tree.cuts = cuts
+	const kids = []
+	while (tree.length) {
+		const c = tree.shift()
+		if (c.id) kids.push(trim(c))
+		else if (c.length && trim(c).length) kids.push(...c)
 	}
+	tree.push(...kids)
 	return tree
 }
 class R {
@@ -21,11 +19,14 @@ class R {
 		const res = this.peek(t,0)
 		if (res === null || res.j !== t.length) return null
 		trim(res)
-		if (!res.id && res.cuts?.length === 1 && res.cuts[0].j === res.j) return res.cuts[0]
+		if (!res.id && res.length === 1 && res[0].j === res.j) return res[0]
 		return res
 	}
-	tree(i,j,cuts,id=this.id) {
-		return cuts?.length ? id ? {i,j,id,cuts} : {i,j,cuts} : id ? {i,j,id} : {i,j}
+	tree(i,j,itms=[],id=this.id) {
+		if (id) itms.id = id
+		itms.i = i
+		itms.j = j
+		return itms
 	}
 }
 function toRule(r) {
@@ -76,7 +77,7 @@ export const seq = ruleOfN.bind({peek: function(t,i=0) {
 		if (leaf === null) return leaf
 		j = leaf.j
 		if (leaf.id) tree.push(leaf)
-		else if (leaf.cuts) for(const cut of leaf.cuts) tree.push(cut)
+		else for(const cut of leaf) tree.push(cut)
 	} else return null
 	return this.tree(i,j,tree)
 }})

@@ -3,21 +3,21 @@ import PEG from './grammar.js'
 
 export default function(source) {
 	const peg = Array.isArray(source) && Array.isArray(source.raw) ? String.raw.apply(String, source) : source,
-				tree = PEG.scan(peg),
-				{id,cuts} = tree
-	if (id?.[0]==='X') return null
+				tree = PEG.scan(peg)
+	if (tree.id?.[0]==='X') return null
 	const map = {},
 				ctx = {map, peg}
-	if (cuts) for (const def of cuts) {
-		const [idT, expT] = def.cuts,
+	for (const def of tree) {
+		const [idT, expT] = def,
 					id = peg.slice(idT.i, idT.j)
 		map[id] = fs.seq`${id}`()
 		map[id].set( buildRule.call(ctx,expT) )
 	}
 	return map[Object.keys(map)[0]]
 }
-function buildRule({i,j,id,cuts}) {
-	if (cuts?.length) return fs[id]( cuts.map(buildRule,this) )
+function buildRule(tree) {
+	const {i,j,id} = tree
+	if (tree.length) return fs[id]( tree.map(buildRule,this) )
 
 	const tok = this.peg.slice(i,j)
 	return id==='txt' ? fs.seq(tok)
