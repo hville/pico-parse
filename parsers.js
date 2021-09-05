@@ -24,17 +24,12 @@ class R {
 	}
 }
 function toRule(r) {
-	return r instanceof R ? r : tok(r)
+	return r instanceof R ? r
+		: r.source ? new R({peek:regP, rs:r.sticky ? r : RegExp(r.source, 'y'+r.flags)})
+		: new R({peek:txtP, rs:r})
 }
 
 /* terminal tokens */
-function tok(re) {
-	if (isTag(re)) return tok.bind({id: t(...arguments)})
-	const term = new R(this)
-	term.peek = re.source ? regP : txtP
-	term.rs = !re.source ? re : !re.sticky ? RegExp(re.source, 'y'+re.flags) : re
-	return term
-}
 function regP(t,i=0) {
 	const r = this.rs
 	r.lastIndex = i
