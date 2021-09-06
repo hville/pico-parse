@@ -93,35 +93,26 @@ Space <- ’ ’ / ’\t’ / EndOfLine
 EndOfLine <- ’\r\n’ / ’\n’ / ’\r’
 EndOfFile <- !.`)
 
-//console.log(pa)
-//console.log(pab.rs[0])
-//console.log(pa.scan('a'))
-//console.log(pab.scan('ab'))
-
 t('simple peg parse', a => {
-	const	pnab = peg`ab='a' 'b'`,
-				pnanb = peg`ab='a' b b='b'`
-	console.log(pnanb.rs[1])
-	console.log(PEG.scan(`ab='a' b b='b'`))
-	//a`===`(peg`'a'`.scan('a').j, 1)
-	//a`===`(peg`'a' 'b'`.scan('ab').j, 2)
-	//a`===`(pnab.scan('ab').j, 2)
-	//a`===`(pnanb.scan('ab').j, 2)
+	a`===`(peg`'abc'`.scan('abc').j, 3)
+	a`===`(peg`'x' / 'abc'`.scan('abc').j, 3)
+	a`===`(peg`'a' 'bc'`.scan('abc').j, 3)
+	a`===`(peg`'a' &b 'bc'`.scan('abc').j, 3)
+	a`===`(peg`'a' 'b' 'c'`.scan('abc').j, 3)
+	a`===`(peg`'a' [b] 'c'`.scan('abc').j, 3)
+	a`===`(peg`'a' [b-c]+`.scan('abc').j, 3)
+	a`===`(peg`'a' b:'b' 'c'`.scan('abc').j, 3)
+	a`===`(peg`ab='ab' 'c'`.scan('abc').j, 3)
+	a`===`(peg`abc='a' bc bc='b' c c='c'`.scan('abc').j, 3)
+	a`===`(peg`abc='a'+ bc+ bc='b'+ c+ c='c'+`.scan('abc').j, 3)
+	//label
+	a`===`(peg`'a' b:'b' 'c'`.scan('abc')[0].id, 'b')
 })
-
-//const nbr = peg`nbr <- [0-9]+`
-//console.log(peg`add <- nbr nbr <- 'a'`)
-
-const rule = peg(`
-add <- nbr '+' exp
-exp <- add / nbr
-nbr <- [0-9]+
-`)
-//console.log(rule.rs[3])
-//console.log(rule.scan('12+3'))
-
-console.assert( peg(`
-add <- nbr '+' exp
-exp <- add / nbr
-nbr <- [0-9]+
-`)?.scan('12+3')?.id === 'add', 'compile PEG')
+t('complex peg parse', a => {
+	const rule = peg`
+		add <- nbr '+' exp
+		exp <- add / nbr
+		nbr <- [0-9]+
+	`
+	a`===`(rule.scan('12+3').j, 4)
+})

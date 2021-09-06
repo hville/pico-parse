@@ -11,20 +11,21 @@ export default function(source) {
 	for (const def of tree) {
 		const id = def.id === 'def' ? peg.slice(def[0].i, def[0].j) : '',
 					expT = id ? def[def.length-1] : def
-		Object.assign(map[id] = fs.seq(), buildRule.call(ctx,expT) )
+		if (!map[id]) map[id] = fs.seq()
+		Object.assign(map[id], buildRule.call(ctx,expT) )
 	}
 	return map[Object.keys(map)[0]]
 }
 function buildRule(tree) {
 	const {i,j,id} = tree
 	if (id === 'kin') {
-		const t0 = tree.shift(),
-					rule = buildRule.call(this, tree)
-		rule.id = peg.slice(t0.i, t0.j)
+		//console.log('******KIN*******', tree.length, tree)
+		const rule = buildRule.call(this, tree[1])
+		rule.id = this.peg.slice(tree[0].i, tree[0].j)
 		return rule
 	}
 	if (tree.length) {
-		console.log('******LEN*******', id, this.peg.slice(i,j))
+		//console.log('**?**', tree)
 		return fs[id](...tree.map(buildRule,this))
 	}
 	const tok = this.peg.slice(i,j)
