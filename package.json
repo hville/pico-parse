@@ -3,7 +3,7 @@
   "type": "module",
   "main": "parsers.js",
   "browser": "parsers.js",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "small top-down parser combinator and PEG parser",
   "devDependencies": {
     "assert-op": "^1.1.0"

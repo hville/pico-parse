@@ -10,10 +10,13 @@ export default function(source) {
 	for (const def of tree) {
 		const id = def.id === 'def' ? peg.slice(def[0].i, def[0].j) : '',
 					expT = id ? def[def.length-1] : def
-		if (!map[id]) map[id] = fs.seq()
-		Object.assign(map[id], buildRule.call(ctx,expT) )
+		Object.assign(
+			map[id] || (map[id] = fs.seq()),
+			buildRule.call(ctx,expT)
+		)
 	}
-	return map[Object.keys(map)[0]]
+	const head = map[Object.keys(map)[0]]
+	return head.scan.bind(head)
 }
 function buildRule(tree) {
 	const {i,j,id} = tree
