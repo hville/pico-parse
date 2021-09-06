@@ -19,8 +19,7 @@ class R {
 		const res = this.peek(t,0)
 		if (res === null || res.j !== t.length) return null
 		trim(res)
-		if (!res.id && res.length === 1 && res[0].j === res.j) return res[0]
-		return res
+		return (!res.id && res.length===1) ? res[0] : res
 	}
 	tree(i,j,itms=[],id=this.id) {
 		if (id) itms.id = id

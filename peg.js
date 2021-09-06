@@ -1,7 +1,6 @@
 import * as fs from './parsers.js'
 import PEG from './grammar.js'
 
-
 export default function(source) {
 	const peg = Array.isArray(source) && Array.isArray(source.raw) ? String.raw.apply(String, arguments) : source,
 				tree = PEG.scan(peg)
@@ -19,18 +18,22 @@ export default function(source) {
 function buildRule(tree) {
 	const {i,j,id} = tree
 	if (id === 'kin') {
-		//console.log('******KIN*******', tree.length, tree)
 		const rule = buildRule.call(this, tree[1])
 		rule.id = this.peg.slice(tree[0].i, tree[0].j)
 		return rule
 	}
+	if (id === 'get') {
+		const exp = buildRule.call(this, tree[0])
+		return fs.seq(fs.run(fs.not(exp), /[^]/), exp)
+	}
+	if (id === 'dot') {
+		return fs.seq(/[^]/)
+	}
 	if (tree.length) {
-		//console.log('**?**', tree)
 		return fs[id](...tree.map(buildRule,this))
 	}
 	const tok = this.peg.slice(i,j)
 	return id==='txt' ? fs.seq(tok)
 		: id==='reg' ? fs.seq(RegExp(tok, 'uy'))
-		: id==='idv' ? this.map[tok] || (this.map[tok] = fs.seq())
-		: console.log('*******TODO*******', id) //TODO
+		: /* id==='idv' ? */ this.map[tok] || (this.map[tok] = fs.seq())
 }
