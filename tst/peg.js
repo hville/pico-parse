@@ -18,7 +18,18 @@ pegTest('simple ←',`
 B ← A
 A ← 'a'
 `)
-
+pegTest('simple =',`
+B = A
+A = 'a'
+`)
+pegTest('anonymous 1st',`
+A 'x'
+A = 'a'
+`)
+pegTest('label',`
+A X:'x'
+A = 'a'
+`)
 //https://en.wikipedia.org/wiki/Parsing_expression_grammar#Examples
 pegTest('grammar #1',`
 Expr    ← Sum
@@ -81,6 +92,33 @@ Comment <- ’#’ (!EndOfLine .)* EndOfLine
 Space <- ’ ’ / ’\t’ / EndOfLine
 EndOfLine <- ’\r\n’ / ’\n’ / ’\r’
 EndOfFile <- !.`)
+
+//console.log(pa)
+//console.log(pab.rs[0])
+//console.log(pa.scan('a'))
+//console.log(pab.scan('ab'))
+
+t('simple peg parse', a => {
+	const	pnab = peg`ab='a' 'b'`,
+				pnanb = peg`ab='a' b b='b'`
+	console.log(pnanb.rs[1])
+	console.log(PEG.scan(`ab='a' b b='b'`))
+	//a`===`(peg`'a'`.scan('a').j, 1)
+	//a`===`(peg`'a' 'b'`.scan('ab').j, 2)
+	//a`===`(pnab.scan('ab').j, 2)
+	//a`===`(pnanb.scan('ab').j, 2)
+})
+
+//const nbr = peg`nbr <- [0-9]+`
+//console.log(peg`add <- nbr nbr <- 'a'`)
+
+const rule = peg(`
+add <- nbr '+' exp
+exp <- add / nbr
+nbr <- [0-9]+
+`)
+//console.log(rule.rs[3])
+//console.log(rule.scan('12+3'))
 
 console.assert( peg(`
 add <- nbr '+' exp

@@ -1,4 +1,4 @@
-import { seq,any,few,not } from './parsers.js'
+import { seq,any,few,not,run } from './parsers.js'
 /*
 TODO
 standardize
@@ -20,24 +20,29 @@ const //# Lexical syntax
 
 const //# Hierarchical syntax
 	exp = any(),
-	ID = seq`id`(identifier),
-	prm = seq(any(seq('(',_, exp, _, ')'), LIT, CHR, DOT, seq(ID, _, not(set))), _), //Primary <- Identifier !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
+	IDK = seq`idk`(identifier),
+	IDV = seq`idv`(identifier),
+	prm = seq(any(seq('(',_, exp, _, ')'), LIT, CHR, DOT, seq(IDV, _, not(set))), _), //Primary <- Identifier !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
 	RUN = seq`run`(prm, '*'), //e* unary suffix 4 Zero-or-more
 	OPT = seq`opt`(prm, '?'), //e? unary suffix 4 Optional
 	FEW = seq`few`(prm, '+'), //e+ unary suffix 4 One-or-more
 	suf = any(FEW,OPT,RUN,prm), //Suffix <- Primary (QUESTION / STAR / PLUS)?
 	NOT = seq`not`('!', suf), //!e unary prefix 3 Not-predicate
 	AND = seq`and`('&', suf), //&e unary prefix 3 And-predicate
-	KIN = seq`kin`(ID, _, ':', _, any(AND,NOT,suf)),
+	KIN = seq`kin`(IDK, _, ':', _, any(AND,NOT,suf)),
 	pre = any(KIN,AND,NOT,suf), //Prefix <- (AND / NOT)? Suffix
 	SEQ = seq`seq`(pre, few(_, pre)), //e1 e2 binary 2 Sequence ////Sequence <- Prefix*
 	itm = any(SEQ,pre),
 	ANY = seq`any`(itm, few(_, sep, _, itm)), //e1 / e2 binary 1 Prioritized Choice //Expression <- Sequence (SLASH Sequence)*
-	DEF = seq`def`(ID, _, set, _, exp)//Definition <- Identifier LEFTARROW Expression
-exp.set(ANY,SEQ,KIN,AND,NOT,FEW,OPT,RUN,prm)
+	DEF = seq`def`(IDV, _, set, _, exp)//Definition <- Identifier LEFTARROW Expression
+Object.assign(exp, any(ANY,SEQ,KIN,AND,NOT,FEW,OPT,RUN,prm))
 
 const // Error Management
 	Xexp = seq(_, seq`Xexp`(/[^\s]*/), _),//Grammar <- Spacing Definition+ EndOfFile
-	XDEF = any`Xdef`('Xdef', seq(ID, _, set, _, Xexp), Xexp)//Definition <- Identifier LEFTARROW Expression
+	XDEF = any`Xdef`('Xdef', seq(IDV, _, set, _, Xexp), Xexp)//Definition <- Identifier LEFTARROW Expression
 
-export default seq(_, any(few`peg`(DEF, _), few`Xpeg`(any(DEF,XDEF),_) ) ) //Grammar <- Spacing Definition+ EndOfFile
+export default seq(_, any(
+	few`peg`(DEF, _),
+	seq`peg`(any(DEF,exp), _, run(DEF, _)),
+	few`Xpeg`(any(DEF,XDEF,exp),_)
+) ) //Grammar <- Spacing Definition+ EndOfFile

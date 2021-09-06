@@ -53,7 +53,7 @@ function ruleOfN(...rs) {
 	if (isTag(rs[0])) return ruleOfN.bind({peek: this.peek, id: t(...rs)})
 	return Object.assign(
 		this instanceof R ? this : new R(this.peek, this.rs, this.id),
-		rs.length === 0 ? {rs, set: ruleOfN}
+		rs.length === 0 ? {rs}
 		: rs.length === 1 && !(this.id && rs[0].id) ? toRule(rs[0])
 		: {rs: rs.map( toRule )}
 	)
@@ -87,7 +87,7 @@ function ruleOf1(...rs) {
 	if (isTag(rs[0])) return ruleOf1.bind({peek: this.peek, id: t(...rs)})
 	return Object.assign(
 		this instanceof R ? this : new R(this.peek, this.rs, this.id),
-		rs.length === 0 ? {rs, set: ruleOf1}
+		rs.length === 0 ? {rs}
 		: rs.length === 1 ? {rs: toRule(rs[0])}
 		: {rs: seq(...rs)}
 	)

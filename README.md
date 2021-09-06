@@ -36,7 +36,7 @@ const //# Hierarchical syntax
   itm = any(SEQ,pre),
   ANY = seq`any`(itm, few(_, '/', _, itm)), //e1 / e2 binary 1 Prioritized Choice //Expression <- Sequence (SLASH Sequence)*
   DEF = seq`def`(ID, _, '<-', _, exp)//Definition <- Identifier LEFTARROW Expression
-exp.set(ANY,itm)
+Object.assign(exp, any(ANY,itm))
 
 const // Error Management
   Xexp = seq(_, seq`Xexp`(/[^\s]*/), _),//Grammar <- Spacing Definition+ EndOfFile
