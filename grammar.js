@@ -15,7 +15,7 @@ const //# Lexical syntax
 	LIT = any(seq(`'`,seq`txt`(/(?:[^']|\\[^])+/),`'`), seq('"',seq`txt`(/(?:[^"]|\\[^])+/),'"'), seq('’',seq`txt`(/(?:[^’]|\\[^])+/),'’')), // " "/’ ’ primary 5 Literal string
 	DOT = seq`dot`('.'), //. primary 5 Any character
 	CHR = seq`reg`(/\[(?:(?:\\[^])|[^\]])+\]/), // [ ] primary 5 Character class
-	REG = seq('/', seq`reg`(/(?:[^/]|\\\/)+/), '/')
+	REG = seq('/', seq`reg`(/(?:[^/]|\\\/)+/), '/') //TODO add flags!
 
 const //# Hierarchical syntax
 	exp = any(),
