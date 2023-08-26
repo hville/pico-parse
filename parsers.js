@@ -1,16 +1,24 @@
-const all = ruleOfN(ALL) /* DEFAULT: sequence e0 e1 ... en */
+const toN = rs => rs.map( toRule ),
+			to1 = rs => [ rs.length > 1 ? all(...rs) : toRule(rs[0]) ]
+function ruleOf(FCN, toX) {
+	return function(...rs) {
+		const rule = new R(FCN, toX(rs) )
+		return this ? Object.assign(this, rule) : rule
+	}
+}
+const all = ruleOf(ALL, toN) /* DEFAULT: sequence e0 e1 ... en */
 const parsers = {
 	' ': all,
-	'|': ruleOfN(ANY), /* any e0 / e1 / ... / en */
-	'&': ruleOf1(AND), /* &(e0 ... en) */
-	'!': ruleOf1(NOT), /* !(e0 ... en) */
-	'+': ruleOf1(FEW), /* (e0 ... en)+ */
-	'*': ruleOf1(RUN), /* (e0 ... en)* */
-	'?': ruleOf1(OPT), /* (e0 ... en)? */
-	'@': ruleOf1(GET), /* (!e .)* e */
+	'|': ruleOf(ANY, toN), /* any e0 / e1 / ... / en */
+	'&': ruleOf(AND, to1), /* &(e0 ... en) */
+	'!': ruleOf(NOT, to1), /* !(e0 ... en) */
+	'+': ruleOf(FEW, to1), /* (e0 ... en)+ */
+	'*': ruleOf(RUN, to1), /* (e0 ... en)* */
+	'?': ruleOf(OPT, to1), /* (e0 ... en)? */
+	'@': ruleOf(GET, to1), /* (!e .)* e */
 }
 export default function define(a) {
-	return Array.isArray(a) ? parsers[a[0]] : parsers[' '].apply(this, arguments)
+	return !Array.isArray(a) ? parsers[' '].apply(this, arguments) : !this ? parsers[a[0]] : parsers[a[0]].bind(this)
 }
 export class Grammar {
 	constructor() {
@@ -48,11 +56,6 @@ class R {
 		this.rs = rules
 		this.id = ''
 	}
-	reset(a) {
-		return Array.isArray(a)
-			? (...rs) => Object.assign(this, parsers[a[0]](...rs) )
-			: Object.assign(this, parsers[' '].apply(this, arguments) )
-	}
 	scan(t) {
 		const res = this.peek(t,0)
 		if (res === null || res.j !== t.length) return null
@@ -66,6 +69,7 @@ class R {
 		return itms
 	}
 }
+R.prototype.reset = define
 function trim(tree) {
 	const kids = []
 	while (tree.length) {
@@ -150,12 +154,4 @@ function OPT(t,i=0) {
 	if (i>t.length) return null
 	let leaf = this.rs[0].peek(t,i)
 	return leaf === null ? this.tree(i,i) : this.tree(i,leaf.j,[leaf])
-}
-
-/* helpers */
-function ruleOfN(FCN) {
-	return (...rs) => new R(FCN, rs.map( toRule ) )
-}
-function ruleOf1(FCN) {
-	return (...rs) => new R(FCN, [ rs.length > 1 ? all(...rs) : toRule(rs[0]) ] )
 }

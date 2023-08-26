@@ -64,6 +64,7 @@ test('reset', a => {
 	eq(r.reset('a').peek('abc', 0), {i:0,j:1})
 	eq(r.reset`|`('c', 'b').peek('bcd', 0), {i:0,j:1})
 	eq(r.reset(/[^]/).peek('cde', 0), {i:0,j:1})
+	eq(r.reset('a').peek('abc', 0), {i:0,j:1})
 })
 
 test('consistent reduction', a => {
