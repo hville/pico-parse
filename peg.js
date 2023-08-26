@@ -1,42 +1,37 @@
-import * as fs from './parsers.js'
-import PEG from './grammar.js'
+import Rules from './rules.js'
+import PEG from './pegparser.js'
 
 export default function(source) {
-	const peg = Array.isArray(source) && Array.isArray(source.raw) ? String.raw.apply(String, arguments) : source,
+	const R = new Rules,
+				peg = Array.isArray(source) && Array.isArray(source.raw) ? String.raw.apply(String, arguments) : source,
 				tree = PEG.scan(peg)
 	if (tree.id?.[0]==='X') return null
-	const map = {},
-				ctx = {map, peg}
+	const ctx = {R, peg}
 	for (const def of tree) {
 		const id = def.id === 'def' ? peg.slice(def[0].i, def[0].j) : '',
 					expT = id ? def[def.length-1] : def
-		Object.assign(
-			map[id] || (map[id] = fs.seq()),
-			buildRule.call(ctx,expT)
-		)
+		R[id] = buildRule.call(ctx,expT)
 	}
-	const head = map[Object.keys(map)[0]]
+	const head = R[Object.keys(R)[0]] // First declared Id is the output rule
 	return head.scan.bind(head)
 }
-function buildRule(tree) {
-	const {i,j,id} = tree
-	if (id === 'kin') {
-		const rule = buildRule.call(this, tree[1])
-		rule.id = this.peg.slice(tree[0].i, tree[0].j)
-		return rule
+function buildRule(tree) { //this = {R, peg}
+	const {i,j,id} = tree,
+				{R, peg} = this
+	switch (id) {
+		case 'kin':
+			const idR = peg.slice(tree[0].i, tree[0].j)
+			return ( this.R[idR] = buildRule.call(this, tree[1]) )
+		case 'dot': return R(/[^]/)
+		case 'exp': return R(...tree.map(buildRule,this))
+		case 'txt': return R(peg.slice(i+1,j-1))
+		case 'chr': return R(RegExp(peg.slice(i,j), 'uy'))
+		case 'id' : return R[peg.slice(i,j)]
+		case 'reg' : //TODO flags
+			console.log('REG', tree)
+			return R(RegExp(peg.slice(i+1,j-1), 'uy'))
+		default:
+			if (id.length > 1) throw Error(id)
+			return R([id])(...tree.map(buildRule,this))
 	}
-	if (id === 'get') {
-		const exp = buildRule.call(this, tree[0])
-		return fs.seq(fs.run(fs.not(exp), /[^]/), exp)
-	}
-	if (id === 'dot') {
-		return fs.seq(/[^]/)
-	}
-	if (tree.length) {
-		return fs[id](...tree.map(buildRule,this))
-	}
-	const tok = this.peg.slice(i,j)
-	return id==='txt' ? fs.seq(tok)
-		: id==='reg' ? fs.seq(RegExp(tok, 'uy'))
-		: /* id==='idv' ? */ this.map[tok] || (this.map[tok] = fs.seq())
 }

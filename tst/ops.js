@@ -1,6 +1,8 @@
 import test from 'assert-op'
 import a from 'assert-op/assert.js'
-import { and, any, few, not, opt, run, seq } from '../parsers.js'
+import Rules from '../rules.js'
+
+const R = new Rules
 
 function eq(val, res) {
 	if (val === null || res === null) a`===`(val, res)
@@ -10,57 +12,73 @@ function eq(val, res) {
 	}
 }
 
-test('run', a => {
-	eq(run('ab').peek('x', 0), {i:0,j:0})
-	eq(run('ab').scan('ab'), {i:0,j:2})
-	eq(run('ab').scan('ababab'), {i:0,j:6})
-	eq(run('a', 'b').scan('ababab'), {i:0,j:6})
+test('R`*`', a => {
+	eq(R`*`('ab').peek('x', 0), {i:0,j:0})
+	eq(R`*`('ab').scan('ab'), {i:0,j:2})
+	eq(R`*`('ab').scan('ababab'), {i:0,j:6})
+	eq(R`*`('a', 'b').scan('ababab'), {i:0,j:6})
 })
 
-test('few', a => {
+test('R`+`', a => {
 	//pass
-	eq(few('ab').scan('ababab'), {i:0,j:6})
-	eq(few('a', 'b').scan('ababab'), {i:0,j:6})
+	eq(R`+`('ab').scan('ababab'), {i:0,j:6})
+	eq(R`+`('a', 'b').scan('ababab'), {i:0,j:6})
 	// few fail
-	eq(few('ab').peek('x', 0), null)
+	eq(R`+`('ab').peek('x', 0), null)
 })
 
-test('opt', a => {
-	// opt pass
-	eq(opt('ab').peek('x', 0), {i:0,j:0})
-	eq(opt('a', 'b').peek('x', 0), {i:0,j:0})
-	eq(opt('ab').scan('ab'), {i:0,j:2})
-	eq(opt('a', 'b').scan('ab'), {i:0,j:2})
+test('R`?`', a => {
+	// R`?` pass
+	eq(R`?`('ab').peek('x', 0), {i:0,j:0})
+	eq(R`?`('a', 'b').peek('x', 0), {i:0,j:0})
+	eq(R`?`('ab').scan('ab'), {i:0,j:2})
+	eq(R`?`('a', 'b').scan('ab'), {i:0,j:2})
 })
 
-test('any', a => {
-	// any pass
-	eq(any('x','ab','abab').peek('abababX', 0), {i:0,j:2})
+test('R`|`', a => {
+	// R`|` pass
+	eq(R`|`('x','ab','abab').peek('abababX', 0), {i:0,j:2})
 })
 
-test('and', a => {
-	eq(and('ab').peek('abc', 0), {i:0,j:0})
-	eq(and('ba').peek('abc', 0), null)
-	eq(seq('a', and('c')).peek('abc', 0), null)
-	eq(seq('a', and('b')).peek('abc', 0), {i:0,j:1})
+test('R`&`', a => {
+	eq(R`&`('ab').peek('abc', 0), {i:0,j:0})
+	eq(R`&`('ba').peek('abc', 0), null)
+	eq(R('a', R`&`('c')).peek('abc', 0), null)
+	eq(R('a', R`&`('b')).peek('abc', 0), {i:0,j:1})
 })
 
-test('not', a => {
-	eq(not('ab').peek('abc', 0), null)
-	eq(not('ba').peek('abc', 0), {i:0,j:0})
-	eq(seq('a', not('c')).peek('abc', 0), {i:0,j:1})
-	eq(seq('a', not('b')).peek('abc', 0), null)
+test('R`!`', a => {
+	eq(R`!`('ab').peek('abc', 0), null)
+	eq(R`!`('ba').peek('abc', 0), {i:0,j:0})
+	eq(R('a', R`!`('c')).peek('abc', 0), {i:0,j:1})
+	eq(R('a', R`!`('b')).peek('abc', 0), null)
+})
+
+test('R`@`', a => {
+	eq(R`@`('ba').peek('abc', 0), null)
+	eq(R`@`('ab').peek('abc', 0), {i:0,j:2})
+	eq(R`@`('bc').peek('abc', 0), {i:0,j:3})
 })
 
 test('consistent reduction', a => {
-	eq(seq(any('a')), any('a'))
-	eq(seq`n`(any('a')), any`n`('a'))
-	eq(seq(any`n`('a')), any`n`('a'))
+	eq(R(R`|`('a')), R`|`('a'))
 
-	eq(any(seq('a')), seq('a'))
-	eq(any`n`(seq('a')), seq`n`('a'))
-	eq(any(seq`n`('a')), seq`n`('a'))
+	const an = R`|`('a')
+	an.id = 'n'
+	eq(R(an), an)
+
+	const sn = R(R`|`('a'))
+	sn.id = 'n'
+	eq(sn, an)
+
+	const G = new Rules
+	G.test = R(G.an)
+	G.an = R`|`('a')
+	G.sn = R(R`|`('a'))
+	eq(G.sn, G.an)
 })
+
+//console.log(R.b, '?Object.keys(R)?:', Object.keys(R), Object.keys(R))
 
 /*
 test('tie', a => {

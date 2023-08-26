@@ -1,10 +1,13 @@
-import {seq, any} from '../parsers.js'
+import Rules from '../rules.js'
 import test from 'assert-op'
 import a from 'assert-op/assert.js'
 
+const R = new Rules
 
-withRofN(seq, 'seq')
-withRofN(any, 'any')
+withRofN(R, 'R')
+withRofN(R`/`, 'R`/`')
+withRofN(R` `, 'R` `')
+
 
 function eq(val, res) {
 	if (val === null || res === null) a`===`(val, res)
@@ -16,7 +19,8 @@ function eq(val, res) {
 
 function withRofN(rule, name) {
 	const abcT = rule('abc'),
-				abcR = rule`r`(/abc/)
+				abcR = rule(/abc/)
+	abcR.id = 'r'
 	test(`${name}(terminal)`, a => {
 		// name
 		eq(rule('abc').peek('abc', 0), {i:0,j:3})
