@@ -1,11 +1,9 @@
-import Rules from '../rules.js'
+import R from '../parsers.js'
 import test from 'assert-op'
 import a from 'assert-op/assert.js'
 
-const R = new Rules
-
 withRofN(R, 'R')
-withRofN(R`/`, 'R`/`')
+withRofN(R`|`, 'R`|`')
 withRofN(R` `, 'R` `')
 
 

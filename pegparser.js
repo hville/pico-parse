@@ -1,4 +1,4 @@
-import Rules from './rules.js'
+import Rules from './parsers.js'
 /*
 TODO
 standardize

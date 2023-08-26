@@ -1,4 +1,4 @@
-import Rules from './rules.js'
+import Rules from './parsers.js'
 import PEG from './pegparser.js'
 
 export default function(source) {
@@ -12,6 +12,7 @@ export default function(source) {
 					expT = id ? def[def.length-1] : def
 		R[id] = buildRule.call(ctx,expT)
 	}
+	console.log(Object.keys(R))
 	const head = R[Object.keys(R)[0]] // First declared Id is the output rule
 	return head.scan.bind(head)
 }

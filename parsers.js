@@ -1,5 +1,5 @@
 const all = ruleOfN(ALL) /* DEFAULT: sequence e0 e1 ... en */
-const operators = {
+const parsers = {
 	' ': all,
 	'|': ruleOfN(ANY), /* any e0 / e1 / ... / en */
 	'&': ruleOf1(AND), /* &(e0 ... en) */
@@ -9,29 +9,21 @@ const operators = {
 	'?': ruleOf1(OPT), /* (e0 ... en)? */
 	'@': ruleOf1(GET), /* (!e .)* e */
 }
-
-export default class Rules {
+export default function define(a) {
+	return Array.isArray(a) ? parsers[a[0]] : parsers[' '].apply(this, arguments)
+}
+export class Grammar {
 	constructor() {
-		const idRules = this
-		function proxied(a) {
-			return Array.isArray(a) ? operators[a[0]] : operators[' '].apply(this, arguments)
-		}
-		return new Proxy(proxied, {
-			get(_, key) { // initiate rules not already defined
-				return idRules[key] ?? idRules[(idRules[key] = new R).id = key]
+		return new Proxy({}, {
+			get(tgt, key) { // initiate rules not already defined
+				return tgt[key] ?? tgt[(tgt[key] = new R).id = key]
 			},
-			set(_, key, val) {
+			set(tgt, key, val) {
 				const rule = toRule(val)
 				rule.id = key // automatic id assignment
-				if (idRules[key]) Object.assign(idRules[key], rule) // keep existing reference
-				else idRules[key] = rule
+				if (tgt[key]) Object.assign(tgt[key], rule) // keep existing reference
+				else tgt[key] = rule
 				return true
-			},
-			ownKeys(_) {
-				return Object.keys(idRules)
-			},
-			getOwnPropertyDescriptor(_, prop) {
-				return Object.getOwnPropertyDescriptor(idRules, prop)
 			}
 		})
 	}
@@ -39,10 +31,27 @@ export default class Rules {
 
 // base class for all parser rules
 class R {
-	constructor(peek, rules=[], id='') {
+	constructor(peek, rules=[]) {
+		/* 	memo(t, i, m=new WeakMap) {
+		let history = m.get(this)
+		if (!history) m.set(this, history={} )
+		return history[i] !== undefined ? history[i] : ( history[i] = this.peek(t, i) )
+		}
+		TODO
+		x = R()
+		x.set('a', /b/)
+		x.add('a', /b/)
+		x.('a', /b/)
+
+		*/
 		this.peek = peek
 		this.rs = rules
-		this.id = id
+		this.id = ''
+	}
+	reset(a) {
+		return Array.isArray(a)
+			? (...rs) => Object.assign(this, parsers[a[0]](...rs) )
+			: Object.assign(this, parsers[' '].apply(this, arguments) )
 	}
 	scan(t) {
 		const res = this.peek(t,0)
@@ -55,11 +64,6 @@ class R {
 		itms.i = i
 		itms.j = j
 		return itms
-	}
-	memo(t, i, m=new WeakMap) {
-		let history = m.get(this)
-		if (!history) m.set(this, history={} )
-		return history[i] ?? ( history[i] = this.peek(t, i) )
 	}
 }
 function trim(tree) {

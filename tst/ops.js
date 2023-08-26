@@ -1,8 +1,7 @@
 import test from 'assert-op'
 import a from 'assert-op/assert.js'
-import Rules from '../rules.js'
-
-const R = new Rules
+import R from '../parsers.js'
+import {Grammar} from '../parsers.js'
 
 function eq(val, res) {
 	if (val === null || res === null) a`===`(val, res)
@@ -60,6 +59,13 @@ test('R`@`', a => {
 	eq(R`@`('bc').peek('abc', 0), {i:0,j:3})
 })
 
+test('reset', a => {
+	const r = R()
+	eq(r.reset('a').peek('abc', 0), {i:0,j:1})
+	eq(r.reset`|`('c', 'b').peek('bcd', 0), {i:0,j:1})
+	eq(r.reset(/[^]/).peek('cde', 0), {i:0,j:1})
+})
+
 test('consistent reduction', a => {
 	eq(R(R`|`('a')), R`|`('a'))
 
@@ -71,15 +77,12 @@ test('consistent reduction', a => {
 	sn.id = 'n'
 	eq(sn, an)
 
-	const G = new Rules
+	const G = new Grammar
 	G.test = R(G.an)
 	G.an = R`|`('a')
 	G.sn = R(R`|`('a'))
 	eq(G.sn, G.an)
 })
-
-//console.log(R.b, '?Object.keys(R)?:', Object.keys(R), Object.keys(R))
-
 /*
 test('tie', a => {
 	//anonymous
