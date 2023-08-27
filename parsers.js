@@ -1,89 +1,49 @@
-const toN = rs => rs.map( toRule ),
-			to1 = rs => [ rs.length > 1 ? all(...rs) : toRule(rs[0]) ]
-function ruleOf(FCN, toX) {
-	return function(...rs) {
-		const rule = new R(FCN, toX(rs) )
-		return this ? Object.assign(this, rule) : rule
-	}
-}
-const all = ruleOf(ALL, toN) /* DEFAULT: sequence e0 e1 ... en */
-const parsers = {
-	' ': all,
-	'|': ruleOf(ANY, toN), /* any e0 / e1 / ... / en */
-	'&': ruleOf(AND, to1), /* &(e0 ... en) */
-	'!': ruleOf(NOT, to1), /* !(e0 ... en) */
-	'+': ruleOf(FEW, to1), /* (e0 ... en)+ */
-	'*': ruleOf(RUN, to1), /* (e0 ... en)* */
-	'?': ruleOf(OPT, to1), /* (e0 ... en)? */
-	'@': ruleOf(GET, to1), /* (!e .)* e */
-}
-export default function define(a) {
-	return !Array.isArray(a) ? parsers[' '].apply(this, arguments) : !this ? parsers[a[0]] : parsers[a[0]].bind(this)
-}
-export class Grammar {
-	constructor() {
-		return new Proxy({}, {
-			get(tgt, key) { // initiate rules not already defined
-				return tgt[key] ?? tgt[(tgt[key] = new R).id = key]
-			},
-			set(tgt, key, val) {
-				const rule = toRule(val)
-				rule.id = key // automatic id assignment
-				if (tgt[key]) Object.assign(tgt[key], rule) // keep existing reference
-				else tgt[key] = rule
-				return true
-			}
-		})
-	}
-}
+const P = {}
 
 // base class for all parser rules
 class R {
 	constructor(peek, rules=[]) {
-		/* 	memo(t, i, m=new WeakMap) {
-		let history = m.get(this)
-		if (!history) m.set(this, history={} )
-		return history[i] !== undefined ? history[i] : ( history[i] = this.peek(t, i) )
-		}
-		TODO
-		x = R()
-		x.set('a', /b/)
-		x.add('a', /b/)
-		x.('a', /b/)
-
-		*/
 		this.peek = peek
-		this.rs = rules
-		this.id = ''
+		this.act = null
+		const rs = rules.filter( r => r.call ? !(this.act = r) : true )
+		this.rs = (peek !== P['|'] && peek !== P[' '] && rs.length > 1) ? [new R(P[' '], rs)]
+		: (peek === TXT || peek === REG) ? rs
+		: rs.map( r => r instanceof R ? r
+			: r.source ? new R(REG, [r.sticky ? r : RegExp(r.source, 'y'+r.flags)])
+			: new R(TXT, [r])
+		)
 	}
 	scan(t) {
-		const res = this.peek(t,0)
+		let res = this.peek(t,0)
 		if (res === null || res.j !== t.length) return null
 		trim(res)
-		return (!res.id && res.length===1) ? res[0] : res
+		if ((!res.act && res.length===1)) res = res[0] //TODO in trim?
+		return res
 	}
-	tree(i,j,itms=[],id=this.id) {
-		if (id) itms.id = id
+	tree(i, j, itms=[]) {
+		if (this.act) itms.act = this.act
 		itms.i = i
 		itms.j = j
 		return itms
 	}
+	reset(...rs) {
+		return Array.isArray(rs[0]) ? (...as) => this ? Object.assign(this, new R(P[rs[0][0]], as)) : new R(P[rs[0][0]], as)
+		: this ? Object.assign(this, new R(P[' '], rs))
+		: new R(P[' '], rs)
+	}
 }
-R.prototype.reset = define
+
+export default R.prototype.reset
+
 function trim(tree) {
 	const kids = []
 	while (tree.length) {
 		const c = tree.shift()
-		if (c.id) kids.push(trim(c))
+		if (c.act) kids.push(trim(c))
 		else if (c.length && trim(c).length) kids.push(...c)
 	}
 	tree.push(...kids)
 	return tree
-}
-function toRule(r) {
-	return r instanceof R ? r
-		: r.source ? new R(REG, [r.sticky ? r : RegExp(r.source, 'y'+r.flags)])
-		: new R(TXT, [r])
 }
 
 /* terminal tokens */
@@ -101,33 +61,33 @@ function TXT(t,i=0) {
 }
 
 /* parsers */
-function ANY(t,i=0) {
+P['|'] = function ANY(t,i=0) { /* any e0 / e1 / ... / en */
 	for (const r of this.rs) {
 		const leaf = r.peek(t,i)
-		if (leaf !== null) return this.id ? this.tree(i,leaf.j,leaf) : leaf
+		if (leaf !== null) return this.act ? this.tree(i,leaf.j,leaf) : leaf
 	}
 	return null
 }
-function ALL(t,i=0) {
+P[' '] = function ALL(t,i=0) { /* DEFAULT: sequence e0 e1 ... en */
 	const tree = []
 	let j = i
 	if (j<t.length) for (const r of this.rs) {
 		const leaf = r.peek(t,j)
 		if (leaf === null) return leaf
 		j = leaf.j
-		if (leaf.id) tree.push(leaf)
+		if (leaf.act) tree.push(leaf)
 		else for(const cut of leaf) tree.push(cut)
 	} else return null
 	return this.tree(i,j,tree)
 }
-function AND(t,i=0) {
+P['&'] = function AND(t,i=0) { /* &(e0 ... en) */
 	if (this.rs[0].peek(t,i) === null) return null
 	return this.tree(i,i)
 }
-function NOT(t,i=0) {
+P['!'] = function NOT(t,i=0) { /* !(e0 ... en) */
 	return (i>t.length || this.rs[0].peek(t,i)!==null) ? null :  this.tree(i,i)
 }
-function GET(t,i=0) {
+P['@'] = function GET(t,i=0) { /* (!e .)* e */
 	let k = i
 	while(k<t.length) {
 		const leaf = this.rs[0].peek(t,k++)
@@ -135,14 +95,14 @@ function GET(t,i=0) {
 	}
 	return null
 }
-function FEW(t,i=0) {
+P['+'] = function FEW(t,i=0) { /* (e0 ... en)+ */
 	const tree = [],
 				r = this.rs[0]
 	let leaf = {j:i}
 	while(leaf = r.peek(t, leaf.j)) tree.push(leaf)
 	return tree.length > 0 ? this.tree(i,tree[tree.length-1].j,tree) : null
 }
-function RUN(t,i=0) {
+P['*'] = function RUN(t,i=0) { /* (e0 ... en)* */
 	if (i>t.length) return null
 	const tree = [],
 				r = this.rs[0]
@@ -150,7 +110,7 @@ function RUN(t,i=0) {
 	while(leaf = r.peek(t,leaf.j)) tree.push(leaf)
 	return this.tree(i, tree.length ? tree[tree.length-1].j : i,tree)
 }
-function OPT(t,i=0) {
+P['?'] = function OPT(t,i=0) { /* (e0 ... en)? */
 	if (i>t.length) return null
 	let leaf = this.rs[0].peek(t,i)
 	return leaf === null ? this.tree(i,i) : this.tree(i,leaf.j,[leaf])

@@ -1,7 +1,6 @@
 import test from 'assert-op'
 import a from 'assert-op/assert.js'
 import R from '../parsers.js'
-import {Grammar} from '../parsers.js'
 
 function eq(val, res) {
 	if (val === null || res === null) a`===`(val, res)
@@ -78,25 +77,9 @@ test('consistent reduction', a => {
 	sn.id = 'n'
 	eq(sn, an)
 
-	const G = new Grammar
-	G.test = R(G.an)
-	G.an = R`|`('a')
-	G.sn = R(R`|`('a'))
-	eq(G.sn, G.an)
+	const id = a => a,
+				ax = R`|`('a',),
+				sx = R(R`|`('a'))
+	ax.act = sx.act = id
+	eq(ax, sx)
 })
-/*
-test('tie', a => {
-	//anonymous
-	eq(tie('.','a').peek('a.b', 0), {i:0,j:1})
-	eq(tie('.','a').peek('a.a.b', 0), [0,3])
-	eq(tie('.','a').peek('a.a.a.b', 0), [0,5])
-	//any
-	eq(tie('.','a','b').peek('a.b', 0), [0,3])
-	eq(tie('.','a','b').peek('a.a.b', 0), [0,5])
-	eq(tie('.','a','b').peek('a.a.a.b', 0), [0,7])
-	//named
-	eq(tie`n`('.','a').peek('a.b', 0), [0,1,'n'])
-	eq(tie`n`('.','a').peek('a.a.b', 0), [0,3,'n'])
-	eq(tie`n`('.','a').peek('a.a.a.b', 0), [0,5,'n'])
-})
-*/

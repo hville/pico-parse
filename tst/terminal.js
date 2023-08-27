@@ -6,7 +6,6 @@ withRofN(R, 'R')
 withRofN(R`|`, 'R`|`')
 withRofN(R` `, 'R` `')
 
-
 function eq(val, res) {
 	if (val === null || res === null) a`===`(val, res)
 	else {
@@ -43,3 +42,4 @@ function withRofN(rule, name) {
 		eq(abcR.peek('abc', 1), null)
 	})
 }
+
