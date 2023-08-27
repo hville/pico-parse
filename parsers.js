@@ -1,11 +1,8 @@
-const P = {}
-
-// base class for all parser rules
 class R {
 	constructor(peek, rules=[]) {
 		this.peek = peek
-		this.act = null
-		const rs = rules.filter( r => r.call ? !(this.act = r) : true )
+		this.cb = undefined
+		const rs = rules.filter( r => r.apply ? !(this.cb = r) : true )
 		this.rs = (peek !== P['|'] && peek !== P[' '] && rs.length > 1) ? [new R(P[' '], rs)]
 		: (peek === TXT || peek === REG) ? rs
 		: rs.map( r => r instanceof R ? r
@@ -14,14 +11,13 @@ class R {
 		)
 	}
 	scan(t) {
-		let res = this.peek(t,0)
-		if (res === null || res.j !== t.length) return null
-		trim(res)
-		if ((!res.act && res.length===1)) res = res[0] //TODO in trim?
-		return res
+		let tree = this.peek(t,0)
+		if (tree === null || tree.j !== t.length) return null
+		prune(tree, t)
+		return tree.cb ? tree.cb(tree, t) : tree
 	}
 	tree(i, j, itms=[]) {
-		if (this.act) itms.act = this.act
+		if (this.cb) itms.cb = this.cb
 		itms.i = i
 		itms.j = j
 		return itms
@@ -32,17 +28,16 @@ class R {
 		: new R(P[' '], rs)
 	}
 }
-
 export default R.prototype.reset
 
-function trim(tree) {
-	const kids = []
-	while (tree.length) {
-		const c = tree.shift()
-		if (c.act) kids.push(trim(c))
-		else if (c.length && trim(c).length) kids.push(...c)
+function prune(tree, t) {
+	let len = 0
+	for (let i=0; i<tree.length; ++i) {
+		const kid = tree[i],
+					res = kid?.cb?.(prune(kid, t), t)
+		if (res !== undefined) tree[len++] = res
 	}
-	tree.push(...kids)
+	tree.length = len
 	return tree
 }
 
@@ -61,57 +56,58 @@ function TXT(t,i=0) {
 }
 
 /* parsers */
-P['|'] = function ANY(t,i=0) { /* any e0 / e1 / ... / en */
+const P = {
+'|': function(t,i=0) { /* any e0 / e1 / ... / en */
 	for (const r of this.rs) {
 		const leaf = r.peek(t,i)
-		if (leaf !== null) return this.act ? this.tree(i,leaf.j,leaf) : leaf
+		if (leaf !== null) return this.cb ? this.tree(i,leaf.j,leaf) : leaf
 	}
 	return null
-}
-P[' '] = function ALL(t,i=0) { /* DEFAULT: sequence e0 e1 ... en */
+},
+' ': function(t,i=0) { /* DEFAULT: sequence e0 e1 ... en */
 	const tree = []
 	let j = i
 	if (j<t.length) for (const r of this.rs) {
 		const leaf = r.peek(t,j)
 		if (leaf === null) return leaf
 		j = leaf.j
-		if (leaf.act) tree.push(leaf)
+		if (leaf.cb) tree.push(leaf)
 		else for(const cut of leaf) tree.push(cut)
 	} else return null
 	return this.tree(i,j,tree)
-}
-P['&'] = function AND(t,i=0) { /* &(e0 ... en) */
+},
+'&': function(t,i=0) { /* &(e0 ... en) */
 	if (this.rs[0].peek(t,i) === null) return null
 	return this.tree(i,i)
-}
-P['!'] = function NOT(t,i=0) { /* !(e0 ... en) */
+},
+'!': function(t,i=0) { /* !(e0 ... en) */
 	return (i>t.length || this.rs[0].peek(t,i)!==null) ? null :  this.tree(i,i)
-}
-P['@'] = function GET(t,i=0) { /* (!e .)* e */
+},
+'@': function(t,i=0) { /* (!e .)* e */
 	let k = i
 	while(k<t.length) {
 		const leaf = this.rs[0].peek(t,k++)
 		if (leaf !== null) return this.tree(i, leaf.j, leaf)
 	}
 	return null
-}
-P['+'] = function FEW(t,i=0) { /* (e0 ... en)+ */
+},
+'+': function(t,i=0) { /* (e0 ... en)+ */
 	const tree = [],
 				r = this.rs[0]
 	let leaf = {j:i}
 	while(leaf = r.peek(t, leaf.j)) tree.push(leaf)
 	return tree.length > 0 ? this.tree(i,tree[tree.length-1].j,tree) : null
-}
-P['*'] = function RUN(t,i=0) { /* (e0 ... en)* */
+},
+'*': function(t,i=0) { /* (e0 ... en)* */
 	if (i>t.length) return null
 	const tree = [],
 				r = this.rs[0]
 	let leaf = {j:i}
 	while(leaf = r.peek(t,leaf.j)) tree.push(leaf)
 	return this.tree(i, tree.length ? tree[tree.length-1].j : i,tree)
-}
-P['?'] = function OPT(t,i=0) { /* (e0 ... en)? */
+},
+'?': function(t,i=0) { /* (e0 ... en)? */
 	if (i>t.length) return null
 	let leaf = this.rs[0].peek(t,i)
 	return leaf === null ? this.tree(i,i) : this.tree(i,leaf.j,[leaf])
-}
+}}
