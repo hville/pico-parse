@@ -87,4 +87,5 @@ test('consistent reduction', a => {
 test('actions', a => {
 	a`===`( R('a', R('a', (r,s)=>r.i /* 1 */), (r,s)=>s+r.i+r[0]).scan('aa') , 'aa01')
 	a`===`( R( R('a', ()=>'A'), R('b', ()=>'B'), R('c', ()=>'C'), r=>r.join('') ).scan('abc') , 'ABC')
+	a`===`( R('a', R( R( R('b', ()=>'B') ), 'c' ), r=>r.join('') ).scan('abc'), 'B')
 })

@@ -33,9 +33,13 @@ export default R.prototype.reset
 function prune(tree, t) {
 	let len = 0
 	for (let i=0; i<tree.length; ++i) {
-		const kid = tree[i],
-					res = kid?.cb?.(prune(kid, t), t)
-		if (res !== undefined) tree[len++] = res
+		const kid = tree[i]
+		if (kid.cb) {
+			const res = kid.cb?.(prune(kid, t), t)
+			if (res !== undefined) tree[len++] = res
+		} else {
+			tree.splice(i+1, 0, ...kid)
+		}
 	}
 	tree.length = len
 	return tree

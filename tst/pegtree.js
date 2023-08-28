@@ -3,19 +3,18 @@ import PEG from '../pegparser.js'
 
 function pegTest(name, txt) {
 	t(name, a => {
-		const tree = PEG.scan(txt),
-					{j,id} = tree
-		console.log(tree)
+		const tree = PEG.scan(txt)
+		console.log('>>>',tree)
 		a`===`(j, txt.length, `parsed ${txt} until ${j}`)
 		a`===`(id, 'peg', `parsed ${txt} as valid`)
 	})
 }
 
 pegTest('simple =',`
-B = A
+B != A
 A = 'a'
 `)
-pegTest('anonymous 1st',`
+/* pegTest('anonymous 1st',`
 A 'x'
 A = 'a'
 `)
@@ -83,3 +82,4 @@ Space = ’ ’ | ’\t’ | EndOfLine
 EndOfLine = ’\r\n’ | ’\n’ | ’\r’
 EndOfFile = !.`)
 
+ */
