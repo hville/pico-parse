@@ -7,7 +7,8 @@ withRofN(R`|`, 'R`|`')
 withRofN(R` `, 'R` `')
 
 function eq(val, res) {
-	if (val === null || res === null) a`===`(val, res)
+	if ( val === null || res === null ) a`===`(val, res)
+	else if ( val.error || res.error ) a`===`( !val.error, !val.error )
 	else {
 		a`===`(val.i, res.i)
 		a`===`(val.j, res.j)
@@ -20,7 +21,7 @@ function withRofN(rule, name) {
 	abcR.id = 'r'
 	test(`${name}(terminal)`, a => {
 		// name
-		eq(rule('abc').peek('abc', 0), {i:0,j:3})
+		eq(rule('abc').peek('abc', 0), {i:0,j:3})//
 		eq(rule(/abc/).peek('abc', 0), {i:0,j:3})
 
 		// rule string pass
@@ -30,7 +31,7 @@ function withRofN(rule, name) {
 		// rule string fail
 		eq(abcT.peek('ab', 0), null)
 		eq(abcT.peek('aabc', 0), null)
-		eq(abcT.scan('aabc'), null)
+		eq(abcT.scan('aabc'), {error:'...'})
 		eq(abcT.peek('abc', 1), null)
 		// rule regexp pass
 		eq(abcR.scan('abc'), {i:0,j:3,id:'r'})

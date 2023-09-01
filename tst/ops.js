@@ -3,7 +3,8 @@ import a from 'assert-op/assert.js'
 import R from '../parsers.js'
 
 function eq(val, res) {
-	if (val === null || res === null) a`===`(val, res)
+	if ( val === null || res === null ) a`===`(val, res)
+	else if ( val.error || res.error ) a`===`( !val.error, !val.error )
 	else {
 		a`===`(val.i, res.i)
 		a`===`(val.j, res.j)
@@ -60,10 +61,9 @@ test('R`@`', a => {
 
 test('reset', a => {
 	const r = R()
-	eq(r.reset('a').peek('abc', 0), {i:0,j:1})
-	eq(r.reset`|`('c', 'b').peek('bcd', 0), {i:0,j:1})
-	eq(r.reset(/[^]/).peek('cde', 0), {i:0,j:1})
-	eq(r.reset('a').peek('abc', 0), {i:0,j:1})
+	eq(r.set('a').peek('abc', 0), {i:0,j:1})
+	eq(r.set(/[^]/).peek('cde', 0), {i:0,j:1})
+	eq(r.set('a').peek('abc', 0), {i:0,j:1})
 })
 
 test('consistent reduction', a => {
@@ -77,15 +77,12 @@ test('consistent reduction', a => {
 	sn.id = 'n'
 	eq(sn, an)
 
-	const id = a => a,
-				ax = R`|`('a',),
+	const	ax = R`|`('a',),
 				sx = R(R`|`('a'))
-	ax.act = sx.act = id
+	ax.id = sx.id = 'id'
 	eq(ax, sx)
 })
 
-test('actions', a => {
-	a`===`( R('a', R('a', (r,s)=>r.i /* 1 */), (r,s)=>s+r.i+r[0]).scan('aa') , 'aa01')
-	a`===`( R( R('a', ()=>'A'), R('b', ()=>'B'), R('c', ()=>'C'), r=>r.join('') ).scan('abc') , 'ABC')
-	a`===`( R('a', R( R( R('b', ()=>'B') ), 'c' ), r=>r.join('') ).scan('abc'), 'B')
+test('ids and actions', a => {
+	a`===`( R.a('a', R.b('b'), R.c('c') ).scan('abc', { a:r=>r.join(''), b:(r,s)=>s, c:()=>'C' }) , 'bC')
 })

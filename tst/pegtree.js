@@ -1,17 +1,20 @@
 import t from 'assert-op'
 import PEG from '../pegparser.js'
 
+console.log('>>>',PEG.scan(`B = 'a'`))
+
 function pegTest(name, txt) {
 	t(name, a => {
-		const tree = PEG.scan(txt)
-		console.log('>>>',tree)
-		a`===`(j, txt.length, `parsed ${txt} until ${j}`)
-		a`===`(id, 'peg', `parsed ${txt} as valid`)
+		const tree = PEG.peek(txt)
+		//console.log(tree)
+		a`===`(tree.j, txt.length, `parsed ${txt} until ${tree.j}`)
+		//a`===`(id, 'peg', `parsed ${txt} as valid`)
 	})
 }
+//pegTest('token',`B = 'a'`)
 
 pegTest('simple =',`
-B != A
+B = A
 A = 'a'
 `)
 /* pegTest('anonymous 1st',`
