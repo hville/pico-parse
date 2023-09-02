@@ -17,6 +17,7 @@ class R {
 		return itms
 	}
 	scan(text, actions) {
+		if (typeof text !== 'string') throw Error(`Source must be a string, not a ${typeof text}.`)
 		let tree = this.peek(text, 0)
 		if (tree?.j !== text.length) {
 			if (tree === null) tree = this.tree(0,0)
