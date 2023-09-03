@@ -15,7 +15,7 @@ REG = $.reg( '/', $.lit( /(?:[^/]|\\\/)+/ ), '/', $.lit`?`( /[a-z]*/ ) )
 
 //# Hierarchical syntax
 const
-exp = $`|`(),
+exp = $(),
 PID = $.lit( identifier ),
 VAR = $( $.ref( PID ), _, $`!`('=') ),
 prm = $`|`( $('(', _, exp, _, ')'), TXT, CHR, DOT, REG, VAR ), //Primary = Identifier !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
@@ -36,7 +36,7 @@ ERR = $.err( /[^\s]+/ ),
 // final grammar
 PEG = $.peg( _, $`|`(DEF, exp, ERR), $`*`( _, $`|`(DEF, ERR) ), _ )
 
-exp.set(ANY, SEQ, AND, NOT, GET, FEW, OPT, RUN, prm)
+exp.reset( $`|`(ANY, SEQ, AND, NOT, GET, FEW, OPT, RUN, prm) )
 
 const m = new Map // memory to store PEG references before being declared
 

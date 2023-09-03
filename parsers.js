@@ -2,16 +2,21 @@ class R {
 	constructor(peek, rules=[]) {
 		this.peek = peek
 		this.id = ''
-		this.set( ...rules ) //this.rs
+		this.rs = (this.peek !== P['|'] && this.peek !== P['>'] && rules.length > 1) ? [new R(P['>'], rules)]
+		: (this.peek === TXT || this.peek === REG) ? rules
+		: rules.map( r => r instanceof R ? r : r.source ? new R(REG, [r.sticky ? r : RegExp(r.source, 'y'+r.flags)]) : new R(TXT, [r]) )
 	}
-	set( ...rs ) {
-		this.rs = (this.peek !== P['|'] && this.peek !== P[' '] && rs.length > 1) ? [new R(P[' '], rs)]
-		: (this.peek === TXT || this.peek === REG) ? rs
-		: rs.map( r => r instanceof R ? r : r.source ? new R(REG, [r.sticky ? r : RegExp(r.source, 'y'+r.flags)]) : new R(TXT, [r]) )
-		return this
+	reset( rule ) {
+		return Object.assign( this, rule.peek ? rule : new R(P['>'], [rule])  )
 	}
 	tree(i, j, itms=[]) {
 		if (this.id) itms.id = this.id
+		let len = 0
+		for (let i=0; i<itms.length; ++i) {
+			if (itms[i].id) itms[len++] = itms[i]
+			else itms.splice(i+1, 0, ...itms[i])
+		}
+		itms.length = len
 		itms.i = i
 		itms.j = j
 		return itms
@@ -24,29 +29,35 @@ class R {
 			tree.error = `Parse failed at position ${tree.j}.`
 			return tree
 		}
-		prune(tree, text, actions)
+		apply(tree, text, actions)
 		const action = actions?.[tree.id]
 		return !action ? tree : action.length < 2 ? action( tree ) : action( tree, t.slice(tree.i, tree.j) )
 	}
 }
+
 export default new Proxy(
-	(...args) => Array.isArray(args[0]) ? (...rs) => new R(P[args[0][0]], rs) : new R(P[' '], args),
+	(...args) => Array.isArray(args[0]) ? (...rs) => new R(P[args[0][0]], rs) : new R(P['>'], args),
 	{ get: (f,id) => (...as) => { const r=f(...as); r.id=id; return r } }
 )
 
-function prune(tree, t, acts) {
+export class Grammar {
+	constructor() {
+		const tmp = Object.create(null)
+		return new Proxy(Object.create(null), {
+			get: (_, k) => tmp[k] ?? ( tmp[k] = new R ),
+			set: (m, k, v) => m[k] = tmp[k]?.reset(v) ?? ( tmp[k] = v )
+		})
+	}
+}
+
+function apply(tree, t, acts) {
 	let len = 0
-	for (let i=0; i<tree.length; ++i) {
-		const kid = tree[i]
+	for (let kid of tree) {
 		if (kid.error && !tree.error) tree.error = kid.error
-		if (kid.id) { // a branch with an action => ACT
-			prune(kid, t, acts)
-			const act = acts?.[kid.id],
-						res = !act ? kid : act.length < 2 ? act( kid ) : act( kid, t.slice(kid.i, kid.j) )
-			if (res !== undefined) tree[len++] = res
-		} else {
-			tree.splice(i+1, 0, ...kid)
-		}
+		apply(kid, t, acts)
+		const act = acts?.[kid.id],
+					res = !act ? kid : act.length < 2 ? act( kid ) : act( kid, t.slice(kid.i, kid.j) )
+		if (res !== undefined) tree[len++] = res
 	}
 	tree.length = len
 	return tree
@@ -75,7 +86,7 @@ const P = {
 	}
 	return null
 },
-' ': function(t,i=0) { /* DEFAULT: sequence e0 e1 ... en */
+'>': function(t,i=0) { /* DEFAULT: sequence e0 e1 ... en */
 	const tree = []
 	let j = i
 	if (j<t.length) for (const r of this.rs) {
@@ -130,23 +141,3 @@ const P = {
 	}
 	return null
 }}
-/*
-TODO
-https://www.raincode.com/docs/PEGGrammar/UserGuide.html
-X*,"," a comma-separated, possibly empty list of Xs
-Y+,";;" a semicolon-separated non-empty list of Ys
-Z{5},i:s a space-separated list of at least five Zs
-
-https://peps.python.org/pep-0617/
-s.e+ === (e (s e)*)   //Seperator not in parse tree
-sep=atom '.' node=atom '+' {Gather(sep, node)}
-
-https://www.inf.puc-rio.br/~roberto/lpeg/
-sep = lpeg.S(",;") * space
-
-$( e, $`*`(s, e) )
-$`.`(s, e)
-$( $`|`(a, b), $`*`(s, $`|`(a, b)) )
-$`.`(s, $`|`(a, b))
-
-*/

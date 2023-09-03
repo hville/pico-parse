@@ -6,6 +6,7 @@
   "version": "0.18.0",
   "description": "small top-down parser combinator and PEG parser",
   "devDependencies": {
+    "@hugov/bench": "^2.0.0",
     "assert-op": "^1.1.0"
   },
   "scripts": {
@@ -24,8 +25,5 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/hville/pico-parse.git"
-  },
-  "dependencies": {
-    "@hugov/bench": "^2.0.0"
   }
 }

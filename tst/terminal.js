@@ -4,7 +4,7 @@ import a from 'assert-op/assert.js'
 
 withRofN(R, 'R')
 withRofN(R`|`, 'R`|`')
-withRofN(R` `, 'R` `')
+withRofN(R`>`, 'R`>`')
 
 function eq(val, res) {
 	if ( val === null || res === null ) a`===`(val, res)

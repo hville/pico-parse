@@ -61,26 +61,28 @@ test('R`@`', a => {
 
 test('reset', a => {
 	const r = R()
-	eq(r.set('a').peek('abc', 0), {i:0,j:1})
-	eq(r.set(/[^]/).peek('cde', 0), {i:0,j:1})
-	eq(r.set('a').peek('abc', 0), {i:0,j:1})
+	eq(r.reset('a').peek('abc', 0), {i:0,j:1})
+	eq(r.reset( R('a') ).peek('abc', 0), {i:0,j:1})
+	eq(r.reset(/[^]/).peek('cde', 0), {i:0,j:1})
+	eq(r.reset('a').peek('abc', 0), {i:0,j:1})
 })
 
 test('consistent reduction', a => {
 	eq(R(R`|`('a')), R`|`('a'))
 
-	const an = R`|`('a')
-	an.id = 'n'
+	const an = R.n`|`('a')
 	eq(R(an), an)
 
-	const sn = R(R`|`('a'))
-	sn.id = 'n'
+	const sn = R.n(R`|`('a'))
 	eq(sn, an)
 
-	const	ax = R`|`('a',),
-				sx = R(R`|`('a'))
-	ax.id = sx.id = 'id'
+	const	ax = R.id`|`('a',),
+				sx = R.id(R`|`('a'))
 	eq(ax, sx)
+	//TODO
+	//console.log(R( R( R( R( R( 'a' ) ) ) ) ).rs[0].rs[0].rs[0].rs[0] )
+	//console.log(R( R( R( R( R( 'a' ) ) ) ) ).peek('a') )
+	//console.log(R( R( R( R( R.id( 'a' ) ) ) ) ).peek('a') )
 })
 
 test('ids and actions', a => {

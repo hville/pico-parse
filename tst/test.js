@@ -1,3 +1,4 @@
 import './terminal.js'
 import './ops.js'
-import './peg.js'
+import './grammar.js'
+import './pegtest.js'
