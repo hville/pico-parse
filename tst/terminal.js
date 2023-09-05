@@ -1,4 +1,4 @@
-import R from '../parsers.js'
+import R from '../parser.js'
 import test from 'assert-op'
 import a from 'assert-op/assert.js'
 

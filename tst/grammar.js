@@ -1,4 +1,4 @@
-import { Grammar, default as $ } from '../parsers.js'
+import { Grammar, default as $ } from '../parser.js'
 import test from 'assert-op'
 
 test(`grammar`, a => {

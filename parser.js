@@ -1,9 +1,9 @@
 class R {
-	constructor(peek, rules=[]) {
+	constructor( peek=P['>'], rules=[] ) {
 		this.peek = peek
 		this.id = ''
-		this.rs = (this.peek !== P['|'] && this.peek !== P['>'] && rules.length > 1) ? [new R(P['>'], rules)]
-		: (this.peek === TXT || this.peek === REG) ? rules
+		this.rs = (peek !== P['|'] && peek !== P['>'] && rules.length > 1) ? [new R(P['>'], rules)]
+		: (peek === TXT || peek === REG) ? rules
 		: rules.map( r => r instanceof R ? r : r.source ? new R(REG, [r.sticky ? r : RegExp(r.source, 'y'+r.flags)]) : new R(TXT, [r]) )
 	}
 	reset( rule ) {
@@ -133,11 +133,4 @@ const P = {
 	let leaf = this.rs[0].peek(t,i)
 	return leaf === null ? this.tree(i,i) : this.tree(i,leaf.j,[leaf])
 },
-'.': function(t,i=0) { /* (s.e+) === (e (s e)*) */
-	let k = i
-	while(k<t.length) {
-		const leaf = this.rs[0].peek(t,k++)
-		if (leaf !== null) return this.tree(i, leaf.j, leaf)
-	}
-	return null
-}}
+}

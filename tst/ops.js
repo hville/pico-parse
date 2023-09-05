@@ -1,6 +1,6 @@
 import test from 'assert-op'
 import a from 'assert-op/assert.js'
-import R from '../parsers.js'
+import R from '../parser.js'
 
 function eq(val, res) {
 	if ( val === null || res === null ) a`===`(val, res)

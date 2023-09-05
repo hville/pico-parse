@@ -1,6 +1,6 @@
 import t from 'assert-op'
 import toPEG from './pegparser.js'
-import $ from '../parsers.js'
+import $ from '../parser.js'
 import PEG from './original-peg-grammar.js'
 
 const P = toPEG($)

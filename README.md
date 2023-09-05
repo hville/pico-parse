@@ -1,8 +1,8 @@
 <!-- markdownlint-disable MD032 MD036 MD041 -->
 # pico-parse
 
-*small top-down parser combinator and [PEG](https://bford.info/pub/lang/peg.pdf)
- parser without pre-compilation*
+*small top-down parser combinator similar to [PEG](https://bford.info/pub/lang/peg.pdf)
+ without pre-compilation*
 
 [Example](#example) • [API](#api) • [Notes](#notes) • [License](#license)
 
@@ -11,83 +11,95 @@
 Below is the actual code to parse [PEG](https://bford.info/pub/lang/peg.pdf) grammar
 
 ```javascript
-import { seq,any,few,not } from './parsers.js'
-
+import $ from './parser.js'
+//# helpers
 const identifier = /[\p{ID_Start}\$_][\p{ID_Continue}\$_\u200C\u200D]*/u
+//# Lexical syntax
+const
+_ = /(?:\s*#[^\n\r]*(?:\r\n|\n|\r)+)?\s*/,
+TXT = $`|`( // " ' primary 5 Literal string
+  $( `'`, $.lit( /(?:[^']|\\[^])+/ ), `'` ),
+  $( '"', $.lit( /(?:[^"]|\\[^])+/ ), '"' )
+),
+DOT = $.dot( '.' ), // . primary 5 Any character
+CHR = $.rng( /\[(?:(?:\\[^])|[^\]])+\]/ ), // [ ] primary 5 Character class
+REG = $.reg( '/', $.lit( /(?:[^/]|\\\/)+/ ), '/', $.lit`?`( /[a-z]*/ ) )
 
-const //# Lexical syntax
-  _ = seq(/(?:\s*#[^\n\r]*(?:\r\n|\n|\r)+)?\s*/),
-  LIT = any(seq(`'`,seq`txt`(/[^']+/),`'`), seq('"',seq`txt`(/[^"]+/),'"'), seq('’',seq`txt`(/[^’]+/),'’')), // " "/’ ’ primary 5 Literal string
-  DOT = seq`reg`('.'), //. primary 5 Any character
-  CHR = seq`reg`(/\[(?:(?:\\[^])|[^\]])+\]/) // [ ] primary 5 Character class
+//# Hierarchical syntax
+const
+exp = $(),
+PID = $.lit( identifier ),
+VAR = $( $.ref( PID ), _, $`!`('=') ),
+prm = $`|`( $('(', _, exp, _, ')'), TXT, CHR, DOT, REG, VAR ), //Primary = Identifier !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
+FEW = $.ops( prm, $.fcn('+') ), //e+ unary suffix 4 One-or-more
+OPT = $.ops( prm, $.fcn('?') ), //e? unary suffix 4 Optional
+RUN = $.ops( prm, $.fcn('*') ), //e* unary suffix 4 Zero-or-more
+suf = $`|`( FEW, OPT, RUN, prm ), //Suffix = Primary (QUESTION / STAR / PLUS)?
+AND = $.ops( $.fcn('&'), suf ), //&e unary prefix 3 And-predicate
+NOT = $.ops( $.fcn('!'), suf), //!e unary prefix 3 Not-predicate
+GET = $.ops( $.fcn('@'), suf), //@e === (!e .)* e
+pre = $`|`(AND, NOT, GET, suf), //Prefix = (AND / NOT)? Suffix
+SEQ = $.seq(pre, $`+`(_, pre) ), //e1 e2 binary 2 Sequence ////Sequence = Prefix*
+itm = $`|`(SEQ, pre),
+ANY = $.any(itm, $`+`(_, '|', _, itm) ), //e1 / e2 binary 1 Prioritized Choice //Expression = Sequence (SLASH Sequence)*
+DEF = $.def(PID, _, '=', _, exp ),//Definition = Identifier LEFTARROW Expression
+// Error Management
+ERR = $.err( /[^\s]+/ )
 
-const //# Hierarchical syntax
-  exp = any(),
-  ID = seq`id`(identifier),
-  prm = seq(any(seq('(',_, exp, _, ')'), LIT, CHR, DOT, seq(ID, _, not('<-'))), _), //Primary <- Identifier !LEFTARROW / OPEN Expression CLOSE / Literal / Class / DOT
-  RUN = seq`run`(prm, '*'), //e* unary suffix 4 Zero-or-more
-  OPT = seq`opt`(prm, '?'), //e? unary suffix 4 Optional
-  FEW = seq`few`(prm, '+'), //e+ unary suffix 4 One-or-more
-  suf = any(FEW,OPT,RUN,prm), //Suffix <- Primary (QUESTION / STAR / PLUS)?
-  NOT = seq`not`('!', suf), //!e unary prefix 3 Not-predicate
-  AND = seq`and`('&', suf), //&e unary prefix 3 And-predicate
-  pre = any(AND,NOT,suf), //Prefix <- (AND / NOT)? Suffix
-  SEQ = seq`seq`(pre, few(_, pre), _), //e1 e2 binary 2 Sequence ////Sequence <- Prefix*
-  itm = any(SEQ,pre),
-  ANY = seq`any`(itm, few(_, '/', _, itm)), //e1 / e2 binary 1 Prioritized Choice //Expression <- Sequence (SLASH Sequence)*
-  DEF = seq`def`(ID, _, '<-', _, exp)//Definition <- Identifier LEFTARROW Expression
-Object.assign(exp, any(ANY,itm))
-
-const // Error Management
-  Xexp = seq(_, seq`Xexp`(/[^\s]*/), _),//Grammar <- Spacing Definition+ EndOfFile
-  XDEF = any`Xdef`('Xdef', seq(ID, _, '<-', _, Xexp), Xexp)//Definition <- Identifier LEFTARROW Expression
-
-export default seq(_, any(few`peg`(DEF, _), few`Xpeg`(any(DEF,XDEF),_) ) ) //Grammar <- Spacing Definition+ EndOfFile
+exp.reset( $`|`(ANY, SEQ, AND, NOT, GET, FEW, OPT, RUN, prm) )
+// final grammar
+export default $( _, $`|`(DEF, exp, ERR), $`*`( _, $`|`(DEF, ERR) ), _ )
 ```
 
 ## API
 
-### Rule factories
+### Rule types
 
-Rules are created with the following factories
-* `any(...Rule|Array|String|RegExp) : Rule` finds the first passing rule (/ operator)
-* `seq(...Rule|Array|String|RegExp) : Rule` chains all rules, all must pass
-* `few(...Rule|Array|String|RegExp) : Rule` repeat all rules one or more times (+ operator)
-* `run(...Rule|Array|String|RegExp) : Rule` repeat rules any times (* operator)
-* `opt(...Rule|Array|String|RegExp) : Rule` optional rule (? operator)
-* `and(...Rule|Array|String|RegExp) : Rule` pass if lookahead passes (& operator)
-* `not(...Rule|Array|String|RegExp) : Rule` pass if lookahead fails (! operator)
+* $`>`(...Rule|String|RegExp) : Rule ( e0 e1 ... en ) // sequence
+* $(...Rule|String|RegExp) : Rule ( e0 e1 ... en ) // sequence, same as above
+* $`|`(...Rule|String|RegExp) : Rule  ( e0 / e1 / ... / en ) // option
+* $`*`(...Rule|String|RegExp) : Rule  (e0 ... en)*
+* $`+`(...Rule|String|RegExp) : Rule  (e0 ... en)+
+* $`?`(...Rule|String|RegExp) : Rule  (e0 ... en)?
+* $`&`(...Rule|String|RegExp) : Rule  &(e0 ... en) //lookahead without capture
+* $`!`(...Rule|String|RegExp) : Rule  !(e0 ... en) //lookahead without capture
+* $`@`(...Rule|String|RegExp) : Rule  ( (!e .)* e )
 
-Rules can have a name by calling them: `named = any.call('myname', e0, e1, ...childRules)`
+`String` and `RegExp` arguments are converted to terminal litteral token rules.
 
-Arguments
-* `String` and `RegExp` arguments are converted to terminal litteral token rules
+### Rule ids
 
-### Rule
+* $.myid`>`(...Rule|String|RegExp) : Rule with id set to myid
+* $.myName(...Rule|String|RegExp) : Rule with id set to myName
+* $.myid(/a/) : a terminal rule with an id
+
+rules without ids are considered temporary constructs and are pruned from the resulting tree
+
+### Rule Object
 
 * `.id` name, empty string by default
 * `.rs` child rules
 * `.peek(string, index=0) : Tree` Used internally to parse a string at a given position
-* `.scan(string) : Tree` parses the complete string
+* `.scan(string, actions={}) : Tree` parses the complete string and applies actions if provided
 
-### Capture Tree
+### Actions
+
+Actions have the form { id: (tree, substring) => any } and are used to replace a branch
+
+### Tree
 
 The resulting tree does not hold the token, only the indices where they are found
-* `tree: {i, j [, id] [, cuts]}`
-* `i : number` start position of the tree
-* `j : number` next position in the tree
-
-notes
-* to get the token, `source.slice(i,j)`
-* unamed empty trees are removed
-* unamed trees are flattened
-* failed token have negative j
+* `tree: Array<tree>` with
+  * `i : number` start position of the tree
+  * `j : number` next position in the tree (length = j-i)
+  * `id : string` the id of the source rule
 
 ## Notes
 
 * left recursion currently not supported nor prevented
 * packrat memoization not yet supported
 * in some cases, `String.raw` must be used to support `\\` escaped characters
+* unamed branches (no id) are removed from the tree (unamed parents except the root are flattened)
 
 ## License
 
