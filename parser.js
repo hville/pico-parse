@@ -1,12 +1,16 @@
+const toRule = r => r instanceof R ? r
+	: r.source ? new R(REG, [r.sticky ? r : RegExp(r.source, 'y'+r.flags)])
+	: new R(TXT, [r])
 class R {
 	constructor( peek=P['>'], rules=[] ) {
 		this.peek = peek
 		this.id = ''
-		this.rs = (peek !== P['|'] && peek !== P['>'] && rules.length > 1) ? [new R(P['>'], rules)]
-		: (peek === TXT || peek === REG) ? rules
-		: rules.map( r => r instanceof R ? r : r.source ? new R(REG, [r.sticky ? r : RegExp(r.source, 'y'+r.flags)]) : new R(TXT, [r]) )
+		this.rs = (peek === TXT || peek === REG) ? rules  // don't reprocess terminale
+		: (peek === P['|'] || peek === P['>'] || rules.length <= 1)  ? rules.map(toRule)
+		: [new R(P['>'], rules)] // extra arguments treated as a sequence
 	}
-	reset( rule ) {
+	assign( rule ) {
+		//TODO detect left-recursion here
 		return Object.assign( this, rule.peek ? rule : new R(P['>'], [rule])  )
 	}
 	tree(i, j, itms=[]) {
@@ -40,16 +44,6 @@ export default new Proxy(
 	{ get: (f,id) => (...as) => { const r=f(...as); r.id=id; return r } }
 )
 
-export class Grammar {
-	constructor() {
-		const tmp = Object.create(null)
-		return new Proxy(Object.create(null), {
-			get: (_, k) => tmp[k] ?? ( tmp[k] = new R ),
-			set: (m, k, v) => m[k] = tmp[k]?.reset(v) ?? ( tmp[k] = v )
-		})
-	}
-}
-
 function apply(tree, t, acts) {
 	let len = 0
 	for (let kid of tree) {
@@ -79,14 +73,7 @@ function TXT(t,i=0) {
 
 /* parsers */
 const P = {
-'|': function(t,i=0) { /* any e0 / e1 / ... / en */
-	for (const r of this.rs) {
-		const leaf = r.peek(t,i)
-		if (leaf !== null) return this.id ? this.tree(i,leaf.j,leaf) : leaf
-	}
-	return null
-},
-'>': function(t,i=0) { /* DEFAULT: sequence e0 e1 ... en */
+'>': function(t,i=0) { /*  DEFAULT: e0 e1 ... en  */
 	const tree = []
 	let j = i
 	if (j<t.length) for (const r of this.rs) {
@@ -98,14 +85,21 @@ const P = {
 	} else return null
 	return this.tree(i,j,tree)
 },
-'&': function(t,i=0) { /* &(e0 ... en) */
+'|': function(t,i=0) { /*  e0 / e1 / ... / en  */
+	for (const r of this.rs) {
+		const leaf = r.peek(t,i)
+		if (leaf !== null) return this.id ? this.tree(i,leaf.j,leaf) : leaf
+	}
+	return null
+},
+'&': function(t,i=0) { /*  &e  */
 	if (this.rs[0].peek(t,i) === null) return null
 	return this.tree(i,i)
 },
-'!': function(t,i=0) { /* !(e0 ... en) */
+'!': function(t,i=0) { /*  !e  */
 	return (i>t.length || this.rs[0].peek(t,i)!==null) ? null :  this.tree(i,i)
 },
-'@': function(t,i=0) { /* (!e .)* e */
+'@': function(t,i=0) { /*  (!e .)* e  */
 	let k = i
 	while(k<t.length) {
 		const leaf = this.rs[0].peek(t,k++)
@@ -113,14 +107,14 @@ const P = {
 	}
 	return null
 },
-'+': function(t,i=0) { /* (e0 ... en)+ */
+'+': function(t,i=0) { /*  e+  */
 	const tree = [],
 				r = this.rs[0]
 	let leaf = {j:i}
 	while(leaf = r.peek(t, leaf.j)) tree.push(leaf)
 	return tree.length > 0 ? this.tree(i,tree[tree.length-1].j,tree) : null
 },
-'*': function(t,i=0) { /* (e0 ... en)* */
+'*': function(t,i=0) { /*  e*  */
 	if (i>t.length) return null
 	const tree = [],
 				r = this.rs[0]
@@ -128,9 +122,9 @@ const P = {
 	while(leaf = r.peek(t,leaf.j)) tree.push(leaf)
 	return this.tree(i, tree.length ? tree[tree.length-1].j : i,tree)
 },
-'?': function(t,i=0) { /* (e0 ... en)? */
+'?': function(t,i=0) { /*  e?  */
 	if (i>t.length) return null
 	let leaf = this.rs[0].peek(t,i)
 	return leaf === null ? this.tree(i,i) : this.tree(i,leaf.j,[leaf])
-},
+}
 }

@@ -46,7 +46,7 @@ DEF = $.def(PID, _, '=', _, exp ),//Definition = Identifier LEFTARROW Expression
 // Error Management
 ERR = $.err( /[^\s]+/ )
 
-exp.reset( $`|`(ANY, SEQ, AND, NOT, GET, FEW, OPT, RUN, prm) )
+exp.assign( $`|`(ANY, SEQ, AND, NOT, GET, FEW, OPT, RUN, prm) )
 // final grammar
 export default $( _, $`|`(DEF, exp, ERR), $`*`( _, $`|`(DEF, ERR) ), _ )
 ```
@@ -55,15 +55,15 @@ export default $( _, $`|`(DEF, exp, ERR), $`*`( _, $`|`(DEF, ERR) ), _ )
 
 ### Rule types
 
-* $`>`(...Rule|String|RegExp) : Rule ( e0 e1 ... en ) // sequence
-* $(...Rule|String|RegExp) : Rule ( e0 e1 ... en ) // sequence, same as above
+* $`>`(...Rule|String|RegExp) : Rule ( e0 e1 ... en )               // sequence
+* $(...Rule|String|RegExp) : Rule ( e0 e1 ... en )                  // sequence, same as above
 * $`|`(...Rule|String|RegExp) : Rule  ( e0 / e1 / ... / en ) // option
 * $`*`(...Rule|String|RegExp) : Rule  (e0 ... en)*
 * $`+`(...Rule|String|RegExp) : Rule  (e0 ... en)+
 * $`?`(...Rule|String|RegExp) : Rule  (e0 ... en)?
-* $`&`(...Rule|String|RegExp) : Rule  &(e0 ... en) //lookahead without capture
-* $`!`(...Rule|String|RegExp) : Rule  !(e0 ... en) //lookahead without capture
-* $`@`(...Rule|String|RegExp) : Rule  ( (!e .)* e )
+* $`&`(...Rule|String|RegExp) : Rule  &(e0 ... en)                  // lookahead without capture
+* $`!`(...Rule|String|RegExp) : Rule  !(e0 ... en)                  // lookahead without capture
+* $`@`(...Rule|String|RegExp) : Rule  ( (!(e0 ... en) .)* (e0 ... en) )
 
 `String` and `RegExp` arguments are converted to terminal litteral token rules.
 
@@ -80,7 +80,8 @@ rules without ids are considered temporary constructs and are pruned from the re
 * `.id` name, empty string by default
 * `.rs` child rules
 * `.peek(string, index=0) : Tree` Used internally to parse a string at a given position
-* `.scan(string, actions={}) : Tree` parses the complete string and applies actions if provided
+* `.scan(string, actions={}) : Tree` parses the complete string, prune branches without ids and applies actions if provided
+* `.assign( rule ) : Rule` merges a rule with an existing reference for recursions
 
 ### Actions
 
@@ -97,9 +98,9 @@ The resulting tree does not hold the token, only the indices where they are foun
 ## Notes
 
 * left recursion currently not supported nor prevented
-* packrat memoization not yet supported
+* packrat memoization not supported
 * in some cases, `String.raw` must be used to support `\\` escaped characters
-* unamed branches (no id) are removed from the tree (unamed parents except the root are flattened)
+* unamed branches (no id) are removed from the tree when using `.scan` (unamed parents except the root are flattened)
 
 ## License
 

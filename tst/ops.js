@@ -59,12 +59,12 @@ test('R`@`', a => {
 	eq(R`@`('bc').peek('abc', 0), {i:0,j:3})
 })
 
-test('reset', a => {
+test('assign', a => {
 	const r = R()
-	eq(r.reset('a').peek('abc', 0), {i:0,j:1})
-	eq(r.reset( R('a') ).peek('abc', 0), {i:0,j:1})
-	eq(r.reset(/[^]/).peek('cde', 0), {i:0,j:1})
-	eq(r.reset('a').peek('abc', 0), {i:0,j:1})
+	eq(r.assign('a').peek('abc', 0), {i:0,j:1})
+	eq(r.assign( R('a') ).peek('abc', 0), {i:0,j:1})
+	eq(r.assign(/[^]/).peek('cde', 0), {i:0,j:1})
+	eq(r.assign('a').peek('abc', 0), {i:0,j:1})
 })
 
 test('consistent reduction', a => {

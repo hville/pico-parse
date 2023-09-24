@@ -36,7 +36,7 @@ ERR = $.err( /[^\s]+/ ),
 // final grammar
 PEG = $.peg( _, $`|`(DEF, exp, ERR), $`*`( _, $`|`(DEF, ERR) ), _ )
 
-exp.reset( $`|`(ANY, SEQ, AND, NOT, GET, FEW, OPT, RUN, prm) )
+exp.assign( $`|`(ANY, SEQ, AND, NOT, GET, FEW, OPT, RUN, prm) )
 
 const m = new Map // memory to store PEG references before being declared
 
